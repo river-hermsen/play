@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="signup">
     <el-row justify="center" type="flex">
       <el-col :span="8">
         <el-card>
@@ -23,7 +23,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 h1 {
   margin-bottom: 1em;
 }

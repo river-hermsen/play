@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="login">
     <el-row justify="center" type="flex">
       <el-col :span="8">
         <el-card>

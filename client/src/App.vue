@@ -10,7 +10,7 @@
             <el-menu-item index="/login">Login</el-menu-item>
           </el-col>
           <el-col :span="2">
-            <el-menu-item index="/signup">Register</el-menu-item>
+            <el-menu-item index="/signup">Sign Up</el-menu-item>
           </el-col>
         </el-row>
       </el-menu>

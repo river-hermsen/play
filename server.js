@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
-
 const users = require("./routes/api/users");
 
 const app = express();
@@ -22,7 +21,7 @@ const db = require("./config/keys").mongoURI;
 
 // Connect to MongoDB
 mongoose
-  .connect("mongodb://admin:admin123@ds231549.mlab.com:31549/spotify-clone", {
+  .connect(db, {
     useNewUrlParser: true
   })
   .then(() => console.log("MongoDB Connected"))

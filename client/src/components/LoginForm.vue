@@ -1,26 +1,51 @@
 <template>
   <div id="loginForm">
-    <el-form :rules="formRules">
+    <el-form :rules="formRules" ref="loginForm" :model="formData">
+      <div id="errors">
+        <div class="errors" v-for="error in errors" :key="error">
+          <el-alert type="error" :title="error" show-icon></el-alert>
+        </div>
+      </div>
       <el-form-item label="Email" prop="email">
         <el-input type="email" placeholder="example@gmail.com" v-model="formData.email"></el-input>
       </el-form-item>
       <el-form-item label="Password" prop="pwd">
         <el-input type="password" placeholder="••••••••••••" v-model="formData.pwd"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary">Login</el-button>
+      <router-link to="/forgotpassword">Or forgot your password?</router-link>
+      <el-form-item class="outer-btn-login">
+        <el-button type="primary" @click="submitForm" class="btn-login">Login</el-button>
       </el-form-item>
     </el-form>
+    <h2>Don't have an account yet?</h2>
+    <router-link tag="el-button" to="/signup" class="el-button--primary">Sign Up</router-link>
   </div>
 </template>
 
 <style lang="scss" scoped>
+a {
+  display: inline;
+  float: left;
+}
+.outer-btn-login {
+  display: inline;
+  float: right;
+}
+.btn-login {
+  display: inline;
+  float: right;
+}
+h2 {
+  margin-top: 100px;
+}
 .el-form--label-top .el-form-item__label {
   padding-bottom: 0px;
 }
 </style>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -48,8 +73,37 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      errors: {}
     };
+  },
+  methods: {
+    submitForm() {
+      console.log("Submiting form...");
+      axios
+        .post("http://localhost:5000/api/users/login", {
+          email: this.formData.email,
+          pwd: this.formData.pwd
+        })
+        .then(res => {
+          console.log(res.data);
+          this.$store.commit("newLogin", {
+            token: res.data.token,
+            username: res.data.username,
+            email: res.data.email
+          });
+          this.$router.push({ path: "/" });
+        })
+        .catch(errors => {
+          if (errors.response.data) {
+            this.errors = errors.response.data;
+          } else {
+            this.erros = {
+              server: "Internal Server Error. Please try again later"
+            };
+          }
+        });
+    }
   }
 };
 </script>

@@ -1,28 +1,48 @@
 import Vue from "vue";
-import Router from "vue-router";
+import VueRouter from "vue-router";
+import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import SignUp from "./views/SignUp.vue";
+import ForgotPassword from "./views/ForgotPassword.vue";
+import store from "./store";
+Vue.use(VueRouter);
 
-Vue.use(Router);
-
-export default new Router({
+const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
+    {
+      path: "/",
+      name: "Home",
+      component: Home,
+      meta: {
+        requiresAuth: true
+      }
+    },
     {
       path: "/login",
       name: "Login",
       component: Login,
       meta: {
-        requireAuth: false
+        requiresAuth: false,
+        isLoginSignUp: true
       }
     },
     {
       path: "/signup",
-      name: "signup",
+      name: "Signup",
       component: SignUp,
       meta: {
-        requireAuth: false
+        requiresAuth: false,
+        isLoginSignUp: true
+      }
+    },
+    {
+      path: "/forgotpassword",
+      name: "ForgotPassword",
+      component: ForgotPassword,
+      meta: {
+        requiresAuth: false
       }
     },
     {
@@ -36,3 +56,19 @@ export default new Router({
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isLoginSignUp = to.matched.some(record => record.meta.isLoginSignUp);
+  const isLoggedIn = store.state.isLoggedIn;
+
+  if (requiresAuth && !isLoggedIn) {
+    next("/login");
+  } else if (isLoginSignUp && isLoggedIn) {
+    next("/");
+  } else {
+    next();
+  }
+});
+
+export default router;
