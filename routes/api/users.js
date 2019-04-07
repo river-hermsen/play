@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const nodemailer = require("nodemailer");
 
 // Load input validation
 const validateSignUpInput = require("../../validation/signUp");
@@ -15,11 +16,40 @@ const User = require("../../models/User");
 // @router  GET api/users/test
 // @desc    Test User route
 // @access  Public
-router.get("/test", (req, res) =>
-  res.json({
-    msg: "Users Works"
-  })
-);
+router.get("/test", (req, res) => {});
+
+const hbs = require("handlebars");
+const fs = require("fs");
+var template = fs.readFileSync("././config/emails/confirmEmail.hbs", "utf-8");
+var compiledTemplate = hbs.compile(template);
+router.get("/", (req, res) => {
+  template = compiledTemplate({ username: "riverhermsen" });
+  res.send(template);
+});
+// @router  GET api/users/test/email
+// @desc    Test email route
+// @access  Public
+router.post("/test/email", (req, res) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: keys.gmail.email,
+      pass: keys.gmail.password
+    }
+  });
+  //compiledTemplate({ firstname: "River" })
+  const mailOptions = {
+    from: "project.play19@gmail.com", // sender address
+    to: "riverhermsen@hotmail.nl", // list of receivers
+    subject: "Test email", // Subject line
+    html: compiledTemplate({ firstname: "river" }) // plain text body
+  };
+
+  transporter.sendMail(mailOptions, function(err, info) {
+    if (err) console.log(err);
+    else console.log(info);
+  });
+});
 
 // @router  POST api/users/signup
 // @desc    Sign up route
@@ -46,15 +76,55 @@ router.post("/signup", (req, res) => {
 
     // Salting and hashing new users password
     bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.password, salt, (err, hash) => {
-        if (err) throw err;
-        newUser.password = hash;
-        newUser
-          .save()
-          .then(user =>
-            res.json({ username: newUser.username, email: newUser.email })
-          )
-          .catch(err => console.log(err));
+      bcrypt
+        .hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+        })
+        .catch(err => console.log(err));
+
+      // Generate random token
+      newUser.confirmEmailToken = require("crypto").randomBytes(48, function(
+        err,
+        buffer
+      ) {
+        var token = buffer.toString("hex");
+      });
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: keys.gmail.email,
+          pass: keys.gmail.password
+        }
+      });
+      //compiledTemplate({ firstname: "River" })
+      const mailOptions = {
+        from: "project.play19@gmail.com", // sender address
+        to: "riverhermsen@hotmail.nl", // list of receivers
+        subject: "Confirm Email", // Subject line
+        html: compiledTemplate({
+          firstname: "river",
+          linkToConfirm: `http://localhost/confirmemail?token=${
+            newUser.confirmEmailToken
+          }`
+        })
+      };
+
+      transporter.sendMail(mailOptions, function(err, info) {
+        if (err) {
+          console.log(err);
+          errors.mail = "Error sending confirmation email";
+          return res.status(500).json(errors);
+        } else {
+        }
+      });
+
+      newUser.save().then(user => {
+        res.json({
+          username: newUser.username,
+          email: newUser.email,
+          success: true
+        });
       });
     });
   });

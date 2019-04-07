@@ -12,13 +12,14 @@
     >
     <input
       type="range"
-      id="volume"
+      id="seek"
       min="0"
-      max="1"
+      :max="audio.length"
       step="0.05"
-      v-on:input="changeSeekAudio"
+      v-on:input="changePosAudio"
       v-model="audio.seek"
     >
+    <el-button @click="testBtn">Test button</el-button>
   </div>
 </template>
 
@@ -35,7 +36,8 @@ export default {
         src: "http://localhost:8080/music/08 HUMBLE..mp3",
         track: "",
         lenghtString: "2:00",
-        length: 200,
+        length: 0,
+        pos: 0,
         albumCover: "",
         album: "",
         artist: "",
@@ -49,6 +51,7 @@ export default {
       src: [this.audio.src]
     });
     this.track = track;
+    this.audio.length = track._duration;
   },
   methods: {
     playPauseMusic() {
@@ -66,8 +69,11 @@ export default {
     changeVolumeAudio() {
       Howler.volume(this.audio.volume);
     },
-    changeSeekAudio() {
-      this.track.seek(30, this.audio.id);
+    changePosAudio() {
+      this.track.seek(this.audio.pos, this.audio.id);
+    },
+    testBtn() {
+      console.log(this.track._sounds[0]);
     }
   }
 };
