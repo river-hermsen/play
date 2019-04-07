@@ -2,22 +2,46 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 Vue.use(Vuex);
+var Cookies = require("js-cookie");
 
 export default new Vuex.Store({
   state: {
-    isLoggedIn: false,
+    isLoggedIn: Cookies.get("user") ? true : false,
     user: {
       token: "",
-      username: "",
+      username: Cookies.get("user") ? Cookies.get("user").username : "",
       email: ""
     }
   },
-  mutations: {
-    newLogin(state, user) {
-      state.user.token = user.token;
-      state.user.username = user.username;
-      state.user.email = user.email;
-      state.isLoggedIn = true;
+  mutations: {},
+  actions: {
+    getUserInfo() {
+      if (Cookies.get("user")) {
+        const userInfo = JSON.parse(Cookies.get("user"));
+        return {
+          username: userInfo.username,
+          email: userInfo.email
+        };
+      } else {
+        return false;
+      }
+    },
+    logInUser({ state }, userData) {
+      console.log(state);
+      console.log(userData);
+
+      Cookies.set(
+        "user",
+        {
+          jwt: userData.token,
+          username: userData.username,
+          email: userData.email
+        },
+        { expires: 7 }
+      );
+    },
+    logOutUser() {
+      Cookies.remove("user");
     }
   }
 });

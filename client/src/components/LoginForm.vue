@@ -45,7 +45,6 @@ h2 {
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
@@ -87,18 +86,15 @@ export default {
         })
         .then(res => {
           console.log(res.data);
-          this.$store.commit("newLogin", {
-            token: res.data.token,
-            username: res.data.username,
-            email: res.data.email
+          this.$store.dispatch("logInUser", res.data).then(() => {
+            this.$router.go("/");
           });
-          this.$router.push({ path: "/" });
         })
         .catch(errors => {
-          if (errors.response.data) {
+          if (errors.response) {
             this.errors = errors.response.data;
           } else {
-            this.erros = {
+            this.errors = {
               server: "Internal Server Error. Please try again later"
             };
           }
