@@ -8,11 +8,20 @@ var UserSchema = new Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true
   },
   password: {
     type: String,
     required: true
+  },
+  confirmEmailToken: {
+    type: String
+  },
+  emailConfirmed: {
+    type: Boolean,
+    required: true,
+    default: false
   },
   dateCreated: {
     type: Date,

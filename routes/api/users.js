@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
-
+const crypto = require("crypto");
 // Load input validation
 const validateSignUpInput = require("../../validation/signUp");
 const validateLoginInput = require("../../validation/login");
@@ -57,6 +57,7 @@ router.post("/test/email", (req, res) => {
 router.post("/signup", (req, res) => {
   const { errors, isValid } = validateSignUpInput(req.body);
   if (!isValid) {
+    console.error("\x1b[31m", "---------WRONG CREDENTIALS---------");
     return res.status(400).json(errors);
   }
 
@@ -71,25 +72,19 @@ router.post("/signup", (req, res) => {
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
-      password: req.body.pwd1
+      password: req.body.pwd1,
+      confirmEmailToken: crypto.randomBytes(16).toString("hex")
     });
-
     // Salting and hashing new users password
     bcrypt.genSalt(10, (err, salt) => {
-      bcrypt
-        .hash(newUser.password, salt, (err, hash) => {
-          if (err) throw err;
-          newUser.password = hash;
-        })
-        .catch(err => console.log(err));
-
-      // Generate random token
-      newUser.confirmEmailToken = require("crypto").randomBytes(48, function(
-        err,
-        buffer
-      ) {
-        var token = buffer.toString("hex");
+      bcrypt.hash(newUser.password, salt, (err, hash) => {
+        if (err) throw err;
+        newUser.password = hash;
+        console.log("---------HASHED PASSWORD-------------");
       });
+      // Generate random token
+      // newUser.confirmEmailToken = crypto.randomBytes(16).toString("hex");
+
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -97,16 +92,15 @@ router.post("/signup", (req, res) => {
           pass: keys.gmail.password
         }
       });
-      //compiledTemplate({ firstname: "River" })
       const mailOptions = {
         from: "project.play19@gmail.com", // sender address
         to: "riverhermsen@hotmail.nl", // list of receivers
         subject: "Confirm Email", // Subject line
         html: compiledTemplate({
-          firstname: "river",
-          linkToConfirm: `http://localhost/confirmemail?token=${
+          username: newUser.username,
+          linkToConfirm: `http://localhost:8080/confirmemail?token=${
             newUser.confirmEmailToken
-          }`
+          }&email=${newUser.email}`
         })
       };
 
@@ -116,15 +110,15 @@ router.post("/signup", (req, res) => {
           errors.mail = "Error sending confirmation email";
           return res.status(500).json(errors);
         } else {
+          console.log(newUser);
+          newUser.save().then(user => {
+            res.json({
+              username: newUser.username,
+              email: newUser.email,
+              status: "Validate email"
+            });
+          });
         }
-      });
-
-      newUser.save().then(user => {
-        res.json({
-          username: newUser.username,
-          email: newUser.email,
-          success: true
-        });
       });
     });
   });
@@ -180,8 +174,38 @@ router.post("/login", (req, res) => {
   });
 });
 
-// @router  POST api/users/getuser
-// @desc    Login route
+// @router  POST api/users/confirmemail
+// @desc    ConfirmEmail route
 // @access  Public
+router.post("/confirmemail", (req, res) => {
+  const token = req.body.token;
+  const email = req.body.email;
 
+  if (token.length == 32 && email) {
+    User.findOne({ email }).then(user => {
+      if (!user) {
+        return res.status(400).json({ error: "No email found." });
+      }
+      if (!user.confirmEmailToken == token) {
+        return res.status(400).json({ error: "Wrong token." });
+      }
+      if (user.emailConfirmed == true) {
+        return res.status(400).json({ error: "Email is already confirmed." });
+      }
+
+      user.emailConfirmed = true;
+
+      user.save(err => {
+        if (err) {
+          console.log(err);
+          return res
+            .status(500)
+            .json({ servererror: "Something went wrong please try again." });
+        } else {
+          return res.status(200).json({ success: "Email has been confirmed." });
+        }
+      });
+    });
+  }
+});
 module.exports = router;

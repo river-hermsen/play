@@ -19,6 +19,13 @@ export default {
   name: "login",
   components: {
     LoginForm
+  },
+  mounted() {
+    console.log(this.$route.query.errormsg);
+
+    this.$notify.error({
+      title: this.$route.query.errormsg
+    });
   }
 };
 </script>

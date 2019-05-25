@@ -2,7 +2,6 @@ const Validator = require("validator");
 const isEmpty = require("./isEmpty");
 
 module.exports = function validateSignUpInput(data) {
-  console.log(data.username);
   let errors = {};
   if (!Validator.isLength(data.username, { min: 2, max: 30 })) {
     errors.username = "Username must be between 2 and 30 characters";

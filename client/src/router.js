@@ -3,6 +3,8 @@ import VueRouter from "vue-router";
 import Login from "./views/auth/Login.vue";
 import SignUp from "./views/auth/SignUp.vue";
 import ForgotPassword from "./views/auth/ForgotPassword.vue";
+import ConfirmEmail from "./views/auth/ConfirmEmail.vue";
+
 import store from "./store";
 Vue.use(VueRouter);
 
@@ -38,6 +40,14 @@ const router = new VueRouter({
       path: "/forgotpassword",
       name: "ForgotPassword",
       component: ForgotPassword,
+      meta: {
+        requiresAuth: false
+      }
+    },
+    {
+      path: "/confirmemail",
+      name: "ConfirmEmail",
+      component: ConfirmEmail,
       meta: {
         requiresAuth: false
       }
