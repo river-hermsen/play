@@ -34,12 +34,15 @@ export default {
           email: this.$route.query.email
         })
         .then(res => {
-          console.log(res);
+          this.$store.state.flashMsg.success.msg =
+            "Email has been verified. \nYou can now login.";
+
+          this.$router.push({ name: "Login" });
         })
         .catch(error => {
+          this.$store.state.flashMsg.error.msg = error.response.data.error;
           this.$router.push({
-            path: "login",
-            query: { errormsg: error.response.data.error }
+            name: "Login"
           });
         });
     } else {

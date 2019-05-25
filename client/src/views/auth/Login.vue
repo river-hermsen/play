@@ -21,11 +21,23 @@ export default {
     LoginForm
   },
   mounted() {
-    console.log(this.$route.query.errormsg);
+    console.log(this);
 
-    this.$notify.error({
-      title: this.$route.query.errormsg
-    });
+    if (this.$store.state.flashMsg.error.msg) {
+      this.$message({
+        showClose: true,
+        message: this.$store.state.flashMsg.error.msg,
+        type: "error"
+      });
+      this.$store.state.flashMsg.error.msg = "";
+    } else if (this.$store.state.flashMsg.success.msg) {
+      this.$message({
+        showClose: true,
+        message: this.$store.state.flashMsg.success.msg,
+        type: "success"
+      });
+      this.$store.state.flashMsg.success.msg = "";
+    }
   }
 };
 </script>
@@ -36,6 +48,10 @@ h1 {
 }
 .el-card {
   margin-top: 2rem;
+}
+
+.el-notification__title {
+  font-family: "Poppins", sans-serif;
 }
 </style>
 

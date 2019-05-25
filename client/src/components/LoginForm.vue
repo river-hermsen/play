@@ -12,7 +12,7 @@
       <el-form-item label="Password" prop="pwd">
         <el-input type="password" placeholder="••••••••••••" v-model="formData.pwd"></el-input>
       </el-form-item>
-      <router-link to="/forgotpassword">Or forgot your password?</router-link>
+      <router-link to="/forgotpassword">Forgot your password?</router-link>
       <el-form-item class="outer-btn-login">
         <el-button type="primary" @click="submitForm" class="btn-login">Login</el-button>
       </el-form-item>

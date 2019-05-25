@@ -9,11 +9,30 @@ export default new Vuex.Store({
     isLoggedIn: Cookies.get("user") ? true : false,
     user: {
       token: "",
-      username: Cookies.get("user") ? Cookies.get("user").username : "",
+      username: "",
       email: ""
+    },
+    flashMsg: {
+      error: {
+        msg: ""
+      },
+      success: {
+        msg: ""
+      },
+      info: {
+        msg: ""
+      }
+    },
+    podcasts: {
+      genres: []
     }
   },
-  mutations: {},
+  mutations: {
+    addGenres(state, genres) {
+      state.podcasts.genres = genres;
+      console.log(state.podcasts.genres);
+    }
+  },
   actions: {
     getUserInfo() {
       if (Cookies.get("user")) {

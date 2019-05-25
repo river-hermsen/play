@@ -67,9 +67,18 @@ export default {
           pwd2: this.formData.pwd2
         })
         .then(res => {
+          this.$store.state.flashMsg.success.msg = "Please verify your email..";
+
+          this.$router.push({
+            name: "Login",
+            query: {
+              succmsg: "Please verify your email."
+            }
+          });
           console.log(res);
         })
         .catch(errors => {
+          console.log(errors);
           this.errors = errors.response.data;
         });
 

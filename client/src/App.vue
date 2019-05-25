@@ -63,8 +63,12 @@ export default {
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css?family=Poppins");
+body {
+    font-family: "Poppins", sans-serif; 
+
+}
 #app {
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif; 
   background-color: #f5f5f5;
   height: 100vh;
 }

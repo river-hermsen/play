@@ -140,9 +140,10 @@ router.post("/login", (req, res) => {
   // Find user by email
   User.findOne({ email }).then(user => {
     if (!user) {
-      console.log("No user with that email is");
-
       errors.user = "No user with that email is found";
+      return res.status(400).json(errors);
+    } else if (!user.emailConfirmed) {
+      errors.user = "Please confirm your email.";
       return res.status(400).json(errors);
     }
 
@@ -190,11 +191,13 @@ router.post("/confirmemail", (req, res) => {
         return res.status(400).json({ error: "Wrong token." });
       }
       if (user.emailConfirmed == true) {
-        return res.status(400).json({ error: "Email is already confirmed." });
+        return res
+          .status(400)
+          .json({ error: "Email has already been confirmed." });
       }
 
       user.emailConfirmed = true;
-
+      user.confirmEmailToken = null;
       user.save(err => {
         if (err) {
           console.log(err);

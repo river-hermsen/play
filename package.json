@@ -1,7 +1,7 @@
 {
   "name": "play-mevn",
   "version": "1.0.0",
-  "description": "Music player made with the MEVN(MongoDB, ExpressJS, VueJS and NodeJS) stack",
+  "description": "Podcast player made with the MEVN(MongoDB, ExpressJS, VueJS and NodeJS) stack",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.js",
