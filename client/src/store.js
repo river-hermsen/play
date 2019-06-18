@@ -24,13 +24,25 @@ export default new Vuex.Store({
       }
     },
     podcasts: {
-      genres: []
+      genres: [],
+      mostPopular: []
+    }
+  },
+  getters: {
+    getGenres: state => {
+      return state.podcasts.genres;
+    },
+    getMostPopularPodcasts: state => {
+      return state.podcasts.mostPopular;
     }
   },
   mutations: {
-    addGenres(state, genres) {
-      state.podcasts.genres = genres;
-      console.log(state.podcasts.genres);
+    addGenres(state, data) {
+      state.podcasts.genres = data.genres;
+      // console.log(state.podcasts.genres);
+    },
+    addMostPopularPodcasts(state, data) {
+      state.podcasts.mostPopular.push(data);
     }
   },
   actions: {

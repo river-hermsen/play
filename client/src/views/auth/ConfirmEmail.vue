@@ -33,7 +33,7 @@ export default {
           token: this.$route.query.token,
           email: this.$route.query.email
         })
-        .then(res => {
+        .then(() => {
           this.$store.state.flashMsg.success.msg =
             "Email has been verified. \nYou can now login.";
 
