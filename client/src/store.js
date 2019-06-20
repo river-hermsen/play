@@ -1,10 +1,17 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import VuexPersist from "vuex-persist";
 
 Vue.use(Vuex);
+const vuexPersist = new VuexPersist({
+  key: "my-app",
+  storage: localStorage
+});
+
 var Cookies = require("js-cookie");
 
 export default new Vuex.Store({
+  plugins: [vuexPersist.plugin],
   state: {
     isLoggedIn: Cookies.get("user") ? true : false,
     user: {
@@ -34,6 +41,11 @@ export default new Vuex.Store({
     },
     getMostPopularPodcasts: state => {
       return state.podcasts.mostPopular;
+    },
+    getGenreTitleById: state => id => {
+      // console.log(state.podcasts.genres.find(genre => (genre.id = id)));
+
+      return state.podcasts.genres.find(genre => (genre.id = id));
     }
   },
   mutations: {

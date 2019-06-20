@@ -3,17 +3,96 @@
     <div class="header">
       <h1>Hi {{this.userInfo.username}}</h1>
     </div>
+    <el-divider></el-divider>
     <div class="content">
-      {{podcasts.mostPopular}}
+      <!-- <el-row>
+        <el-col :span="8" v-for="(o, index) in 6" :key="o" :offset="index > 0 ? 2 : 0">
+          <el-card :body-style="{ padding: '0px' }">
+            <img
+              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+              class="image"
+            >
+            <div style="padding: 14px;">
+              <span>Yummy hamburger</span>
+              <div class="bottom clearfix">
+                <time class="time">{{ currentDate }}</time>
+                <el-button type="text" class="button">Operating</el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>-->
+
+      <!-- {{podcasts.mostPopular}} -->
       <div class="mostPopular">
-        <!-- <div v-if="podcasts.mostPopular[0]"> -->
-        <div v-for="podcast in podcasts.mostPopular" v-bind:key="podcast.id">{{podcast.title}}</div>
-        <!-- </div> -->
+        <h2>Most Popular podcasts</h2>
+        <el-row>
+          <el-col v-for="podcast in podcasts.mostPopular" :key="podcast.id" :md="8" :lg="6" :xl="6">
+            <el-card class="cardPodcast">
+              <img :src="podcast.thumbnail" class="imagePodcast">
+              <div class="infoBoxPodcast">
+                <div class="titlePodcast">
+                  <b :title="podcast.title">{{podcast.title}}</b>
+                </div>
+                <div>
+                  <span>
+                    <span
+                      v-for="genre in podcast.genre_ids.slice(0, 2)"
+                      :key="genre"
+                    >{{getGenreTitleById(genre).name}}</span>
+                  </span>
+                  <span class="languagePodcast">{{podcast.language}}</span>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
-      <!-- <div class="randomgenres">{{this.$store.getters.getGenres}}</div> -->
+      <!-- <div class="randomgenres">
+        <div v-for="genre in podcasts.genres" :key="genre.id">{{genre.name}}</div>
+      </div>-->
     </div>
   </div>
 </template>
+
+<style>
+.cardPodcast {
+  margin: 10px;
+}
+
+.cardPodcast {
+  width: 300px;
+  height: 390px;
+}
+
+.imagePodcast {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.el-card__body {
+  padding: 0px;
+  height: 100%;
+}
+
+.infoBoxPodcast {
+  padding: 14px;
+  height: 64px;
+}
+
+.titlePodcast {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.1rem;
+}
+
+.languagePodcast {
+  position: relative;
+  float: right;
+  top: 20px;
+}
+</style>
+
 
 <script>
 import axios from "axios";
@@ -25,25 +104,24 @@ export default {
         email: ""
       },
       podcasts: {
-        genres: this.$store.getters.getGenres,
-        mostPopular: [
-          {
-            id: 8,
-            title: "NO"
-          }
-        ]
+        genres: "",
+        mostPopular: []
       }
     };
   },
   created() {
+    console.log(this.$store.getters.getGenreTitleById(99));
+    // Get user info
+    this.$store.dispatch("getUserInfo").then(userInfo => {
+      this.userInfo.username = userInfo.username;
+      this.userInfo.email = userInfo.email;
+    });
     if (this.$store.getters.getMostPopularPodcasts[0]) {
+      console.log(this.$store.getters.getMostPopularPodcasts[0].podcasts);
+
       this.podcasts.mostPopular = this.$store.getters.getMostPopularPodcasts[0].podcasts;
     } else {
-    }
-
-    // Fetch most popular Podcasts
-    var mostPopularPodcasts = this.$store.getters.getMostPopularPodcasts;
-    if (!mostPopularPodcasts[0]) {
+      // Fetch most popular Podcasts
       axios
         .get("https://listen-api.listennotes.com/api/v2/best_podcasts", {
           headers: { "X-ListenAPI-Key": "2e2c4f39b7b44659b73cb3b31f95236e" }
@@ -51,19 +129,21 @@ export default {
         .then(res => {
           console.log("Fetched most popular podcasts from API.");
           this.$store.commit("addMostPopularPodcasts", res.data);
-          this.podcasts.mostPopular = res.data;
+          this.podcasts.mostPopular = res.data.podcasts;
           console.log(this.podcasts.mostPopular);
         })
         .catch(err => {
           console.log(err);
         });
-    } else {
       console.log("Most popular podcasts already fetched and in VUEX state.");
     }
 
-    var genres = this.$store.getters.getGenres;
-    // Fetch genres only if not in VUEX store
-    if (!genres[0]) {
+    if (this.$store.getters.getGenres[0]) {
+      // console.log(this.$store.getters.getGenres);
+
+      this.podcasts.genres = this.$store.getters.getGenres;
+    } else {
+      // Fetch genres only if not in VUEX store
       axios
         .get("https://listen-api.listennotes.com/api/v2/genres", {
           headers: { "X-ListenAPI-Key": "2e2c4f39b7b44659b73cb3b31f95236e" }
@@ -71,23 +151,17 @@ export default {
         .then(res => {
           console.log("Fetched genres from API.");
           this.$store.commit("addGenres", res.data);
+          this.podcasts.genres = res.data;
         })
         .catch(err => {
           console.log(err);
         });
-    } else {
-      console.log("Genres already fetched and in VUEX state.");
     }
   },
-  mounted() {
-    // Get user info
-    this.$store.dispatch("getUserInfo").then(userInfo => {
-      this.userInfo.username = userInfo.username;
-      this.userInfo.email = userInfo.email;
-    });
-
-    // Fetch best podcast by random genres
-    // axios.get();
+  methods: {
+    getGenreTitleById(id) {
+      return this.$store.getters.getGenreTitleById(id);
+    }
   }
 };
 </script>

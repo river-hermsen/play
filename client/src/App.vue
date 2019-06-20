@@ -115,5 +115,11 @@ body {
     }
   }
 }
+
+.content {
+  max-width: 1500px;
+  margin: 0 auto;
+  margin-bottom: 12vh;
+}
 </style>
 
