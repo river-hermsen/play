@@ -105,7 +105,8 @@ export default {
     };
   },
   created() {
-    console.log(this.$store.getters.getGenreTitleById(67));
+    console.log(this.$store.getters.getRandomGenre);
+    // console.log(this.$store.getters.getGenreTitleById(67));
     // Get user info
     this.$store.dispatch("getUserInfo").then(userInfo => {
       this.userInfo.username = userInfo.username;

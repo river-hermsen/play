@@ -44,12 +44,16 @@ export default new Vuex.Store({
     },
     getGenreTitleById: state => id => {
       return state.podcasts.genres.find(genre => genre.id === id);
+    },
+    getRandomGenre: state => {
+      var genres = state.podcasts.genres;
+      var randomGenre = genres[Math.floor(Math.random() * genres.length)];
+      return randomGenre;
     }
   },
   mutations: {
     addGenres(state, data) {
       state.podcasts.genres = data.genres;
-      // console.log(state.podcasts.genres);
     },
     addMostPopularPodcasts(state, data) {
       state.podcasts.mostPopular.push(data);
@@ -83,6 +87,7 @@ export default new Vuex.Store({
     },
     logOutUser() {
       Cookies.remove("user");
-    }
+    },
+    fetchBestPodcastsByGenreId() {}
   }
 });
