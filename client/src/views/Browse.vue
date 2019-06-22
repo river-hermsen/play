@@ -5,29 +5,16 @@
     </div>
     <el-divider></el-divider>
     <div class="content">
-      <!-- <el-row>
-        <el-col :span="8" v-for="(o, index) in 6" :key="o" :offset="index > 0 ? 2 : 0">
-          <el-card :body-style="{ padding: '0px' }">
-            <img
-              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-              class="image"
-            >
-            <div style="padding: 14px;">
-              <span>Yummy hamburger</span>
-              <div class="bottom clearfix">
-                <time class="time">{{ currentDate }}</time>
-                <el-button type="text" class="button">Operating</el-button>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>-->
-
-      <!-- {{podcasts.mostPopular}} -->
       <div class="mostPopular">
         <h2>Most Popular podcasts</h2>
         <el-row>
-          <el-col v-for="podcast in podcasts.mostPopular" :key="podcast.id" :md="8" :lg="6" :xl="6">
+          <el-col
+            v-for="podcast in podcasts.mostPopular.slice(0,8)"
+            :key="podcast.id"
+            :md="8"
+            :lg="6"
+            :xl="6"
+          >
             <el-card class="cardPodcast">
               <img :src="podcast.thumbnail" class="imagePodcast">
               <div class="infoBoxPodcast">
@@ -37,9 +24,12 @@
                 <div>
                   <span>
                     <span
-                      v-for="genre in podcast.genre_ids.slice(0, 2)"
+                      class="genrePodcast"
+                    >{{$store.getters.getGenreTitleById(podcast.genre_ids[0]).name}}</span>
+                    <!-- <span
+                      v-for="genre in podcast.genre_ids.slice(0, 1)"
                       :key="genre"
-                    >{{getGenreTitleById(genre).name}}</span>
+                    >{{$store.getters.getGenreTitleById(genre).name}}</span>-->
                   </span>
                   <span class="languagePodcast">{{podcast.language}}</span>
                 </div>
@@ -62,7 +52,7 @@
 
 .cardPodcast {
   width: 300px;
-  height: 390px;
+  height: 375px;
 }
 
 .imagePodcast {
@@ -83,13 +73,18 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .languagePodcast {
   position: relative;
   float: right;
-  top: 20px;
+  top: 12px;
+}
+
+.genrePodcast {
+  position: relative;
+  top: 12px;
 }
 </style>
 
@@ -110,7 +105,7 @@ export default {
     };
   },
   created() {
-    console.log(this.$store.getters.getGenreTitleById(99));
+    console.log(this.$store.getters.getGenreTitleById(67));
     // Get user info
     this.$store.dispatch("getUserInfo").then(userInfo => {
       this.userInfo.username = userInfo.username;

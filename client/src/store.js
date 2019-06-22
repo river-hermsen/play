@@ -43,9 +43,7 @@ export default new Vuex.Store({
       return state.podcasts.mostPopular;
     },
     getGenreTitleById: state => id => {
-      // console.log(state.podcasts.genres.find(genre => (genre.id = id)));
-
-      return state.podcasts.genres.find(genre => (genre.id = id));
+      return state.podcasts.genres.find(genre => genre.id === id);
     }
   },
   mutations: {

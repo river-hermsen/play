@@ -69,7 +69,7 @@ body {
 #app {
   font-family: "Poppins", sans-serif;
   background-color: #f5f5f5;
-  height: 100vh;
+  min-height: 88vh;
 }
 
 .loggedInContent {
