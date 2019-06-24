@@ -6,7 +6,6 @@ import ForgotPassword from "./views/auth/ForgotPassword.vue";
 import ConfirmEmail from "./views/auth/ConfirmEmail.vue";
 
 import store from "./store";
-Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: "history",
@@ -15,7 +14,7 @@ const router = new VueRouter({
     {
       path: "/",
       redirect: {
-        name: "browse"
+        name: "Browse"
       }
     },
     {
@@ -54,12 +53,24 @@ const router = new VueRouter({
     },
     {
       path: "/browse",
-      name: "browse",
+      name: "Browse",
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () =>
         import(/* webpackChunkName: "about" */ "./views/Browse.vue"),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/podcast/:id",
+      name: "Podcast",
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () =>
+        import(/* webpackChunkName: "about" */ "./views/Podcast.vue"),
       meta: {
         requiresAuth: true
       }
@@ -69,6 +80,10 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const isLoginSignUp = to.matched.some(record => record.meta.isLoginSignUp);
+  // const store = require("./store");
+
+  console.log(this);
+
   const isLoggedIn = store.state.isLoggedIn;
 
   if (requiresAuth && !isLoggedIn) {

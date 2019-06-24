@@ -12,10 +12,9 @@ const actions = {
       return false;
     }
   },
-  logInUser({ state }, userData) {
-    console.log(state);
-    console.log(userData);
-
+  logInUser(userData) {
+    // console.log(state);
+    // console.log(userData);
     Cookies.set(
       "user",
       {
@@ -26,10 +25,12 @@ const actions = {
       { expires: 7 }
     );
   },
-  logOutUser() {
+  logOutUser({ state }) {
+    // console.log(state);
+    state.isLoggedIn = false;
     Cookies.remove("user");
-  },
-  fetchBestPodcastsByGenreId() {}
+    return;
+  }
 };
 
 export default actions;

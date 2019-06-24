@@ -12,6 +12,9 @@ const getters = {
     var genres = state.podcasts.genres;
     var randomGenre = genres[Math.floor(Math.random() * genres.length)];
     return randomGenre;
+  },
+  getIsLoggedInStatus: state => {
+    return state.isloggedin;
   }
 };
 

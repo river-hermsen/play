@@ -14,7 +14,7 @@ const vuexPersist = new VuexPersist({
 });
 
 export default new Vuex.Store({
-  plugins: [vuexPersist.plugin],
+  // plugins: [vuexPersist.plugin],
   state,
   getters,
   mutations,

@@ -57,6 +57,22 @@ export default {
         this.$router.go("/login");
       });
     }
+  },
+  mounted() {
+    this.$store.state.isLoggedIn = false;
+    if (this.$store.state.isLoggedIn) {
+      this.$message({
+        message: "You are logged in!",
+        type: "success"
+      });
+    } else if (!this.$store.state.isLoggedIn) {
+      this.$message({
+        message: "You are not logged in!",
+        type: "warning"
+      });
+    } else {
+      this.$message.error("There has been an error with login.");
+    }
   }
 };
 </script>
