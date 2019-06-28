@@ -12,19 +12,6 @@ const actions = {
       return false;
     }
   },
-  logInUser(userData) {
-    // console.log(state);
-    // console.log(userData);
-    Cookies.set(
-      "user",
-      {
-        jwt: userData.token,
-        username: userData.username,
-        email: userData.email
-      },
-      { expires: 7 }
-    );
-  },
   logOutUser({ state }) {
     // console.log(state);
     state.isLoggedIn = false;

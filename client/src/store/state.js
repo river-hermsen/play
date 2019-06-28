@@ -1,7 +1,7 @@
 var Cookies = require("js-cookie");
 
 const state = {
-  isLoggedIn: false,
+  isLoggedIn: Cookies.get("user") ? true : false,
   user: {
     token: "",
     username: "",

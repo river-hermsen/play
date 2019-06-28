@@ -1,11 +1,10 @@
-import Vue from "vue";
 import VueRouter from "vue-router";
 import Login from "./views/auth/Login.vue";
 import SignUp from "./views/auth/SignUp.vue";
 import ForgotPassword from "./views/auth/ForgotPassword.vue";
 import ConfirmEmail from "./views/auth/ConfirmEmail.vue";
 
-import store from "./store";
+var Cookies = require("js-cookie");
 
 const router = new VueRouter({
   mode: "history",
@@ -80,11 +79,14 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const isLoginSignUp = to.matched.some(record => record.meta.isLoginSignUp);
-  // const store = require("./store");
-
-  console.log(this);
-
-  const isLoggedIn = store.state.isLoggedIn;
+  var isLoggedIn;
+  if (Cookies.get("user")) {
+    isLoggedIn = true;
+    // console.log("logged in");
+  } else {
+    isLoggedIn = false;
+    // console.log("not logged in");
+  }
 
   if (requiresAuth && !isLoggedIn) {
     next("/login");

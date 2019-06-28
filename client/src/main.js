@@ -12,7 +12,7 @@ Vue.use(Element);
 Vue.use(VueRouter);
 
 Vue.config.productionTip = false;
-
+Vue.prototype.$scrollToTop = () => window.scrollTo(0, 0);
 new Vue({
   store,
   router,

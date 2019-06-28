@@ -4,6 +4,7 @@
       <h1>Hi {{this.userInfo.username}}</h1>
     </div>
     <el-divider></el-divider>
+    <div v-loading="podcasts.isLoading" v-if="podcasts.isLoading" class="loadingIconBrowse"></div>
     <div class="content" v-if="!podcasts.isLoading">
       <div class="mostPopular">
         <h2>Most Popular podcasts</h2>
@@ -19,6 +20,7 @@
               <router-link
                 :to="{ name: 'Podcast', params: { id: podcast.id }}"
                 class="routerPodcastLink"
+                @click.native="$scrollToTop"
               >
                 <div class="containerImagePodcast">
                   <img :src="podcast.thumbnail" class="imagePodcast">
@@ -31,7 +33,7 @@
                     <span>
                       <span
                         class="genrePodcast"
-                      >{{$store.getters.getGenreTitleById(podcast.genre_ids[0]).name}}</span>
+                      >{{$store.getters.getGenreTitleById(podcast.genre_ids, podcasts.genres).name}}</span>
                     </span>
                     <span class="languagePodcast">{{podcast.language}}</span>
                   </div>
@@ -58,6 +60,7 @@
                 <router-link
                   :to="{ name: 'Podcast', params: { id: podcast.id }}"
                   class="routerPodcastLink"
+                  @click.native="$scrollToTop"
                 >
                   <div class="containerImagePodcast">
                     <img :src="podcast.thumbnail" class="imagePodcast">
@@ -70,7 +73,7 @@
                       <span>
                         <span
                           class="genrePodcast"
-                        >{{$store.getters.getGenreTitleById(podcast.genre_ids[0]).name}}</span>
+                        >{{$store.getters.getGenreTitleById(podcast.genre_ids, podcasts.genres).name}}</span>
                       </span>
                       <span class="languagePodcast">{{podcast.language}}</span>
                     </div>
@@ -86,6 +89,19 @@
 </template>
 
 <style>
+.loadingIconBrowse {
+  padding-top: 200px;
+}
+
+.el-loading-mask {
+  background-color: transparent;
+}
+
+.el-loading-spinner .circular {
+  width: 100px;
+  height: 100px;
+}
+
 .cardPodcast {
   margin: 10px;
 }
@@ -141,6 +157,7 @@
 
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
 export default {
   data() {
     return {
@@ -149,6 +166,8 @@ export default {
         email: ""
       },
       podcasts: {
+        isTrue: true,
+        isFalse: false,
         isLoading: true,
         genres: [],
         mostPopular: [],
@@ -160,20 +179,15 @@ export default {
     };
   },
   created() {
-    // console.log(this.$store.state);
-    // var Cookies = require("js-cookie");
-    // if (!Cookies.get("user")) {
-    //   console.log(false);
-    // }
-    // // console.log(this.$store.getters.getRandomGenre);
-    // console.log(Cookies.get("user"));
+    // console.log(this.$store.getters.getGenreTitleById(podcasts.mostPopular[0].genre).name);
 
-    // // console.log(this.$store.getters.getGenreTitleById(67));
-    // // Get user info
-    // this.$store.dispatch("getUserInfo").then(userInfo => {
-    //   this.userInfo.username = userInfo.username;
-    //   this.userInfo.email = userInfo.email;
-    // });
+    // Get user info
+    if (Cookies.get("user")) {
+      const userInfo = JSON.parse(Cookies.get("user"));
+      this.userInfo.username = userInfo.username;
+      this.userInfo.email = userInfo.email;
+    }
+
     if (localStorage.getItem("mostPopularPodcasts")) {
       console.log("Most popular podcasts already fetched and in LocalStorage.");
       this.podcasts.mostPopular = JSON.parse(
@@ -199,10 +213,10 @@ export default {
           console.log(err);
         });
     }
+
     const VueInstance = this;
     new Promise(function(resolve, reject) {
       if (localStorage.getItem("podcastGenres")) {
-        // console.log(this.$store.getters.getGenres);
         console.log("Podcats genres already fetched and in LocalStorage.");
         VueInstance.podcasts.genres = JSON.parse(
           localStorage.getItem("podcastGenres")
@@ -231,12 +245,17 @@ export default {
       }
     }).then(() => {
       var randomGenre =
-        VueInstance.podcasts.genres.genres[
-          Math.floor(Math.random() * VueInstance.podcasts.genres.genres.length)
+        VueInstance.podcasts.genres[
+          Math.floor(Math.random() * VueInstance.podcasts.genres.length)
         ];
+
+      console.log(randomGenre);
+
       axios
         .get(
-          `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${randomGenre}`,
+          `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${
+            randomGenre.id
+          }`,
           {
             headers: { "X-ListenAPI-Key": "2e2c4f39b7b44659b73cb3b31f95236e" }
           }
@@ -247,7 +266,7 @@ export default {
             8
           );
           VueInstance.podcasts.randomGenre.genre = randomGenre;
-          VueInstance.isLoading = false;
+          VueInstance.podcasts.isLoading = false;
         })
         .catch(err => {
           console.log(err);

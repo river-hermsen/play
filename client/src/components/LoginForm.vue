@@ -45,6 +45,8 @@ h2 {
 
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
+
 export default {
   data() {
     return {
@@ -86,8 +88,21 @@ export default {
         })
         .then(res => {
           console.log(res.data);
-          this.$store.dispatch("logInUser", res.data).then(() => {
-            this.$router.go("/");
+          const vm = this;
+          new Promise((resolve, reject) => {
+            let userData = res.data;
+            Cookies.set(
+              "user",
+              {
+                jwt: userData.token,
+                username: userData.username,
+                email: userData.email
+              },
+              { expires: 7 }
+            );
+            resolve();
+          }).then(() => {
+            vm.$router.go("/");
           });
         })
         .catch(errors => {

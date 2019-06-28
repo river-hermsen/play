@@ -42,6 +42,8 @@
 
 <script>
 import Player from "@/components/Player.vue";
+import Cookies from "js-cookie";
+
 export default {
   data() {
     return {
@@ -53,26 +55,24 @@ export default {
   },
   methods: {
     logOut() {
-      this.$store.dispatch("logOutUser").then(() => {
-        this.$router.go("/login");
-      });
+      Cookies.remove("user");
+      this.$router.go("/login");
     }
   },
   mounted() {
-    this.$store.state.isLoggedIn = false;
-    if (this.$store.state.isLoggedIn) {
-      this.$message({
-        message: "You are logged in!",
-        type: "success"
-      });
-    } else if (!this.$store.state.isLoggedIn) {
-      this.$message({
-        message: "You are not logged in!",
-        type: "warning"
-      });
-    } else {
-      this.$message.error("There has been an error with login.");
-    }
+    // if (this.$store.state.isLoggedIn) {
+    //   this.$message({
+    //     message: "You are logged in!",
+    //     type: "success"
+    //   });
+    // } else if (!this.$store.state.isLoggedIn) {
+    //   this.$message({
+    //     message: "You are not logged in!",
+    //     type: "warning"
+    //   });
+    // } else {
+    //   this.$message.error("There has been an error with login.");
+    // }
   }
 };
 </script>
