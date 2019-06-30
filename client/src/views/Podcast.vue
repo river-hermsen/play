@@ -104,7 +104,11 @@
             </table>
           </div>
         </div>
-        <el-button class="viewMoreEpisodesBtn">View More</el-button>
+        <el-button
+          class="viewMoreEpisodesBtn"
+          v-if="showViewMore"
+          @click="viewMoreEpisodes"
+        >View More</el-button>
       </div>
     </el-card>
   </div>
@@ -208,13 +212,16 @@ export default {
         }
       )
       .then(res => {
-        this.isLoading = false;
         console.log(res.data);
         this.podcastInfo = res.data;
+        this.isLoading = false;
       })
       .catch(err => {
         console.log(err);
       });
+
+    // Check if View More btn needs to be showed
+    console.log();
   },
   methods: {
     rmHtmlTags(text) {
@@ -243,7 +250,6 @@ export default {
         "Nov",
         "Dec"
       ];
-
       var day = date.getDate();
       var monthIndex = date.getMonth();
       var year = date.getFullYear();
@@ -252,6 +258,51 @@ export default {
     },
     playPodcast(id) {
       console.log(id);
+    },
+    viewMoreEpisodes() {
+      console.log(
+        this.podcastInfo.episodes[this.podcastInfo.episodes.length - 1]
+      );
+      var lastPubDate = this.podcastInfo.episodes[
+        this.podcastInfo.episodes.length - 1
+      ].pub_date_ms;
+
+      console.log(lastPubDate);
+
+      var podcastId = this.podcastInfo.id;
+      axios
+        .get(
+          `https://listen-api.listennotes.com/api/v2/podcasts/${podcastId}?next_episode_pub_date=${lastPubDate}`,
+          {
+            headers: { "X-ListenAPI-Key": "2e2c4f39b7b44659b73cb3b31f95236e" }
+          }
+        )
+        .then(res => {
+          console.log(res);
+          // var newArray = this.podcastInfo.episodes.concat(res.data.episodes);
+          // var newArray = res.data.episodes.concat(this.podcastInfo.episodes);
+          this.podcastInfo.episodes.push(...res.data.episodes);
+          // console.log(newArray);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  },
+  computed: {
+    showViewMore() {
+      if (!this.isLoading) {
+        if (
+          this.podcastInfo.episodes.length == this.podcastInfo.total_episodes
+        ) {
+          console.log("dont show button");
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
     }
   }
 };
