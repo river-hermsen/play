@@ -112,30 +112,10 @@ body {
   margin-right: auto;
 }
 
-#player {
-  background-color: #ffffff;
-  position: fixed;
-  bottom: 0px;
-  width: 100vw;
-  height: 12vh;
-  display: flex;
-  #playerImg {
-    padding: 0.5vh;
-    img {
-      width: 10vh;
-    }
-  }
-  #playerInfo {
-    h3 {
-      display: inline;
-    }
-  }
-}
-
 .content {
   max-width: 1500px;
   margin: 0 auto;
-  margin-bottom: 12vh;
+  margin-bottom: 150px;
 }
 </style>
 

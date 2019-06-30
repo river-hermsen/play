@@ -257,7 +257,14 @@ export default {
       return day + " " + monthNames[monthIndex] + " " + year;
     },
     playPodcast(id) {
-      console.log(id);
+      // Get meta data from episode
+      var currentEpisode;
+      this.podcastInfo.episodes.find(episode => {
+        if (episode.id == id) {
+          currentEpisode = episode;
+        }
+      });
+      console.log(currentEpisode);
     },
     viewMoreEpisodes() {
       console.log(
