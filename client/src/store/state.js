@@ -21,6 +21,13 @@ const state = {
   podcasts: {
     genres: [],
     mostPopular: []
+  },
+  audioPlayer: {
+    audioSrc: "",
+    title: "",
+    totalTime: 0,
+    podcast: "",
+    thumbnailSrc: ""
   }
 };
 

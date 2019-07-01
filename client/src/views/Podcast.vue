@@ -3,7 +3,7 @@
     <el-card class="cardPodcastView" v-loading="isLoading">
       <div class="infoPodcastView">
         <div class="imagePodcastView">
-          <img :src="podcastInfo.thumbnail" alt>
+          <img :src="podcastInfo.thumbnail" alt />
         </div>
         <div class="innerInfoPodcastView">
           <h1 class="titlePodcastView displayInline">{{podcastInfo.title}}</h1>
@@ -25,11 +25,11 @@
               style="width: 1040px;"
             >
               <colgroup>
-                <col name="el-table_1_column_1" width="60">
-                <col name="el-table_1_column_2" width="130">
-                <col name="el-table_1_column_3" width="300">
-                <col name="el-table_1_column_4" width="600">
-                <col name="gutter" width="0">
+                <col name="el-table_1_column_1" width="60" />
+                <col name="el-table_1_column_2" width="130" />
+                <col name="el-table_1_column_3" width="300" />
+                <col name="el-table_1_column_4" width="600" />
+                <col name="gutter" width="0" />
               </colgroup>
               <thead class="has-gutter">
                 <tr class>
@@ -59,10 +59,10 @@
               style="width: 1040px;"
             >
               <colgroup>
-                <col name="el-table_1_column_1" width="60">
-                <col name="el-table_1_column_2" width="130">
-                <col name="el-table_1_column_3" width="300">
-                <col name="el-table_1_column_4" width="600">
+                <col name="el-table_1_column_1" width="60" />
+                <col name="el-table_1_column_2" width="130" />
+                <col name="el-table_1_column_3" width="300" />
+                <col name="el-table_1_column_4" width="600" />
               </colgroup>
               <tbody>
                 <tr
@@ -192,6 +192,7 @@
 
 <script>
 import axios from "axios";
+import store from "../store/index.js";
 
 export default {
   data() {
@@ -204,9 +205,7 @@ export default {
     // Fetch meta data of podcast
     axios
       .get(
-        `https://listen-api.listennotes.com/api/v2/podcasts/${
-          this.$route.params.id
-        }`,
+        `https://listen-api.listennotes.com/api/v2/podcasts/${this.$route.params.id}`,
         {
           headers: { "X-ListenAPI-Key": "2e2c4f39b7b44659b73cb3b31f95236e" }
         }
@@ -264,7 +263,11 @@ export default {
           currentEpisode = episode;
         }
       });
-      console.log(currentEpisode);
+      this.$store.state.audioPlayer.audioSrc = currentEpisode.audio;
+      this.$store.state.audioPlayer.title = currentEpisode.title;
+      this.$store.state.audioPlayer.totalTime = currentEpisode.audio_length_sec;
+      this.$store.state.audioPlayer.podcast = this.podcastInfo.title;
+      this.$store.state.audioPlayer.thumbnailSrc = currentEpisode.image;
     },
     viewMoreEpisodes() {
       console.log(
