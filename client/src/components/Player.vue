@@ -2,12 +2,11 @@
   <div id="player">
     <audio
       id="audioPlayer"
-      src="https://content.production.cdn.art19.com/validation=1562015344,832752e4-ef8b-5495-8201-3afd31e1c4e1,NwzvPLAx0yc6FPHnWhCEgJ_IxjU/episodes/fdd53ac3-ffe4-4413-8954-4444467845e1/41e96bd177a2a8bf20673a875ec5e194549291dc19bd5cdaf3835b921b87ca6b4e9a9745f49f6e563354c1cf79abcdec2e9f3d17f92b9f6247c2118d540ba5b2/1865-03-InsideTheEpisode-190624-wls.mp3"
+      :src="audioSrc"
       type="audio/mp3"
       :onplay="getTotalTime()"
       @timeupdate="currentTimeInSeconds = $event.target.currentTime"
       ref="audioElement"
-      preload="auto"
     ></audio>
     <div class="audioControls">
       <div class="playPauseContainer">
@@ -41,8 +40,10 @@ export default {
     return {
       time: 0,
       audioElement: {},
-      audioSrc:
-        "https://content.production.cdn.art19.com/validation=1562015344,832752e4-ef8b-5495-8201-3afd31e1c4e1,NwzvPLAx0yc6FPHnWhCEgJ_IxjU/episodes/fdd53ac3-ffe4-4413-8954-4444467845e1/41e96bd177a2a8bf20673a875ec5e194549291dc19bd5cdaf3835b921b87ca6b4e9a9745f49f6e563354c1cf79abcdec2e9f3d17f92b9f6247c2118d540ba5b2/1865-03-InsideTheEpisode-190624-wls.mp3",
+      audioSrc: "",
+      title: "",
+      thumbnailSrc: "",
+      podcast: "",
       isPlaying: false,
       currentTimeInSeconds: 0,
       currentTimeFormated: 0,
@@ -52,10 +53,16 @@ export default {
   },
   mounted() {
     this.audioElement = this.$refs.audioElement;
-    this.audioElementReadyState = this.$refs.audioElement.readyState;
+    this.audioElement.addEventListener("play", event => {
+      this.audioElement.play();
+      console.log(event);
+    });
+    // this.audioElementReadyState = this.$refs.audioElement.readyState;
   },
   methods: {
     playPauseEpisode() {
+      console.log(this.audioSrc);
+
       if (this.isPlaying) {
         this.audioElement.pause();
         this.isPlaying = false;
@@ -76,11 +83,13 @@ export default {
       this.audioElement.currentTime = this.currentTimeInSeconds;
     },
     test() {
-      console.log(this.$store.state);
+      console.log(this.$store.getters.getAudio);
+    },
+    play() {
+      this.audioElement.play();
     }
   },
   computed: {
-    formattedCurrentTime() {},
     formattedTotalTime() {
       var date = new Date(null);
       date.setSeconds(this.totalTimeInSeconds); // specify value for SECONDS here
@@ -92,6 +101,33 @@ export default {
       var date = new Date(null);
       date.setSeconds(seconds); // specify value for SECONDS here
       return date.toISOString().substr(11, 8);
+    },
+    audioVuex() {
+      return this.$store.state.audioPlayer.audioSrc;
+    },
+    audioReadyState() {
+      // console.log(this.audioElement.readyState);
+
+      return this.audioElement.readyState;
+    }
+  },
+  watch: {
+    audioVuex(newAudio, oldAudio) {
+      this.audioSrc = newAudio;
+      this.title = this.$store.state.audioPlayer.title;
+      this.totalTimeInSeconds = this.$store.state.audioPlayer.totalTime;
+      this.thumbnailSrc = this.$store.state.audioPlayer.thumbnailSrc;
+      this.podcast = this.$store.state.audioPlayer.podcast;
+      new Promise((resolve, reject) => {});
+      this.audioElement.load();
+      if (!this.isPlaying) {
+        this.isPlaying = true;
+      }
+    },
+    audioReadyState(newAnd, oldAnd) {
+      console.log(newAnd);
+
+      console.log("Ready state changed");
     }
   }
 };

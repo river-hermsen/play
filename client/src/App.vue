@@ -34,9 +34,9 @@
       </div>
     </div>
     <div class="content" v-bind:class="{ loggedInContent: isLoggedIn }">
-      <router-view/>
+      <router-view />
     </div>
-    <Player v-if="isLoggedIn"/>
+    <Player v-if="isLoggedIn" />
   </div>
 </template>
 
@@ -85,7 +85,7 @@ body {
 #app {
   font-family: "Poppins", sans-serif;
   background-color: #f5f5f5;
-  min-height: 88vh;
+  min-height: calc(100vh - 150px);
 }
 
 .loggedInContent {
@@ -105,7 +105,7 @@ body {
 .loggedInMenu {
   position: fixed;
   float: left;
-  height: 88vh;
+  height: calc(100vh - 150px);
 }
 
 .logo-menu-col {

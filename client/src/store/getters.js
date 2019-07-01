@@ -23,6 +23,9 @@ const getters = {
   },
   getIsLoggedInStatus: state => {
     return state.isloggedin;
+  },
+  getAudio: state => {
+    return state.audioPlayer;
   }
 };
 
