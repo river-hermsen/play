@@ -23,6 +23,9 @@ var UserSchema = new Schema({
     required: true,
     default: false
   },
+  forgotPasswordToken: {
+    type: String
+  },
   dateCreated: {
     type: Date,
     default: Date.now,

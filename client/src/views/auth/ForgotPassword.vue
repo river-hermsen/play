@@ -33,7 +33,22 @@ export default {
     };
   },
   methods: {
-    submitForm() {}
+    submitForm() {
+      axios
+        .post("http://localhost:5000/api/users/forgotpasword", {
+          email: this.$route.query.email
+        })
+        .then(() => {
+          this.$store.state.flashMsg.success.msg =
+            "Email has been verified. \nYou can now login.";
+        })
+        .catch(error => {
+          this.$store.state.flashMsg.error.msg = error.response.data.error;
+          this.$router.push({
+            name: "Login"
+          });
+        });
+    }
   }
 };
 </script>

@@ -6,6 +6,8 @@ const keys = require("../../config/keys");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const hbs = require("handlebars");
+const fs = require("fs");
 // Load input validation
 const validateSignUpInput = require("../../validation/signUp");
 const validateLoginInput = require("../../validation/login");
@@ -13,42 +15,13 @@ const validateLoginInput = require("../../validation/login");
 //Load User model
 const User = require("../../models/User");
 
-// @router  GET api/users/test
-// @desc    Test User route
-// @access  Public
-router.get("/test", (req, res) => {});
-
-const hbs = require("handlebars");
-const fs = require("fs");
-var template = fs.readFileSync("././config/emails/confirmEmail.hbs", "utf-8");
-var compiledTemplate = hbs.compile(template);
-router.get("/", (req, res) => {
-  template = compiledTemplate({ username: "riverhermsen" });
-  res.send(template);
-});
-// @router  GET api/users/test/email
-// @desc    Test email route
-// @access  Public
-router.post("/test/email", (req, res) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: keys.gmail.email,
-      pass: keys.gmail.password
-    }
-  });
-  //compiledTemplate({ firstname: "River" })
-  const mailOptions = {
-    from: "project.play19@gmail.com", // sender address
-    to: "riverhermsen@hotmail.nl", // list of receivers
-    subject: "Test email", // Subject line
-    html: compiledTemplate({ firstname: "river" }) // plain text body
-  };
-
-  transporter.sendMail(mailOptions, function(err, info) {
-    if (err) console.log(err);
-    else console.log(info);
-  });
+// Setup nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: keys.gmail.email,
+    pass: keys.gmail.password
+  }
 });
 
 // @router  POST api/users/signup
@@ -82,16 +55,11 @@ router.post("/signup", (req, res) => {
         newUser.password = hash;
         console.log("---------HASHED PASSWORD-------------");
       });
-      // Generate random token
-      // newUser.confirmEmailToken = crypto.randomBytes(16).toString("hex");
-
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: keys.gmail.email,
-          pass: keys.gmail.password
-        }
-      });
+      var template = fs.readFileSync(
+        "././config/emails/confirmEmail.hbs",
+        "utf-8"
+      );
+      var compiledTemplate = hbs.compile(template);
       const mailOptions = {
         from: "project.play19@gmail.com", // sender address
         to: "riverhermsen@hotmail.nl", // list of receivers
@@ -143,7 +111,7 @@ router.post("/login", (req, res) => {
       errors.user = "No user with that email is found";
       return res.status(400).json(errors);
     } else if (!user.emailConfirmed) {
-      errors.user = "Please confirm your email.";
+      errors.user = "Please verify your email.";
       return res.status(400).json(errors);
     }
 
@@ -211,4 +179,55 @@ router.post("/confirmemail", (req, res) => {
     });
   }
 });
+
+// @router  POST api/users/forgotpassword
+// @desc    Forgotpassword route
+// @access  Public
+router.post("/forgotpassword", (req, res) => {
+  const email = req.body.email;
+
+  User.findOne({ email }).then(user => {
+    if (!user) {
+      return res
+        .status(400)
+        .json({ error: "No account with that email found" });
+    }
+    var template = fs.readFileSync(
+      "././config/emails/forgotPassword.hbs",
+      "utf-8"
+    );
+    var compiledTemplate = hbs.compile(template);
+    const mailOptions = {
+      from: "project.play19@gmail.com", // sender address
+      to: "riverhermsen@hotmail.nl", // list of receivers
+      subject: "Confirm Email", // Subject line
+      html: compiledTemplate({
+        username: newUser.username,
+        linkToConfirm: `http://localhost:8080/changepassword?token=${
+          newUser.confirmEmailToken
+        }&email=${newUser.email}`
+      })
+    };
+
+    transporter.sendMail(mailOptions, function(err, info) {
+      if (err) {
+        console.log(err);
+        errors.mail = "Error sending confirmation email";
+        return res.status(500).json(errors);
+      } else {
+        console.log(newUser);
+        newUser.save().then(user => {
+          res.json({
+            username: newUser.username,
+            email: newUser.email,
+            status: "Validate email"
+          });
+        });
+      }
+    });
+    var token = crypto.randomBytes(16).toString("hex");
+    user.forgotPasswordToken = token;
+  });
+});
+
 module.exports = router;
