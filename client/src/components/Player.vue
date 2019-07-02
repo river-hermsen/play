@@ -4,33 +4,50 @@
       id="audioPlayer"
       :src="audioSrc"
       type="audio/mp3"
-      :onplay="getTotalTime()"
       @timeupdate="currentTimeInSeconds = $event.target.currentTime"
       ref="audioElement"
     ></audio>
-    <div class="audioControls">
-      <div class="playPauseContainer">
-        <div @click="playPauseEpisode" :class="{pause: isPlaying, play: !isPlaying}"></div>
-      </div>
+    <el-row>
+      <el-col :span="7">
+        <div>
+          <img :src="thumbnailSrc" class="imgPlayerInfo noInfoImgPlayerInfo" ref="imgEpisode" />
+          <h2 class="titlePlayerInfo noInfoTitlePlayerInfo" ref="titleEpisode">{{title}}</h2>
+          <br />
+          <h3
+            class="podcastTitlePlayerInfo noInfoPodcastTitlePlayerInfo"
+            ref="podcastEpisode"
+          >{{podcast}}</h3>
+        </div>
+      </el-col>
+      <el-col :span="11">
+        <div class="audioControls">
+          <div class="playPauseContainer">
+            <div @click="playPauseEpisode" :class="{pause: isPlaying, play: !isPlaying}"></div>
+          </div>
 
-      <div class="seekAudio">
-        <div class="containerCurrentAndTotal">
-          <span
-            id="currentTime"
-          >{{new Date(currentTimeInSeconds * 1000).toISOString().substr(14, 5)}}</span> /
-          <span id="totalTime">{{new Date(totalTimeInSeconds * 1000).toISOString().substr(14, 5)}}</span>
+          <div class="seekAudio">
+            <div class="containerCurrentAndTotal">
+              <span
+                id="currentTime"
+              >{{new Date(currentTimeInSeconds * 1000).toISOString().substr(11, 8)}}</span> /
+              <span
+                id="totalTime"
+              >{{new Date(totalTimeInSeconds * 1000).toISOString().substr(11, 8)}}</span>
+            </div>
+            <div class="seekerSlider">
+              <el-slider
+                v-model="currentTimeInSeconds"
+                :max="totalTimeInSeconds"
+                :show-tooltip="false"
+                @change="seeking"
+              ></el-slider>
+            </div>
+          </div>
         </div>
-        <div class="seekerSlider">
-          <el-slider
-            v-model="currentTimeInSeconds"
-            :max="totalTimeInSeconds"
-            :show-tooltip="false"
-            @change="seeking"
-          ></el-slider>
-        </div>
-      </div>
-    </div>
-    <el-button @click="test">test buttn</el-button>
+      </el-col>
+    </el-row>
+
+    <!-- <el-button @click="test">test buttn</el-button> -->
   </div>
 </template>
 
@@ -53,11 +70,10 @@ export default {
   },
   mounted() {
     this.audioElement = this.$refs.audioElement;
-    this.audioElement.addEventListener("play", event => {
+    this.audioElement.oncanplay = () => {
       this.audioElement.play();
-      console.log(event);
-    });
-    // this.audioElementReadyState = this.$refs.audioElement.readyState;
+      console.log("Can start playing audio.");
+    };
   },
   methods: {
     playPauseEpisode() {
@@ -81,12 +97,6 @@ export default {
     },
     seeking() {
       this.audioElement.currentTime = this.currentTimeInSeconds;
-    },
-    test() {
-      console.log(this.$store.getters.getAudio);
-    },
-    play() {
-      this.audioElement.play();
     }
   },
   computed: {
@@ -104,30 +114,25 @@ export default {
     },
     audioVuex() {
       return this.$store.state.audioPlayer.audioSrc;
-    },
-    audioReadyState() {
-      // console.log(this.audioElement.readyState);
-
-      return this.audioElement.readyState;
     }
   },
   watch: {
-    audioVuex(newAudio, oldAudio) {
+    audioVuex(newAudio) {
+      console.log(this.$refs.podcastEpisode);
+      this.$refs.titleEpisode.classList.remove("noInfoTitlePlayerInfo");
+      this.$refs.podcastEpisode.classList.remove(
+        "noInfoPodcastTitlePlayerInfo"
+      );
+      this.$refs.imgEpisode.classList.remove("noInfoImgPlayerInfo");
       this.audioSrc = newAudio;
       this.title = this.$store.state.audioPlayer.title;
       this.totalTimeInSeconds = this.$store.state.audioPlayer.totalTime;
       this.thumbnailSrc = this.$store.state.audioPlayer.thumbnailSrc;
       this.podcast = this.$store.state.audioPlayer.podcast;
-      new Promise((resolve, reject) => {});
       this.audioElement.load();
       if (!this.isPlaying) {
         this.isPlaying = true;
       }
-    },
-    audioReadyState(newAnd, oldAnd) {
-      console.log(newAnd);
-
-      console.log("Ready state changed");
     }
   }
 };
@@ -141,12 +146,43 @@ export default {
   bottom: 0px;
   width: 100vw;
   height: 150px;
-  display: flex;
+  z-index: 99;
 }
 
+.imgPlayerInfo {
+  height: 150px;
+  float: left;
+}
+
+.noInfoImgPlayerInfo {
+  background-color: #e2e2e2;
+  height: 150px;
+  width: 150px;
+}
+
+.titlePlayerInfo {
+  margin: 0px;
+  padding-top: 20px;
+  padding-left: 160px;
+}
+
+.noInfoTitlePlayerInfo {
+  background-color: #e2e2e2;
+  width: 300px;
+  height: 35px;
+}
+
+.podcastTitlePlayerInfo {
+  margin: 0px;
+  padding-left: 160px;
+}
+.noInfoPodcastTitlePlayerInfo {
+  background-color: #e2e2e2;
+  width: 150px;
+  height: 25px;
+}
 .audioControls {
   margin: 0 auto;
-  width: 800px;
 }
 
 .playPauseContainer {
@@ -170,14 +206,6 @@ export default {
   background-size: 60px 60px;
 }
 .seekerSlider {
-  float: right;
-  width: 690px;
-}
-
-.containerCurrentAndTotal {
-  position: relative;
-  top: 12px;
-  display: inline;
-  float: left;
+  width: 100%;
 }
 </style>

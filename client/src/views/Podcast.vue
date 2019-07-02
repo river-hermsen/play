@@ -75,10 +75,15 @@
                     rowspan="1"
                     colspan="1"
                     class="el-table_1_column_1"
-                    @click="playPodcast(episode.id)"
+                    @click="playPodcast(episode.id, $event)"
                   >
                     <div class="cell">
-                      <i class="el-icon-video-play playEpisodeBtn"></i>
+                      <i
+                        class="el-icon-video-play playEpisodeBtn"
+                        :id="'playBtn' + episode.id"
+                        :ref="'playBtn' + episode.id"
+                      ></i>
+                      <!-- <i class="el-icon-video-pause playEpisodeBtn"></i> -->
                     </div>
                   </td>
                   <td rowspan="1" colspan="1" class="el-table_1_column_2">
@@ -255,7 +260,11 @@ export default {
 
       return day + " " + monthNames[monthIndex] + " " + year;
     },
-    playPodcast(id) {
+    playPodcast(id, e) {
+      var playBtn = document.getElementById("playBtn" + id);
+      playBtn.classList.toggle("el-icon-video-play");
+      playBtn.classList.toggle("el-icon-video-pause");
+
       // Get meta data from episode
       var currentEpisode;
       this.podcastInfo.episodes.find(episode => {
@@ -305,7 +314,6 @@ export default {
         if (
           this.podcastInfo.episodes.length == this.podcastInfo.total_episodes
         ) {
-          console.log("dont show button");
           return false;
         } else {
           return true;
