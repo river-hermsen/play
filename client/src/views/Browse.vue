@@ -8,12 +8,11 @@
             <div>
               <img style="width: 100%" :src="podcast.image" />
               <div style="padding: 6px;">
-                <p>
+                <span class="title">
                   <b>{{podcast.title}}</b>
-                </p>
+                </span>
                 <div class="extra-info">
-                  <span class="genre">Thriller</span>
-                  <span class="language">English</span>
+                  <span class="genre">{{podcast.genreName}}</span>
                 </div>
               </div>
             </div>
@@ -31,16 +30,19 @@
     margin-bottom: 1rem;
   }
   .podcast-card {
-    height: 270px;
+    height: 255px;
     margin-bottom: 6px;
     cursor: pointer;
+    .title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
     .extra-info {
       position: absolute;
       bottom: 12px;
       width: 141px;
-      .language {
-        float: right;
-      }
     }
   }
 }
@@ -66,27 +68,38 @@ export default {
           headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
         })
         .then(response => {
-          // console.log(response.data)
+          console.log(response.data)
           this.$store.state.genres = response.data.genres
         })
-      // .catch(function (error) {
-      //   console.log(error)
-      // })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   },
   mounted () {
-    // console.log(this.$store.state)
     axios
       .get('https://listen-api.listennotes.com/api/v2/best_podcasts', {
         headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
       })
       .then(response => {
         var mostPopularArray = response.data.podcasts.slice(0, 8)
-        this.podcasts.mostPopular = mostPopularArray
+        var mostPopularArrayUpdated = mostPopularArray.filter(podcast => {
+          var mainGenreId
+          if (podcast.genre_ids[0] === 67) {
+            mainGenreId = podcast.genre_ids[1]
+          } else {
+            mainGenreId = podcast.genre_ids[0]
+          }
+          return (podcast.genreName = this.$store.state.genres.find(
+            genre => genre.id === mainGenreId
+          ).name)
+        })
+
+        this.podcasts.mostPopular = mostPopularArrayUpdated
       })
-    // .catch(function (error) {
-    //   console.log(error)
-    // })
+      .catch(function (error) {
+        console.log(error)
+      })
   }
 }
 </script>

@@ -11,11 +11,5 @@ export default new Vuex.Store({
     getGenres: state => {
       return state.genres
     }
-  },
-  setters: {
-    setGenres: (state, genres) => {
-      console.log(state)
-      console.log(genres)
-    }
   }
 })
