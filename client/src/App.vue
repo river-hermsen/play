@@ -1,121 +1,32 @@
 <template>
   <div id="app">
     <div id="nav">
-      <div v-if="!isLoggedIn">
-        <el-menu class="el-menu-demo" mode="horizontal" router>
-          <el-row type="flex" justify="end">
-            <el-col :span="2" class="logo-menu-col">
-              <el-menu-item index="/">Play</el-menu-item>
-            </el-col>
-            <el-col :span="2" v-if="!isLoggedIn">
-              <el-menu-item index="/login" class="loggedOutMenuItem">Login</el-menu-item>
-            </el-col>
-            <el-col :span="2" v-if="!isLoggedIn">
-              <el-menu-item index="/signup" class="loggedOutMenuItem">Sign Up</el-menu-item>
-            </el-col>
-          </el-row>
-        </el-menu>
-      </div>
-      <div v-if="isLoggedIn">
-        <el-menu default-active="2" class="loggedInMenu" router collapse>
-          <el-menu-item index="/search">
-            <i class="el-icon-search"></i>
-            <span>Search</span>
-          </el-menu-item>
-          <el-menu-item index="/browse">
-            <i class="el-icon-goods"></i>
-            <span>Browse</span>
-          </el-menu-item>
-          <el-menu-item @click="logOut" class="loggedInMenuItemBottom">
-            <i class="el-icon-circle-close"></i>
-            <span>Sign Out</span>
-          </el-menu-item>
-        </el-menu>
-      </div>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
     </div>
-    <div class="content" v-bind:class="{ loggedInContent: isLoggedIn }">
-      <router-view />
-    </div>
-    <Player v-if="isLoggedIn" />
+    <router-view/>
   </div>
 </template>
 
-<script>
-import Player from "@/components/Player.vue";
-import Cookies from "js-cookie";
-
-export default {
-  data() {
-    return {
-      isLoggedIn: this.$store.state.isLoggedIn
-    };
-  },
-  components: {
-    Player
-  },
-  methods: {
-    logOut() {
-      Cookies.remove("user");
-      this.$router.go("/login");
-    }
-  },
-  mounted() {
-    // if (this.$store.state.isLoggedIn) {
-    //   this.$message({
-    //     message: "You are logged in!",
-    //     type: "success"
-    //   });
-    // } else if (!this.$store.state.isLoggedIn) {
-    //   this.$message({
-    //     message: "You are not logged in!",
-    //     type: "warning"
-    //   });
-    // } else {
-    //   this.$message.error("There has been an error with login.");
-    // }
-  }
-};
-</script>
-
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Poppins");
-body {
-  font-family: "Poppins", sans-serif;
-}
 #app {
-  font-family: "Poppins", sans-serif;
-  background-color: #f5f5f5;
-  min-height: calc(100vh - 150px);
-}
-
-.loggedInContent {
-  padding: 20px 20px 20px 100px;
-}
-</style>
-
-<style lang="scss" scoped>
-.loggedOutMenuItem {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-}
-.loggedInMenuItemBottom {
-  position: absolute;
-  bottom: 0px;
+  color: #2c3e50;
 }
 
-.loggedInMenu {
-  position: fixed;
-  float: left;
-  height: calc(100vh - 150px);
-}
+#nav {
+  padding: 30px;
 
-.logo-menu-col {
-  margin-right: auto;
-}
+  a {
+    font-weight: bold;
+    color: #2c3e50;
 
-.content {
-  max-width: 1500px;
-  margin: 0 auto;
-  margin-bottom: 150px;
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
 }
 </style>
-

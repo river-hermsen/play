@@ -1,38 +1,24 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const passport = require("passport");
 const users = require("./routes/api/users");
 
 const app = express();
 
-const cors = require("cors");
-app.use(cors());
-//Body Parser middleware
-app.use(
-  bodyParser.urlencoded({
-    extended: false
-  })
-);
-app.use(bodyParser.json());
+app.use(express.json()); //Used to parse JSON bodies
 
 // DB CONFIG
 const db = require("./config/keys").mongoURI;
+console.log(db);
 
 // Connect to MongoDB
 mongoose
-  .connect(db, {
-    useCreateIndex: true,
-    useNewUrlParser: true
-  
-  })
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+    .connect(db, {
+        useUnifiedTopology: true,
+        useNewUrlParser: true
+    })
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.log(err));
 
-//Passport middleware
-app.use(passport.initialize());
-//Passport Config
-require("./config/passport")(passport);
 
 //Use routes
 app.use("/api/users", users);

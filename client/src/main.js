@@ -1,20 +1,13 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import VueRouter from "vue-router";
+import Vue from 'vue'
+import App from './App.vue'
+import './registerServiceWorker'
+import router from './router'
+import store from './store'
 
-import store from "./store/index.js";
-import "./assets/styles/reset.css";
-import Element from "element-ui";
-import "./assets/styles/element-variables.scss";
+Vue.config.productionTip = false
 
-Vue.use(Element);
-Vue.use(VueRouter);
-
-Vue.config.productionTip = false;
-Vue.prototype.$scrollToTop = () => window.scrollTo(0, 0);
 new Vue({
-  store,
   router,
+  store,
   render: h => h(App)
-}).$mount("#app");
+}).$mount('#app')
