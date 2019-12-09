@@ -41,10 +41,10 @@ body {
 }
 
 #content {
-  margin-left: 220px;
-  margin-top: 6px;
-  padding-left: 10px;
-  max-width: 1050px;
+  padding-left: 240px;
+  padding-right: 20px;
   margin: 0 auto;
+  max-width: 1050px;
+  margin-top: 6px;
 }
 </style>

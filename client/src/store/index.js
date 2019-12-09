@@ -5,11 +5,17 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    genres: []
   },
-  mutations: {
+  getters: {
+    getGenres: state => {
+      return state.genres
+    }
   },
-  actions: {
-  },
-  modules: {
+  setters: {
+    setGenres: (state, genres) => {
+      console.log(state)
+      console.log(genres)
+    }
   }
 })
