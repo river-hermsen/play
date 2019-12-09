@@ -1,32 +1,50 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <at-menu mode="inline" active-name="browse">
+        <at-menu-item name="search" to="/search">
+          <i class="icon icon-search"></i>Search
+        </at-menu-item>
+        <at-menu-item name="browse" to="/browse">
+          <i class="icon icon-layers"></i>Browse
+        </at-menu-item>
+        <at-menu-item name="logOut" id="signOut">
+          <i class="icon icon-log-out"></i>Sign Out
+        </at-menu-item>
+      </at-menu>
     </div>
-    <router-view/>
+    <div id="content">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
+
+body {
+  font-family: "Open Sans", sans-serif !important;
 }
 
 #nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+  min-height: 100%;
+  .at-menu {
+    width: 220px !important;
+    padding-top: 6px;
+    min-height: 100vh;
+    position: fixed;
+    #signOut {
+      position: absolute;
+      bottom: 12px;
     }
   }
+}
+
+#content {
+  margin-left: 220px;
+  margin-top: 6px;
+  padding-left: 10px;
+  max-width: 1050px;
+  margin: 0 auto;
 }
 </style>

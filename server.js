@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
+
 const users = require("./routes/api/users");
+
 
 const app = express();
 
@@ -8,7 +10,6 @@ app.use(express.json()); //Used to parse JSON bodies
 
 // DB CONFIG
 const db = require("./config/keys").mongoURI;
-console.log(db);
 
 // Connect to MongoDB
 mongoose
