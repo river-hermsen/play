@@ -10,6 +10,16 @@ export default new Vuex.Store({
   getters: {
     getGenres: state => {
       return state.genres
+    },
+    getGenreById (state, genreId) {
+      return genreId
     }
+  },
+  mutations: {
+    setGenres (state, genres) {
+      state.genres = genres
+    }
+  },
+  actions: {
   }
 })

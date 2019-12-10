@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <div id="toolbar"></div>
     <div id="nav">
       <at-menu mode="inline" active-name="browse">
         <at-menu-item name="search" to="/search">
@@ -44,7 +45,7 @@ body {
   padding-left: 240px;
   padding-right: 20px;
   margin: 0 auto;
-  max-width: 1050px;
-  margin-top: 6px;
+  max-width: 1150px;
+  padding-top: 20px;
 }
 </style>

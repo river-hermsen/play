@@ -4,19 +4,21 @@
       <h1 class="header">Most popular Podcasts</h1>
       <div class="row at-row">
         <div class="col-md-6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
-          <at-card class="podcast-card">
-            <div>
-              <img style="width: 100%" :src="podcast.image" />
-              <div style="padding: 6px;">
-                <span class="title">
-                  <b>{{podcast.title}}</b>
-                </span>
-                <div class="extra-info">
-                  <span class="genre">{{podcast.genreName}}</span>
+          <router-link :to="'podcast/' + podcast.id" tag="div">
+            <at-card class="podcast-card">
+              <div>
+                <img style="width: 100%" :src="podcast.thumbnail" />
+                <div style="padding: 6px;">
+                  <span class="title">
+                    <b>{{podcast.title}}</b>
+                  </span>
+                  <div class="extra-info">
+                    <span class="genre">{{podcast.genreName}}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </at-card>
+            </at-card>
+          </router-link>
         </div>
       </div>
     </div>
@@ -30,7 +32,7 @@
     margin-bottom: 1rem;
   }
   .podcast-card {
-    height: 255px;
+    height: 270px;
     margin-bottom: 6px;
     cursor: pointer;
     .title {
@@ -61,15 +63,17 @@ export default {
       }
     }
   },
-  beforeMount () {
+  created () {
+    console.log()
+
     if (this.$store.getters.getGenres.length === 0) {
       axios
         .get('https://listen-api.listennotes.com/api/v2/genres', {
           headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
         })
         .then(response => {
-          console.log(response.data)
-          this.$store.state.genres = response.data.genres
+          this.$store.commit('setGenres', response.data.genres)
+          console.log(this.$store.getters.getGenres.length)
         })
         .catch(function (error) {
           console.log(error)
@@ -82,6 +86,8 @@ export default {
         headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
       })
       .then(response => {
+        console.log(response.data)
+
         var mostPopularArray = response.data.podcasts.slice(0, 8)
         var mostPopularArrayUpdated = mostPopularArray.filter(podcast => {
           var mainGenreId
