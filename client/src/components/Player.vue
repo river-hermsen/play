@@ -2,43 +2,61 @@
   <div class="row">
     <div class="col-md-6" id="playerImgTitle">
       <div class="img-container">
-        <img
-          src="https://cdn-images-1.listennotes.com/podcasts/the-catch-and-kill-podcast-with-ronan-fkVtdOEUiX2-vLjmbQzHGxq.300x300.jpg"
-          alt
-        />
+        <img :src="episodeInfo.image" alt="Podcast info" v-if="episodeInfo.image" />
       </div>
       <div class="title-container">
-        <span class="title">
-          <b>Episode 3: The Wire</b>
+        <span class="title" :title="episodeInfo.title">
+          <b>{{episodeInfo.title}}</b>
         </span>
-        <br />
-        <p class="podcast">The Catch and Kill Podcast with Ronan Farrow</p>
+        <p class="podcast">{{episodeInfo.podcast_title}}</p>
       </div>
     </div>
     <div class="col-md-12" id="playerControls">
       <div class="top-controls">
-        <div @click="skipBack()" class="controlContainer">
+        <!-- <div @click="skipBack()" class="controlContainer">
           <i class="icon icon-skip-back"></i>
-        </div>
+        </div>-->
         <div class="playPauseContainer">
-          <div @click="play" v-if="!isPlaying" class="controlContainer">
+          <div @click="play" v-if="!isPlaying && !isLoading " class="controlContainer">
             <i class="icon icon-play"></i>
           </div>
-          <div @click="pause" v-else-if="isPlaying" class="controlContainer">
+          <div @click="pause" v-else-if="isPlaying && !isLoading" class="controlContainer">
             <i class="icon icon-pause"></i>
           </div>
+          <div v-else-if="isLoading" class="controlContainer loading-episode-icon">
+            <i class="icon icon-loader"></i>
+          </div>
         </div>
-        <div @click="skipForward()" class="controlContainer">
+        <!-- <div @click="skipForward()" class="controlContainer">
           <i class="icon icon-skip-forward"></i>
-        </div>
+        </div>-->
       </div>
       <div class="bottom-controls">
         <span>{{formattedCurrenPosAudio ? formattedCurrenPosAudio : '0:00'}}</span>
-        <at-slider v-model="currentPosAudio" :max="lengthAudio" class="sliderAudio"></at-slider>
-        <span>{{formattedLength ? formattedLength : '00:00'}}</span>
+        <at-slider
+          v-model="currentPosAudio"
+          :max="lengthAudio"
+          class="sliderAudio"
+          @click.native="seeking"
+        ></at-slider>
+        <span>{{formattedLength ? formattedLength : '0:00'}}</span>
       </div>
     </div>
-    <div class="col-md-6"></div>
+    <div class="col-md-6" id="playerRightControls">
+      <div class="volume-container">
+        <div class="volume-icon" @click="toggleMuteVolume">
+          <i class="icon icon-volume-1" v-if="!mutedVolume && volumeLevel >= 50"></i>
+          <i class="icon icon-volume-2" v-if="!mutedVolume && volumeLevel < 50"></i>
+          <i class="icon icon-volume-x" v-else-if="mutedVolume"></i>
+        </div>
+        <div class="slider">
+          <at-slider v-model="volumeLevel" :max="100" class="slider-volume" :disabled="mutedVolume"></at-slider>
+        </div>
+      </div>
+      <div class="maximize-icon">
+        <i class="icon icon-maximize-2"></i>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -56,11 +74,22 @@
     }
   }
   .title-container {
-    margin-top: 15px;
+    margin-top: 8px;
     padding-left: 15px;
     float: left;
     .title {
       font-size: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .podcast {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 0.9em;
     }
   }
 }
@@ -78,6 +107,20 @@
     .controlContainer {
       margin: 0 0.7rem 0 0.7rem;
     }
+    .loading-episode-icon {
+      -webkit-animation-name: spin;
+      -webkit-animation-duration: 3000ms;
+      -webkit-animation-iteration-count: infinite;
+      -webkit-animation-timing-function: linear;
+    }
+    @-webkit-keyframes spin {
+      from {
+        -webkit-transform: rotate(0deg);
+      }
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
   }
   .bottom-controls {
     display: flex;
@@ -88,6 +131,31 @@
       margin-right: 1rem;
       margin-left: 1rem;
     }
+  }
+}
+
+#playerRightControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2.5rem 0 4rem;
+  font-size: 1.4rem;
+  .volume-container {
+    flex-basis: 130px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .volume-icon {
+      cursor: pointer;
+    }
+  }
+  .slider {
+    flex-basis: 100%;
+    padding: 0rem 1rem 0 0.75rem;
+  }
+  .maximize-icon {
+    cursor: pointer;
+    margin-left: 1rem;
   }
 }
 </style>
@@ -101,64 +169,99 @@ export default {
   mixins: [globalMixin],
   data: () => {
     return {
-      loaded: false,
+      isLoading: null,
       audioTrack:
         'https://www.listennotes.com/e/p/ec7eff6b8e7347c9affd894b1f06a123/',
+      episodeInfo: {
+        title: null,
+        podcast: null,
+        image: null
+      },
       isPlaying: false,
       audioElement: new Audio(),
+      volumeLevel: 100,
+      mutedVolume: false,
       currentPosAudio: 0,
-      lengthAudio: 2312,
+      currentPosSlider: 0,
+      lengthAudio: null,
       formattedLength: '',
       formattedCurrenPosAudio: ''
     };
   },
-  beforeMount () {
-    if (this.audioElement.src === '') {
-      this.audioElement.src = this.audioTrack;
-    }
-    this.audioElement.addEventListener('loadedmetadata', event => {
-      this.loadedAudio();
-    });
-
-    this.audioElement.addEventListener('timeupdate', event => {
-      this.timeUpdate();
-    });
-  },
-  mounted () {},
   methods: {
     loadedAudio () {
       this.formattedLength = globalMixin.methods._formatTime(
         Math.trunc(this.audioElement.duration)
       );
-
-      this.currentPosAudio = this.audioElement.currentTime;
-      this.loaded = true;
+      this.lengthAudio = Math.trunc(this.audioElement.duration);
+      this.isLoading = false;
+      this.play();
     },
     timeUpdate () {
-      this.currentPosAudio = this.audioElement.currentTime;
+      this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
+
       this.formattedCurrenPosAudio = globalMixin.methods._formatTime(
         Math.trunc(this.audioElement.currentTime)
       );
     },
     play () {
-      console.log(this.audioElement.currentTime);
-      if (this.loaded) {
-        this.audioElement.play();
-        this.isPlaying = true;
-      }
+      this.audioElement.play();
+      this.isPlaying = true;
     },
     pause () {
-      if (this.loaded) {
-        this.audioElement.pause();
-        this.isPlaying = false;
-      }
+      this.audioElement.pause();
+      this.isPlaying = false;
     },
-    skipBack () {},
-    skipFoward () {}
+    seeking () {
+      this.audioElement.currentTime = this.currentPosAudio;
+    },
+    toggleMuteVolume () {
+      this.mutedVolume = !this.mutedVolume;
+
+      if (this.mutedVolume) {
+        this.audioElement.volume = 0;
+      } else {
+        if (this.volumeLevel === 0) {
+          this.volumeLevel = 65;
+        }
+        this.audioElement.volume = this.volumeLevel / 100;
+      }
+    }
   },
   computed: {
     currentTimeAudio () {
       return this.audioElement.currentTime;
+    },
+    episodeVuex () {
+      return this.$store.getters.getCurrentEpisode;
+    }
+  },
+  watch: {
+    volumeLevel () {
+      if (this.volumeLevel === 0) {
+        this.toggleMuteVolume();
+      } else {
+        this.audioElement.volume = this.volumeLevel / 100;
+      }
+    },
+    episodeVuex (newEpisode) {
+      this.isLoading = true;
+      this.isPlaying = false;
+      this.lengthAudio = 0;
+      console.log(newEpisode.titlePodcast);
+      this.episodeInfo = {
+        title: newEpisode.title,
+        image: newEpisode.image,
+        podcast_title: newEpisode.podcast_title
+      };
+      this.audioElement.src = newEpisode.audio;
+      this.audioElement.addEventListener('loadedmetadata', event => {
+        this.loadedAudio();
+      });
+
+      this.audioElement.addEventListener('timeupdate', event => {
+        this.timeUpdate();
+      });
     }
   }
 };

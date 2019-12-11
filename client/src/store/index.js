@@ -8,23 +8,28 @@ export default new Vuex.Store({
     genres: [],
     player: {
       isPlaying: false,
-      audioTrack: 'https://www.listennotes.com/e/p/ec7eff6b8e7347c9affd894b1f06a123/'
+      episode: {
+
+      }
     }
   },
   getters: {
     getGenres: state => {
       return state.genres
     },
-    getGenreById (state, genreId) {
-      return genreId
-    },
     getPlayerInfo (state) {
       return state.player
+    },
+    getCurrentEpisode (state) {
+      return state.player.episode
     }
   },
   mutations: {
     setGenres (state, genres) {
       state.genres = genres
+    },
+    setCurrentEpisode (state, episode) {
+      state.player.episode = episode
     }
   },
   actions: {

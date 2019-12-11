@@ -34,8 +34,9 @@ export const globalMixin = {
       return noHTML
     },
     // PLAYBACK methods
-    _playEpisode (episode) {
-      console.log(store.getPlayerInfo)
+    _playEpisode (episode, podcastTitle) {
+      episode.podcast_title = podcastTitle
+      store.commit('setCurrentEpisode', episode)
     }
   }
 }

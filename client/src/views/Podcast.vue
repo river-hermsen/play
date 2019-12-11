@@ -7,7 +7,7 @@
       <div class="col-md-16 text-info">
         <h1 class="title">{{podcastInfo.title}}</h1>
         <h5 class="publisher">Publisher: {{podcastInfo.publisher}}</h5>
-        <p class="description">{{podcastInfo.description}}</p>
+        <p class="description">{{_removeHTMLTags(podcastInfo.description)}}</p>
       </div>
     </div>
     <div class="row" id="podcastEpisodesExtraInfo">
@@ -40,11 +40,11 @@
             </div>
           </div>
           <div class="podcast row" v-for="episode in podcastInfo.episodes" :key="episode.id">
-            <div class="col-md-2 podcast-play" @click="_playEpisode(episode)">
+            <div class="col-md-2 podcast-play" @click="_playEpisode(episode, podcastInfo.title)">
               <i class="icon icon-play-circle"></i>
             </div>
             <div class="col-md-7">
-              <b>{{episode.title}}</b>
+              <b :title="episode.title">{{episode.title}}</b>
             </div>
             <div
               class="col-md-13 description"
@@ -87,7 +87,7 @@
     }
   }
   #podcastEpisodesExtraInfo {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     #extraPodcastInfo {
       border-right: 1px solid #ebebeb;
       .extra-info {

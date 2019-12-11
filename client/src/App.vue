@@ -56,6 +56,7 @@ body {
 #content {
   padding-left: 240px;
   padding-right: 20px;
+  padding-bottom: 110px;
   margin: 0 auto;
   max-width: 1150px;
   padding-top: 20px;
