@@ -2,7 +2,7 @@
   <div id="app">
     <div id="toolbar"></div>
     <div id="nav">
-      <at-menu mode="inline" active-name="browse">
+      <at-menu mode="inline" router>
         <at-menu-item name="search" to="/search">
           <i class="icon icon-search"></i>Search
         </at-menu-item>
@@ -18,7 +18,9 @@
       <Player />
     </div>
     <div id="content">
-      <router-view />
+      <keep-alive>
+        <router-view />
+      </keep-alive>
     </div>
   </div>
 </template>

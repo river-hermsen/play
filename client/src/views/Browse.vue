@@ -64,6 +64,9 @@ export default {
       }
     };
   },
+  beforeCreate () {
+    this.$Loading.start();
+  },
   mounted () {
     axios
       .get('https://listen-api.listennotes.com/api/v2/best_podcasts', {
@@ -80,6 +83,7 @@ export default {
           } else {
             mainGenreId = podcast.genre_ids[0];
           }
+          this.$Loading.finish();
           return (podcast.genreName = globalMixin.methods._getGenreByID(
             mainGenreId
           ).name);
