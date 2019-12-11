@@ -60,6 +60,16 @@ body {
   max-width: 1150px;
   padding-top: 20px;
 }
+
+// Fixed slider bug
+.at-tooltip__trigger {
+  display: block !important;
+  top: 2px;
+}
+// Remove tooltip from slider
+.at-tooltip__popper {
+  display: none;
+}
 </style>
 
 <script>
