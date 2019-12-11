@@ -35,7 +35,7 @@ export const globalMixin = {
     },
     // PLAYBACK methods
     _playEpisode (episode) {
-      console.log(episode.audio)
+      console.log(store.getPlayerInfo)
     }
   }
 }

@@ -145,8 +145,6 @@ export default {
   },
   methods: {
     showHideDescription (episodeId) {
-      console.log(episodeId);
-
       document.getElementById(episodeId).classList.toggle('description-show');
     }
   },

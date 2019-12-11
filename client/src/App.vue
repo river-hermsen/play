@@ -9,10 +9,13 @@
         <at-menu-item name="browse" to="/browse">
           <i class="icon icon-layers"></i>Browse
         </at-menu-item>
-        <at-menu-item name="logOut" id="signOut">
+        <!-- <at-menu-item name="logOut" id="signOut">
           <i class="icon icon-log-out"></i>Sign Out
-        </at-menu-item>
+        </at-menu-item>-->
       </at-menu>
+    </div>
+    <div id="player">
+      <Player />
     </div>
     <div id="content">
       <router-view />
@@ -28,17 +31,26 @@ body {
 }
 
 #nav {
-  min-height: 100%;
   .at-menu {
     width: 220px !important;
     padding-top: 6px;
-    min-height: 100vh;
+    min-height: calc(100vh - 110px);
     position: fixed;
     #signOut {
       position: absolute;
       bottom: 12px;
     }
   }
+}
+
+#player {
+  position: fixed;
+  bottom: 0px;
+  height: 100px;
+  z-index: 99;
+  background-color: #fff;
+  width: 100%;
+  border-top: 1px solid #ebebeb;
 }
 
 #content {
@@ -49,3 +61,15 @@ body {
   padding-top: 20px;
 }
 </style>
+
+<script>
+/* eslint-disable semi */
+import Player from './components/Player';
+
+export default {
+  name: 'App',
+  components: {
+    Player
+  }
+};
+</script>

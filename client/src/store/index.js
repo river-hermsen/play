@@ -5,7 +5,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    genres: []
+    genres: [],
+    player: {
+      isPlaying: false,
+      audioTrack: 'https://www.listennotes.com/e/p/ec7eff6b8e7347c9affd894b1f06a123/'
+    }
   },
   getters: {
     getGenres: state => {
@@ -13,6 +17,9 @@ export default new Vuex.Store({
     },
     getGenreById (state, genreId) {
       return genreId
+    },
+    getPlayerInfo (state) {
+      return state.player
     }
   },
   mutations: {
