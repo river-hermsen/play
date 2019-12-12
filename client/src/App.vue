@@ -18,7 +18,7 @@
       <Player />
     </div>
     <div id="content">
-      <keep-alive>
+      <keep-alive exclude="Podcast" :max="5">
         <router-view />
       </keep-alive>
     </div>
@@ -58,7 +58,7 @@ body {
 #content {
   padding-left: 240px;
   padding-right: 20px;
-  padding-bottom: 110px;
+  padding-bottom: 140px;
   margin: 0 auto;
   max-width: 1150px;
   padding-top: 20px;
@@ -72,6 +72,13 @@ body {
 // Remove tooltip from slider
 .at-tooltip__popper {
   display: none;
+}
+
+.at-input__icon {
+  font-size: 2.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 2rem !important;
 }
 </style>
 

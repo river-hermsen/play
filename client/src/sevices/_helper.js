@@ -26,8 +26,12 @@ export const globalMixin = {
       var formattedDate = dd + '/' + mm + '/' + yyyy
       return formattedDate
     },
-    _formatTime (timeInSeconds) {
-      return (timeInSeconds - (timeInSeconds %= 60)) / 60 + (timeInSeconds > 9 ? ':' : ':0') + timeInSeconds
+    _formatTime (timeInSeconds, format) {
+      if ((timeInSeconds < (60 * 60) & format === undefined) || format === 'MM:SS') {
+        return (timeInSeconds - (timeInSeconds %= 60)) / 60 + (timeInSeconds > 9 ? ':' : ':0') + timeInSeconds
+      } else {
+        return new Date(timeInSeconds * 1000).toISOString().substr(11, 8)
+      }
     },
     _removeHTMLTags (string) {
       const noHTML = string.replace(/<\/?[^>]+(>|$)/g, '')

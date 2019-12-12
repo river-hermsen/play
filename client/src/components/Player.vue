@@ -184,15 +184,23 @@ export default {
       currentPosAudio: 0,
       currentPosSlider: 0,
       lengthAudio: null,
+      timeFormat: null,
       formattedLength: '',
       formattedCurrenPosAudio: ''
     };
   },
   methods: {
     loadedAudio () {
+      if (this.audioElement.duration > 60 * 60) {
+        this.timeFormat = 'HH:MM:SS';
+      } else {
+        this.timeFormat = 'MM:SS';
+      }
       this.formattedLength = globalMixin.methods._formatTime(
-        Math.trunc(this.audioElement.duration)
+        Math.trunc(this.audioElement.duration),
+        this.timeFormat
       );
+
       this.lengthAudio = Math.trunc(this.audioElement.duration);
       this.isLoading = false;
       this.play();
@@ -201,7 +209,8 @@ export default {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
 
       this.formattedCurrenPosAudio = globalMixin.methods._formatTime(
-        Math.trunc(this.audioElement.currentTime)
+        Math.trunc(this.audioElement.currentTime),
+        this.timeFormat
       );
     },
     play () {
@@ -248,7 +257,6 @@ export default {
       this.isLoading = true;
       this.isPlaying = false;
       this.lengthAudio = 0;
-      console.log(newEpisode.titlePodcast);
       this.episodeInfo = {
         title: newEpisode.title,
         image: newEpisode.image,

@@ -4,21 +4,12 @@
       <h1 class="header">Most popular Podcasts</h1>
       <div class="row at-row">
         <div class="col-md-6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
-          <router-link :to="'podcast/' + podcast.id" tag="div">
-            <at-card class="podcast-card">
-              <div>
-                <img style="width: 100%" :src="podcast.thumbnail" />
-                <div style="padding: 6px;">
-                  <span class="title">
-                    <b>{{podcast.title}}</b>
-                  </span>
-                  <div class="extra-info">
-                    <span class="genre">{{podcast.genreName}}</span>
-                  </div>
-                </div>
-              </div>
-            </at-card>
-          </router-link>
+          <PodcastCard
+            :title="podcast.title"
+            :mainGenre="podcast.genreName"
+            :thumbnail="podcast.thumbnail"
+            :podcastId="podcast.id"
+          />
         </div>
       </div>
     </div>
@@ -54,6 +45,7 @@
 /* eslint-disable semi */
 import axios from 'axios';
 import { globalMixin } from '../sevices/_helper';
+import PodcastCard from '../components/PodcastCard';
 
 export default {
   name: 'Browse',
@@ -64,6 +56,7 @@ export default {
       }
     };
   },
+  components: { PodcastCard },
   beforeCreate () {
     this.$Loading.start();
   },
