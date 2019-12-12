@@ -10,7 +10,7 @@
       ></at-input>
     </div>
     <div id="searchContent">
-      <div id="podcasts" class="section-search" v-if="true">
+      <div id="podcasts" class="section-search" v-if="podcasts.length !== 0">
         <h1>Podcasts</h1>
         <div class="row">
           <div class="col-md-6" v-for="podcast in podcasts" :key="podcast.id">
@@ -23,31 +23,30 @@
           </div>
         </div>
       </div>
-      <div id="episodes" class="section-search" v-if="true">
+      <div id="episodes" class="section-search" v-if="episodes.length !== 0">
         <h1>Episodes</h1>
         <div>
-          <!-- <div id="headerContainer" class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-7">Title</div>
-            <div class="col-md-13">Description</div>
-            <div class="col-md-2 episode">
-              <i class="icon icon-clock"></i>
-            </div>
-          </div>-->
-          <div class="episode row">
+          <div class="episode row" v-for="episode in episodes" :key="episode.id">
             <div class="col-md-3 image-container">
-              <img
-                src="https://cdn-images-1.listennotes.com/podcasts/the-joe-rogan/1398-lil-duval-_Mje1h3PF4R-z38coURks-l.300x200.jpg"
-              />
+              <router-link :to="'/podcast/' + episode.podcast_id + '?episode=' + episode.id">
+                <img :src="episode.image" />
+              </router-link>
             </div>
             <div class="col-md-7">
-              <h4>The Joe Rogan Experience:</h4>
+              <h4>{{episode.podcast_title_original}}:</h4>
               <div>
-                <span>#1398 - Lil Duval</span>
+                <span>{{episode.title_original}}</span>
               </div>
             </div>
-            <div class="col-md-13 description">
-              <p>Lil Duval is a stand-up comedian and recording artist.</p>
+            <div
+              class="col-md-11 description"
+              :id="episode.id"
+              @click="showHideDescription(episode.id)"
+            >
+              <p>{{episode.description_original}}</p>
+            </div>
+            <div class="col-md-3">
+              <p>{{_formatDate(_msToDate(episode.pub_date_ms))}}</p>
             </div>
           </div>
         </div>
@@ -81,11 +80,27 @@
       margin: 2rem 0 4rem 0;
     }
     #episodes {
+      margin-top: 2rem;
       .episode {
+        border-bottom: 1px solid #ebebeb;
+        padding: 0.5rem 0 0.5rem 0;
         .image-container {
+          cursor: pointer;
           img {
             width: 100%;
           }
+        }
+        .description {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 5;
+          overflow: hidden;
+          cursor: pointer;
+        }
+        .description-show {
+          -webkit-line-clamp: unset;
+          height: 140px;
+          overflow-y: scroll;
         }
       }
     }
@@ -124,7 +139,7 @@ export default {
     searchForPodcasts (encodedURI) {
       axios
         .get(
-          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription`,
+          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription&language=English`,
           {
             headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
           }
@@ -151,7 +166,26 @@ export default {
           console.log(error);
         });
     },
-    searchForEpisodes (encodedURI) {}
+    searchForEpisodes (encodedURI) {
+      axios
+        .get(
+          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=episode&only_in=title%2Cdescription&language=English`,
+          {
+            headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+          }
+        )
+        .then(response => {
+          console.log(response.data.results);
+
+          this.episodes = response.data.results.slice(0, 8);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    showHideDescription (epsiodeId) {
+      document.getElementById(epsiodeId).classList.toggle('description-show');
+    }
   },
   watch: {
     searchQuery (newQuery) {

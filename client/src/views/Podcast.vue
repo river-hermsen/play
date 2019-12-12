@@ -122,6 +122,8 @@
         }
         .description-show {
           -webkit-line-clamp: unset;
+          height: 140px;
+          overflow-y: scroll;
         }
       }
     }
