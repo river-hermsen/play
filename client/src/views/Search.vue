@@ -124,12 +124,6 @@ export default {
   },
   mixins: [globalMixin],
   components: { PodcastCard },
-  created () {
-    this.debounceSearchForQuery = globalMixin.methods._debounce(
-      this.searchForQuery,
-      900
-    );
-  },
   methods: {
     searchForQuery () {
       const encodedURI = encodeURI(this.searchQuery);
@@ -193,6 +187,12 @@ export default {
         this.debounceSearchForQuery();
       }
     }
+  },
+  created () {
+    this.debounceSearchForQuery = globalMixin.methods._debounce(
+      this.searchForQuery,
+      900
+    );
   }
 };
 </script>

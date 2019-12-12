@@ -18,15 +18,22 @@
       <Player />
     </div>
     <div id="content">
-      <keep-alive exclude="Podcast" :max="5">
-        <router-view />
-      </keep-alive>
+      <!-- <keep-alive exclude="Podcast" :max="5"> -->
+      <router-view />
+      <!-- </keep-alive> -->
     </div>
   </div>
 </template>
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css?family=Open+Sans&display=swap");
+
+// Fixed bug of not detecting end of page scroll
+html,
+body {
+  width: unset !important;
+  height: unset !important;
+}
 
 body {
   font-family: "Open Sans", sans-serif !important;

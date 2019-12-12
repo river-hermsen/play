@@ -142,12 +142,49 @@ export default {
   data: () => {
     return {
       podcastId: null,
-      podcastInfo: undefined
+      podcastInfo: undefined,
+      nextPubDate: null
     };
   },
   methods: {
+    onScroll () {
+      var offset = document.documentElement.scrollTop + window.innerHeight + 1;
+      var height = document.documentElement.offsetHeight;
+      console.log(offset);
+      console.log(height);
+
+      if (offset >= height) {
+        console.log('At the bottom');
+        this.getMoreEpisodes();
+      }
+    },
     showHideDescription (episodeId) {
       document.getElementById(episodeId).classList.toggle('description-show');
+    },
+    getMoreEpisodes () {
+      console.log(this.podcastInfo.total_episodes);
+      console.log(this.podcastInfo.episodes.length);
+
+      if (this.podcastInfo.total_episodes > this.podcastInfo.episodes.length) {
+        axios
+          .get(
+            `https://listen-api.listennotes.com/api/v2/podcasts/${this.podcastId}?next_episode_pub_date=${this.nextPubDate}`,
+            {
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+            }
+          )
+          .then(response => {
+            this.nextPubDate = response.data.next_episode_pub_date;
+            this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
+              response.data.episodes
+            );
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        console.log('all episodes have already been fetched');
+      }
     }
   },
   created () {
@@ -167,12 +204,17 @@ export default {
       )
       .then(response => {
         console.log(response.data);
-
+        this.nextPubDate = response.data.next_episode_pub_date;
         this.podcastInfo = response.data;
       })
       .catch(function (error) {
         console.log(error);
       });
+  },
+  mounted () {
+    window.onscroll = () => {
+      this.onScroll();
+    };
   }
 };
 </script>
