@@ -31,6 +31,11 @@
       </div>
       <div id="podcastEpisodes" class="col-md-19">
         <div id="episodesContainer">
+          <div id="searchContainer">
+            <h4>Search for specific episodes:</h4>
+            <at-input v-model="searchQuery" placeholder="Search episodes"></at-input>
+          </div>
+          <h1 class="episodes-header">Episodes:</h1>
           <div id="headerContainer" class="row">
             <div class="col-md-2 podcast-play"></div>
             <div class="col-md-7">Title</div>
@@ -39,22 +44,39 @@
               <i class="icon icon-clock"></i>
             </div>
           </div>
-          <div class="podcast row" v-for="episode in podcastInfo.episodes" :key="episode.id">
-            <div class="col-md-2 podcast-play" @click="_playEpisode(episode, podcastInfo.title)">
-              <i class="icon icon-play-circle"></i>
-            </div>
-            <div class="col-md-7">
-              <b :title="episode.title">{{episode.title}}</b>
-            </div>
-            <div
-              class="col-md-13 description"
+          <div v-if="!noResultsFound && searchResults && searchResults.length !== 0">
+            <PodcastEpisode
+              v-for="episode in searchResults"
+              :key="episode.id"
               :id="episode.id"
-              @click="showHideDescription(episode.id)"
-            >
-              <p>{{_removeHTMLTags(episode.description)}}</p>
-            </div>
-            <div class="col-md-2 podcast-time">{{_formatTime(episode.audio_length_sec)}}</div>
+              :title="episode.title_original"
+              :description="episode.description_original"
+              :audioLength="episode.audio_length_sec"
+            />
           </div>
+          <div
+            v-else-if="!noResultsFound && searchResults.length === 0 && podcastInfo.episodes.length !== 0"
+          >
+            <PodcastEpisode
+              v-for="episode in podcastInfo.episodes"
+              :key="episode.id"
+              :episode="episode"
+              :id="episode.id"
+              :title="episode.title"
+              :image="episode.image"
+              :description="episode.description"
+              :audio="episode.audio"
+              :audioLength="episode.audio_length_sec"
+              :podcastTitle="podcastInfo.title"
+            />
+          </div>
+          <div v-if="noResultsFound" class="row">
+            <h3 id="noResultsFoundHeader" class="col-md-offset-2">
+              No episodes found, try using the
+              <router-link to="/search">search page</router-link>.
+            </h3>
+          </div>
+          <div class="loader" v-if="loadingNewEpisodes"></div>
         </div>
       </div>
     </div>
@@ -97,36 +119,59 @@
     #podcastEpisodes {
       #episodesContainer {
         margin: 0 1rem 0 1rem;
-      }
-      .podcast-play {
-        text-align: center;
-        font-size: 2em;
-        cursor: pointer;
-      }
-      .podcast-time {
-        text-align: center;
-      }
-      #headerContainer {
-        font-size: 1.1em;
-        border-bottom: 1px solid #ebebeb;
-      }
-      .podcast {
-        padding: 0.5rem 0 0.5rem 0;
-        border-bottom: 1px solid #ebebeb;
-        .description {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 2;
-          overflow: hidden;
-          cursor: pointer;
+        #noResultsFoundHeader {
+          margin-top: 1rem;
         }
-        .description-show {
-          -webkit-line-clamp: unset;
-          height: 140px;
-          overflow-y: scroll;
+        .episodes-header {
+          margin-bottom: 0.5rem;
+        }
+        #searchContainer {
+          border-bottom: 1px solid #ebebeb;
+          padding-bottom: 0.75rem;
+          margin-bottom: 1rem;
+          h4 {
+            margin-bottom: 0.2rem;
+          }
+        }
+        #headerContainer {
+          font-size: 1.1em;
+          border-bottom: 1px solid #ebebeb;
         }
       }
     }
+  }
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  margin: 30px auto;
+  background-color: #333;
+
+  border-radius: 100%;
+  -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+  animation: sk-scaleout 1s infinite ease-in-out;
+}
+
+@-webkit-keyframes sk-scaleout {
+  0% {
+    -webkit-transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes sk-scaleout {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 0;
   }
 }
 </style>
@@ -135,37 +180,37 @@
 /* eslint-disable semi */
 import axios from 'axios';
 import { globalMixin } from '../sevices/_helper';
-
+import PodcastEpisode from '../components/PodcastEpisode';
 export default {
   name: 'Podcast',
   mixins: [globalMixin],
+  components: { PodcastEpisode },
   data: () => {
     return {
       podcastId: null,
       podcastInfo: undefined,
+      loadingNewEpisodes: false,
+      searchResults: [],
+      noResultsFound: false,
+      searchQuery: null,
       nextPubDate: null
     };
   },
   methods: {
     onScroll () {
-      var offset = document.documentElement.scrollTop + window.innerHeight + 1;
+      var offset =
+        document.documentElement.scrollTop + window.innerHeight + 200;
       var height = document.documentElement.offsetHeight;
-      console.log(offset);
-      console.log(height);
-
       if (offset >= height) {
-        console.log('At the bottom');
         this.getMoreEpisodes();
       }
     },
-    showHideDescription (episodeId) {
-      document.getElementById(episodeId).classList.toggle('description-show');
-    },
     getMoreEpisodes () {
-      console.log(this.podcastInfo.total_episodes);
-      console.log(this.podcastInfo.episodes.length);
-
-      if (this.podcastInfo.total_episodes > this.podcastInfo.episodes.length) {
+      if (
+        this.podcastInfo.total_episodes > this.podcastInfo.episodes.length &&
+        !this.loadingNewEpisodes
+      ) {
+        this.loadingNewEpisodes = true;
         axios
           .get(
             `https://listen-api.listennotes.com/api/v2/podcasts/${this.podcastId}?next_episode_pub_date=${this.nextPubDate}`,
@@ -178,16 +223,64 @@ export default {
             this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
               response.data.episodes
             );
+            this.loadingNewEpisodes = false;
           })
-          .catch(function (error) {
+          .catch(error => {
             console.log(error);
+            this.$Loading.error();
+          });
+      }
+    },
+    searchEpisodes () {
+      if (this.searchQuery) {
+        console.log('running');
+        var searchQueryURI = encodeURIComponent(this.searchQuery);
+        var podcastIdURI = encodeURIComponent(this.podcastInfo.id);
+
+        axios
+          .get(
+            `https://listen-api.listennotes.com/api/v2/search?q=${searchQueryURI}&ocid=${podcastIdURI}`,
+            {
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+            }
+          )
+          .then(response => {
+            this.noResultsFound = false;
+            if (response.data.count > 0) {
+              console.log('results found!');
+
+              this.searchResults = response.data.results;
+            } else {
+              console.log('NO results found!');
+
+              this.noResultsFound = true;
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.$Loading.error();
           });
       } else {
-        console.log('all episodes have already been fetched');
+        this.noResultsFound = false;
+        this.searchResults = [];
+        console.log('not running');
       }
     }
   },
+  watch: {
+    searchQuery (newQuery) {
+      this.debounceSearchForQuery();
+    }
+  },
+  beforeCreate () {
+    this.$Loading.start();
+  },
   created () {
+    this.debounceSearchForQuery = globalMixin.methods._debounce(
+      this.searchEpisodes,
+      500
+    );
+
     if (this.$route.params.id.length !== 32) {
       this.$router.go(-1);
     } else {
@@ -206,9 +299,11 @@ export default {
         console.log(response.data);
         this.nextPubDate = response.data.next_episode_pub_date;
         this.podcastInfo = response.data;
+        this.$Loading.finish();
       })
-      .catch(function (error) {
+      .catch(error => {
         console.log(error);
+        this.$Loading.error();
       });
   },
   mounted () {

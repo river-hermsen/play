@@ -126,7 +126,7 @@ export default {
   components: { PodcastCard },
   methods: {
     searchForQuery () {
-      const encodedURI = encodeURI(this.searchQuery);
+      const encodedURI = encodeURIComponent(this.searchQuery);
       this.searchForPodcasts(encodedURI);
       this.searchForEpisodes(encodedURI);
     },
