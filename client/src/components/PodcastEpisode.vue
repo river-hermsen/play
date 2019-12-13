@@ -88,6 +88,7 @@ export default {
       audio_length: this.audioLength,
       podcast_title: this.podcastTitle
     };
+    console.log(this.episode);
   }
 };
 </script>

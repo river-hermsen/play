@@ -1,4 +1,5 @@
 import store from '../store/index'
+import axios from 'axios'
 
 export const globalMixin = {
   methods: {
@@ -56,6 +57,20 @@ export const globalMixin = {
     _playEpisode (episode, podcastTitle) {
       episode.podcast_title = podcastTitle
       store.commit('setCurrentEpisode', episode)
+    },
+    _playRandomEpisode () {
+      console.log('Playing random episode')
+
+      axios
+        .get('https://listen-api.listennotes.com/api/v2/just_listen', {
+          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+        })
+        .then(response => {
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
   }
 }

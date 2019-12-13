@@ -28,7 +28,9 @@
         <div>
           <div class="episode row" v-for="episode in episodes" :key="episode.id">
             <div class="col-md-3 image-container">
-              <router-link :to="'/podcast/' + episode.podcast_id + '?episode=' + episode.id">
+              <router-link
+                :to="'/podcast/' + episode.podcast_id + '?episode=' + encodeURIComponent(episode.title_original) "
+              >
                 <img :src="episode.image" />
               </router-link>
             </div>
@@ -191,7 +193,7 @@ export default {
   created () {
     this.debounceSearchForQuery = globalMixin.methods._debounce(
       this.searchForQuery,
-      900
+      500
     );
   }
 };

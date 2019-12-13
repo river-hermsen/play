@@ -1,92 +1,36 @@
 <template>
   <div id="browse">
-    <div id="most-popular">
-      <h1 class="header">Most popular Podcasts</h1>
-      <div class="row at-row">
-        <div class="col-md-6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
-          <PodcastCard
-            :title="podcast.title"
-            :mainGenre="podcast.genreName"
-            :thumbnail="podcast.thumbnail"
-            :podcastId="podcast.id"
-          />
-        </div>
-      </div>
+    <div class="header-container">
+      <h1>Browse</h1>
+    </div>
+    <div id="contentBrowse">
+      <at-tabs>
+        <at-tab-pane label="Genres" name="Genres" icon="icon-book">
+          <p>Content of Tab Pane 1</p>
+        </at-tab-pane>
+        <at-tab-pane label="Regions" name="Regions" icon="icon-map">
+          <p>Content of Tab Pane 2</p>
+        </at-tab-pane>
+        <at-tab-pane label="Languages" name="Languages" icon="icon-globe">
+          <p>Content of Tab Pane 3</p>
+        </at-tab-pane>
+      </at-tabs>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 #browse {
-  .header {
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
-  }
-  .podcast-card {
-    height: 280px;
-    margin-bottom: 6px;
-    cursor: pointer;
-    .title {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+  .header-container {
+    margin-top: 0.5rem;
+    h1 {
+      font-size: 2rem;
     }
-    .extra-info {
-      position: absolute;
-      bottom: 12px;
-      width: 141px;
+  }
+  #content {
+    .at-tabs {
+      margin-top: 1rem;
     }
   }
 }
 </style>
-
-<script>
-/* eslint-disable semi */
-import axios from 'axios';
-import { globalMixin } from '../sevices/_helper';
-import PodcastCard from '../components/PodcastCard';
-
-export default {
-  name: 'Browse',
-  data () {
-    return {
-      podcasts: {
-        mostPopular: []
-      }
-    };
-  },
-  components: { PodcastCard },
-  beforeCreate () {
-    this.$Loading.start();
-  },
-  mounted () {
-    axios
-      .get('https://listen-api.listennotes.com/api/v2/best_podcasts', {
-        headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-      })
-      .then(response => {
-        console.log(response.data);
-
-        var mostPopularArray = response.data.podcasts.slice(0, 8);
-        var mostPopularArrayUpdated = mostPopularArray.filter(podcast => {
-          var mainGenreId;
-          if (podcast.genre_ids[0] === 67) {
-            mainGenreId = podcast.genre_ids[1];
-          } else {
-            mainGenreId = podcast.genre_ids[0];
-          }
-          this.$Loading.finish();
-          return (podcast.genreName = globalMixin.methods._getGenreByID(
-            mainGenreId
-          ).name);
-        });
-
-        this.podcasts.mostPopular = mostPopularArrayUpdated;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-};
-</script>

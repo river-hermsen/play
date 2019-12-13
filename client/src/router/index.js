@@ -17,15 +17,21 @@ const routes = [
     name: 'Login',
     component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
   },
-  {
-    path: '/browse',
-    name: 'Browse',
-    component: () => import(/* webpackChunkName: "browse" */ '../views/Browse.vue')
-  },
+
   {
     path: '/search',
     name: 'Search',
     component: () => import(/* webpackChunkName: "search" */ '../views/Search.vue')
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: () => import(/* webpackChunkName: "browse" */ '../views/Home.vue')
+  },
+  {
+    path: '/browse',
+    name: 'Browse',
+    component: () => import(/* webpackChunkName: "browse" */ '../views/Browse.vue')
   },
   {
     path: '/podcast/:id',

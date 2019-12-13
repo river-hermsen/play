@@ -6,9 +6,15 @@
         <at-menu-item name="search" to="/search">
           <i class="icon icon-search"></i>Search
         </at-menu-item>
+        <at-menu-item name="home" to="/home">
+          <i class="icon icon-home"></i>Home
+        </at-menu-item>
         <at-menu-item name="browse" to="/browse">
           <i class="icon icon-layers"></i>Browse
         </at-menu-item>
+        <!-- <at-menu-item name="randomEpisode" @click="test()">
+          <i class="icon icon-shuffle"></i>Play random episode
+        </at-menu-item>-->
         <!-- <at-menu-item name="logOut" id="signOut">
           <i class="icon icon-log-out"></i>Sign Out
         </at-menu-item>-->
@@ -92,11 +98,18 @@ body {
 <script>
 /* eslint-disable semi */
 import Player from './components/Player';
+import { globalMixin } from './sevices/_helper';
 
 export default {
   name: 'App',
   components: {
     Player
+  },
+  mixins: [globalMixin],
+  methods: {
+    test () {
+      console.log('test');
+    }
   }
 };
 </script>

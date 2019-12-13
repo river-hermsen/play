@@ -33,7 +33,7 @@
         <div id="episodesContainer">
           <div id="searchContainer">
             <h4>Search for specific episodes:</h4>
-            <at-input v-model="searchQuery" placeholder="Search episodes"></at-input>
+            <at-input v-model="searchQuery" placeholder="Search episodes" size="large"></at-input>
           </div>
           <h1 class="episodes-header">Episodes:</h1>
           <div id="headerContainer" class="row">
@@ -55,7 +55,7 @@
             />
           </div>
           <div
-            v-else-if="!noResultsFound && searchResults.length === 0 && podcastInfo.episodes.length !== 0"
+            v-else-if="!noResultsFound && searchResults.length === 0 && podcastInfo.episodes.length !== 0 && !isLoadingQueryEpisode"
           >
             <PodcastEpisode
               v-for="episode in podcastInfo.episodes"
@@ -76,7 +76,7 @@
               <router-link to="/search">search page</router-link>.
             </h3>
           </div>
-          <div class="loader" v-if="loadingNewEpisodes"></div>
+          <div class="loader" v-if="loadingNewEpisodes || isLoadingQueryEpisode"></div>
         </div>
       </div>
     </div>
@@ -187,6 +187,8 @@ export default {
   components: { PodcastEpisode },
   data: () => {
     return {
+      isLoading: false,
+      isLoadingQueryEpisode: false,
       podcastId: null,
       podcastInfo: undefined,
       loadingNewEpisodes: false,
@@ -246,6 +248,8 @@ export default {
           )
           .then(response => {
             this.noResultsFound = false;
+            console.log('found');
+
             if (response.data.count > 0) {
               console.log('results found!');
 
@@ -254,6 +258,10 @@ export default {
               console.log('NO results found!');
 
               this.noResultsFound = true;
+            }
+
+            if (this.isLoadingQueryEpisode) {
+              this.isLoadingQueryEpisode = false;
             }
           })
           .catch(error => {
@@ -269,13 +277,27 @@ export default {
   },
   watch: {
     searchQuery (newQuery) {
-      this.debounceSearchForQuery();
+      if (this.isLoadingQueryEpisode) {
+        this.searchEpisodes();
+      } else {
+        this.debounceSearchForQuery();
+      }
+    },
+    isLoading (newVal) {
+      if (!newVal && this.$route.query.episode) {
+        const episodeName = decodeURIComponent(this.$route.query.episode);
+        this.searchQuery = episodeName;
+      }
     }
   },
   beforeCreate () {
     this.$Loading.start();
   },
   created () {
+    this.isLoading = true;
+    if (this.$route.query.episode) {
+      this.isLoadingQueryEpisode = true;
+    }
     this.debounceSearchForQuery = globalMixin.methods._debounce(
       this.searchEpisodes,
       500
@@ -299,6 +321,7 @@ export default {
         console.log(response.data);
         this.nextPubDate = response.data.next_episode_pub_date;
         this.podcastInfo = response.data;
+        this.isLoading = false;
         this.$Loading.finish();
       })
       .catch(error => {
