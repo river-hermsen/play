@@ -111,7 +111,6 @@
 </style>
 
 <script>
-/* eslint-disable semi */
 import axios from 'axios';
 import { globalMixin } from '../sevices/_helper';
 import PodcastCard from '../components/PodcastCard';

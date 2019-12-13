@@ -161,7 +161,6 @@
 </style>
 
 <script>
-/* eslint-disable semi */
 import { globalMixin } from '../sevices/_helper';
 
 export default {
@@ -170,8 +169,7 @@ export default {
   data: () => {
     return {
       isLoading: null,
-      audioTrack:
-        'https://www.listennotes.com/e/p/ec7eff6b8e7347c9affd894b1f06a123/',
+      audioTrack: '',
       episodeInfo: {
         title: null,
         podcast: null,
@@ -214,8 +212,10 @@ export default {
       );
     },
     play () {
-      this.audioElement.play();
-      this.isPlaying = true;
+      if (this.audioTrack) {
+        this.audioElement.play();
+        this.isPlaying = true;
+      }
     },
     pause () {
       this.audioElement.pause();

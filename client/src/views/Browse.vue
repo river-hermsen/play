@@ -6,7 +6,7 @@
     <div id="contentBrowse">
       <at-tabs>
         <at-tab-pane label="Genres" name="Genres" icon="icon-book">
-          <p>Content of Tab Pane 1</p>
+          <GenreContent />
         </at-tab-pane>
         <at-tab-pane label="Regions" name="Regions" icon="icon-map">
           <p>Content of Tab Pane 2</p>
@@ -24,13 +24,20 @@
   .header-container {
     margin-top: 0.5rem;
     h1 {
-      font-size: 2rem;
+      font-size: 2.3rem;
     }
   }
-  #content {
-    .at-tabs {
-      margin-top: 1rem;
-    }
+  #contentBrowse {
+    margin-top: 1.5rem;
   }
 }
 </style>
+
+<script>
+import GenreContent from '../components/browse/Genre';
+
+export default {
+  name: 'Browse',
+  components: { GenreContent }
+};
+</script>

@@ -54,7 +54,6 @@
 </style>
 
 <script>
-/* eslint-disable semi */
 import { globalMixin } from '../sevices/_helper';
 
 export default {

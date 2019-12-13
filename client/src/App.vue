@@ -96,7 +96,6 @@ body {
 </style>
 
 <script>
-/* eslint-disable semi */
 import Player from './components/Player';
 import { globalMixin } from './sevices/_helper';
 
