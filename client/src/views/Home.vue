@@ -2,6 +2,12 @@
   <div id="home">
     <div id="most-popular">
       <h1 class="header">Most popular Podcasts</h1>
+      <div class="row" v-if="isLoading">
+        <div class="col-md-6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
+          <LoadingPodcastCard />
+        </div>
+      </div>
+
       <div class="row at-row">
         <div class="col-md-6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
           <PodcastCard
@@ -45,17 +51,20 @@
 import axios from 'axios';
 import { globalMixin } from '../sevices/_helper';
 import PodcastCard from '../components/PodcastCard';
+import LoadingPodcastCard from '../components/LoadingPodcastCard';
 
 export default {
   name: 'Home',
   data () {
     return {
+      isLoading: true,
+      amountLoadingCards: 8,
       podcasts: {
         mostPopular: []
       }
     };
   },
-  components: { PodcastCard },
+  components: { PodcastCard, LoadingPodcastCard },
   beforeCreate () {
     this.$Loading.start();
   },
@@ -76,6 +85,7 @@ export default {
             mainGenreId = podcast.genre_ids[0];
           }
           this.$Loading.finish();
+          this.isLoading = false;
           return (podcast.genreName = globalMixin.methods._getGenreByID(
             mainGenreId
           ).name);

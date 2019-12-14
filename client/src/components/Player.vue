@@ -169,7 +169,6 @@ export default {
   data: () => {
     return {
       isLoading: null,
-      audioTrack: '',
       episodeInfo: {
         title: null,
         podcast: null,
@@ -212,7 +211,7 @@ export default {
       );
     },
     play () {
-      if (this.audioTrack) {
+      if (this.episodeInfo.title) {
         this.audioElement.play();
         this.isPlaying = true;
       }

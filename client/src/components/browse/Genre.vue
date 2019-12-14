@@ -13,11 +13,13 @@
           v-for="genre in searchGenres.length === 0 ? genres : searchGenres"
           :key="genre"
         >
-          <at-card>
-            <div class="card-content-container">
-              <p>{{genre}}</p>
-            </div>
-          </at-card>
+          <router-link :to="'/genre/' + genre">
+            <at-card>
+              <div class="card-content-container">
+                <p>{{genre}}</p>
+              </div>
+            </at-card>
+          </router-link>
         </div>
       </div>
       <div v-if="noResultsFound">
@@ -38,7 +40,6 @@
   }
   .search-container {
     padding-top: 1rem;
-    // border-bottom: 1px solid #ebebeb;
     padding-bottom: 1rem;
   }
   .genres-container {

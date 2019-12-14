@@ -34,10 +34,21 @@ const routes = [
     component: () => import(/* webpackChunkName: "browse" */ '../views/Browse.vue')
   },
   {
+    path: '/genre/:name',
+    name: 'Genre',
+    component: () => import(/* webpackChunkName: "browse" */ '../views/Genre.vue')
+  },
+  {
     path: '/podcast/:id',
     name: 'Podcast',
     component: () => import(/* webpackChunkName: "podcast" */ '../views/Podcast.vue')
   }
+  // {
+  //   path: '*',
+  //   redirect: {
+  //     name: 'Home'
+  //   }
+  // }
 ]
 
 const router = new VueRouter({
