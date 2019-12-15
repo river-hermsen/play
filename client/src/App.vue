@@ -1,8 +1,25 @@
 <template>
   <div id="app">
     <div id="toolbar">
-      <at-button type="error" @click="closeWindow()">CLOSE</at-button>
-      <at-button type="primary" @click="maxWindow()" v-if="!isMaximized">MAXMIZE</at-button>
+      <div id="drag-region">
+        <div id="window-title">
+          <span>PLAY PROJECT</span>
+        </div>
+        <div id="window-controls">
+          <div class="button" id="min-button" @click="minimizeWindow()">
+            <span>&#xE921;</span>
+          </div>
+          <div class="button" id="max-button" @click="maximizeWindow()" v-if="!isMaximized">
+            <span>&#xE922;</span>
+          </div>
+          <div class="button" id="restore-button" @click="unMaximizeWindow()" v-if="isMaximized">
+            <span>&#xE923;</span>
+          </div>
+          <div class="button" id="close-button" @click="closeWindow()">
+            <span>&#xE8BB;</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="nav">
       <at-menu mode="inline" router>
@@ -51,13 +68,94 @@ body {
 #nav {
   .at-menu {
     width: 220px !important;
-    padding-top: 6px;
+    padding-top: 30px;
     min-height: calc(100vh - 110px);
     position: fixed;
     #signOut {
       position: absolute;
       bottom: 12px;
     }
+  }
+}
+
+#toolbar {
+  display: block;
+  position: fixed;
+  height: 32px;
+  width: 100%; /*Compensate for body 1px border*/
+  background: #f0f0f0;
+  z-index: 999;
+  #window-controls {
+    -webkit-app-region: no-drag;
+    display: grid;
+    grid-template-columns: repeat(3, 46px);
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    font-family: "Segoe MDL2 Assets";
+    font-size: 10px;
+  }
+
+  #window-controls .button {
+    user-select: none;
+    cursor: default;
+    grid-row: 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  #window-controls #min-button {
+    grid-column: 1;
+  }
+  #window-controls #max-button,
+  #window-controls #restore-button {
+    grid-column: 2;
+  }
+  #window-controls #close-button {
+    grid-column: 3;
+  }
+  #drag-region {
+    width: 100%;
+    height: 100%;
+    -webkit-app-region: drag;
+  }
+  #window-controls .button:hover {
+    background: #d4d4d4;
+  }
+  #window-controls .button:active {
+    background: #d4d4d4;
+  }
+
+  #close-button:hover {
+    background: #e81123 !important;
+  }
+  #close-button:active {
+    background: #f1707a !important;
+    color: #000;
+  }
+  #titlebar #drag-region {
+    display: grid;
+    grid-template-columns: auto 138px;
+  }
+
+  #window-title {
+    height: 100%;
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+    overflow-x: hidden;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 12px;
+  }
+
+  #window-title span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
   }
 }
 
@@ -77,7 +175,12 @@ body {
   padding-bottom: 140px;
   margin: 0 auto;
   max-width: 1150px;
-  padding-top: 20px;
+  padding-top: 52px;
+}
+
+//Fixed loading bar
+.at-loading-bar {
+  top: 32px !important;
 }
 
 // Fixed slider bug
@@ -112,20 +215,29 @@ export default {
   },
   data () {
     return {
-      w: remote.getCurrentWindow(),
-      isMaximized: remote.getCurrentWindow().isMaximized()
+      isMaximized: false
     };
   },
-
   mixins: [globalMixin],
   methods: {
     closeWindow () {
-      this.w.close();
+      this.currentWindow.close();
     },
-    maxWindow () {
-      console.log(this.w);
-
-      this.w.maximize();
+    maximizeWindow () {
+      this.isMaximized = true;
+      this.currentWindow.maximize();
+    },
+    unMaximizeWindow () {
+      this.isMaximized = false;
+      this.currentWindow.unmaximize();
+    },
+    minimizeWindow () {
+      this.currentWindow.minimize();
+    }
+  },
+  computed: {
+    currentWindow () {
+      return remote.getCurrentWindow();
     }
   }
 };

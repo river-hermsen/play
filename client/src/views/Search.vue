@@ -130,7 +130,7 @@ export default {
             }
           )
           .then(response => {
-            console.log(response.data);
+            // console.log(response.data);
 
             var podcasts = response.data.results.slice(0, 8).filter(podcast => {
               var mainGenreId;
@@ -147,10 +147,10 @@ export default {
             });
 
             this.podcasts = podcasts;
-          })
-          .catch(function (error) {
-            console.log(error);
           });
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
       } else {
         this.podcasts = [];
       }
@@ -165,13 +165,13 @@ export default {
             }
           )
           .then(response => {
-            console.log(response.data.results);
+            // console.log(response.data.results);
 
             this.episodes = response.data.results.slice(0, 8);
-          })
-          .catch(function (error) {
-            console.log(error);
           });
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
       } else {
         this.episodes = [];
       }
@@ -183,7 +183,7 @@ export default {
   watch: {
     searchQuery (newQuery) {
       if (newQuery !== '' || null) {
-        console.log(newQuery);
+        // console.log(newQuery);
 
         this.debounceSearchForQuery();
       } else {

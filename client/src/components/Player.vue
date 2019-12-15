@@ -136,7 +136,7 @@
 
 #playerRightControls {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   padding: 0 2.5rem 0 4rem;
   font-size: 1.4rem;
@@ -249,6 +249,7 @@ export default {
       if (this.volumeLevel === 0) {
         this.toggleMuteVolume();
       } else {
+        this.mutedVolume = false;
         this.audioElement.volume = this.volumeLevel / 100;
       }
     },
