@@ -253,6 +253,8 @@ export default {
       }
     },
     episodeVuex (newEpisode) {
+      console.log(newEpisode);
+
       this.isLoading = true;
       this.isPlaying = false;
       this.lengthAudio = 0;

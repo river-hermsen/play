@@ -51,7 +51,7 @@
 import axios from 'axios';
 import { globalMixin } from '../sevices/_helper';
 import PodcastCard from '../components/PodcastCard';
-import LoadingPodcastCard from '../components/LoadingPodcastCard';
+import LoadingPodcastCard from '../components/loading/LoadingPodcastCard';
 
 export default {
   name: 'Home',

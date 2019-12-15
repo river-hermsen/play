@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <div id="toolbar"></div>
+    <div id="toolbar">
+      <at-button type="error" @click="closeWindow()">CLOSE</at-button>
+      <at-button type="primary" @click="maxWindow()" v-if="!isMaximized">MAXMIZE</at-button>
+    </div>
     <div id="nav">
       <at-menu mode="inline" router>
         <at-menu-item name="search" to="/search">
@@ -24,9 +27,9 @@
       <Player />
     </div>
     <div id="content">
-      <!-- <keep-alive exclude="Podcast" :max="5"> -->
-      <router-view />
-      <!-- </keep-alive> -->
+      <keep-alive exclude="Podcast" :max="5">
+        <router-view />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -94,20 +97,35 @@ body {
   margin-right: 2rem !important;
 }
 </style>
-
+<style lang="scss">
+@import "@/assets/scss/loading.scss";
+</style>
 <script>
 import Player from './components/Player';
 import { globalMixin } from './sevices/_helper';
+const remote = require('electron').remote;
 
 export default {
   name: 'App',
   components: {
     Player
   },
+  data () {
+    return {
+      w: remote.getCurrentWindow(),
+      isMaximized: remote.getCurrentWindow().isMaximized()
+    };
+  },
+
   mixins: [globalMixin],
   methods: {
-    test () {
-      console.log('test');
+    closeWindow () {
+      this.w.close();
+    },
+    maxWindow () {
+      console.log(this.w);
+
+      this.w.maximize();
     }
   }
 };

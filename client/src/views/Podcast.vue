@@ -52,6 +52,9 @@
               :title="episode.title_original"
               :description="episode.description_original"
               :audioLength="episode.audio_length_sec"
+              :image="episode.image"
+              :audio="episode.audio"
+              :podcastTitle="podcastInfo.title"
             />
           </div>
           <div
@@ -60,7 +63,6 @@
             <PodcastEpisode
               v-for="episode in podcastInfo.episodes"
               :key="episode.id"
-              :episode="episode"
               :id="episode.id"
               :title="episode.title"
               :image="episode.image"
@@ -234,7 +236,7 @@ export default {
           )
           .then(response => {
             this.noResultsFound = false;
-            console.log('found');
+            console.log(response.data);
 
             if (response.data.count > 0) {
               console.log('results found!');
@@ -263,6 +265,8 @@ export default {
   },
   watch: {
     searchQuery (newQuery) {
+      console.log(newQuery);
+
       if (this.isLoadingQueryEpisode) {
         this.searchEpisodes();
       } else {

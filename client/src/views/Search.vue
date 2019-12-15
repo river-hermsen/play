@@ -10,9 +10,15 @@
       ></at-input>
     </div>
     <div id="searchContent">
-      <div id="podcasts" class="section-search" v-if="podcasts.length !== 0">
+      <div id="podcasts" class="section-search" v-if="podcasts.length !== 0 || isLoading">
         <h1>Podcasts</h1>
-        <div class="row">
+        <div class="row" v-if="isLoading">
+          <div class="col-md-6" v-for="loadingCard in amountLoadingPodcasts" :key="loadingCard">
+            <LoadingPodcastCard />
+          </div>
+        </div>
+
+        <div class="row" v-if="!isLoading">
           <div class="col-md-6" v-for="podcast in podcasts" :key="podcast.id">
             <PodcastCard
               :title="podcast.title_original"
@@ -23,33 +29,25 @@
           </div>
         </div>
       </div>
-      <div id="episodes" class="section-search" v-if="episodes.length !== 0">
+      <div id="episodes" class="section-search" v-if="episodes.length !== 0 || isLoading">
         <h1>Episodes</h1>
-        <div>
-          <div class="episode row" v-for="episode in episodes" :key="episode.id">
-            <div class="col-md-3 image-container">
-              <router-link
-                :to="'/podcast/' + episode.podcast_id + '?episode=' + encodeURIComponent(episode.title_original) "
-              >
-                <img :src="episode.image" />
-              </router-link>
-            </div>
-            <div class="col-md-7">
-              <h4>{{episode.podcast_title_original}}:</h4>
-              <div>
-                <span>{{episode.title_original}}</span>
-              </div>
-            </div>
-            <div
-              class="col-md-11 description"
-              :id="episode.id"
-              @click="showHideDescription(episode.id)"
-            >
-              <p>{{episode.description_original}}</p>
-            </div>
-            <div class="col-md-3">
-              <p>{{_formatDate(_msToDate(episode.pub_date_ms))}}</p>
-            </div>
+        <div v-if="isLoading">
+          <div v-for="loadingCard in amountLoadingEpisodes" :key="loadingCard">
+            <LoadingEpisodeSearch />
+          </div>
+        </div>
+
+        <div v-if="!isLoading">
+          <div v-for="episode in episodes" :key="episode.id">
+            <PodcastEpisodeSearch
+              :episodeId="episode.id"
+              :podcastId="episode.podcast_id"
+              :episodeTitle="episode.title_original"
+              :podcastTitle="episode.podcast_title_original"
+              :image="episode.image"
+              :description="episode.description_original"
+              :pubDateMS="episode.pub_date_ms"
+            />
           </div>
         </div>
       </div>
@@ -83,28 +81,6 @@
     }
     #episodes {
       margin-top: 2rem;
-      .episode {
-        border-bottom: 1px solid #ebebeb;
-        padding: 0.5rem 0 0.5rem 0;
-        .image-container {
-          cursor: pointer;
-          img {
-            width: 100%;
-          }
-        }
-        .description {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 5;
-          overflow: hidden;
-          cursor: pointer;
-        }
-        .description-show {
-          -webkit-line-clamp: unset;
-          height: 140px;
-          overflow-y: scroll;
-        }
-      }
     }
   }
 }
@@ -114,17 +90,28 @@
 import axios from 'axios';
 import { globalMixin } from '../sevices/_helper';
 import PodcastCard from '../components/PodcastCard';
+import LoadingPodcastCard from '../components/loading/LoadingPodcastCard';
+import PodcastEpisodeSearch from '../components/PodcastEpisodeSearch';
+import LoadingEpisodeSearch from '../components/loading/LoadingEpisodeSearch';
 
 export default {
   data () {
     return {
+      isLoading: false,
+      amountLoadingPodcasts: 8,
+      amountLoadingEpisodes: 12,
       searchQuery: null,
       podcasts: [],
       episodes: []
     };
   },
   mixins: [globalMixin],
-  components: { PodcastCard },
+  components: {
+    PodcastCard,
+    LoadingPodcastCard,
+    PodcastEpisodeSearch,
+    LoadingEpisodeSearch
+  },
   methods: {
     searchForQuery () {
       const encodedURI = encodeURIComponent(this.searchQuery);
@@ -132,51 +119,62 @@ export default {
       this.searchForEpisodes(encodedURI);
     },
     searchForPodcasts (encodedURI) {
-      axios
-        .get(
-          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription&language=English`,
-          {
-            headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-          }
-        )
-        .then(response => {
-          console.log(response.data);
-
-          var podcasts = response.data.results.slice(0, 8).filter(podcast => {
-            var mainGenreId;
-            if (podcast.genre_ids[0] === 67) {
-              mainGenreId = podcast.genre_ids[1];
-            } else {
-              mainGenreId = podcast.genre_ids[0];
+      if (this.searchQuery !== '' || null) {
+        this.isLoading = true;
+        this.$Loading.start();
+        axios
+          .get(
+            `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription&language=English`,
+            {
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
             }
-            this.$Loading.finish();
-            return (podcast.mainGenreName = globalMixin.methods._getGenreByID(
-              mainGenreId
-            ).name);
-          });
+          )
+          .then(response => {
+            console.log(response.data);
 
-          this.podcasts = podcasts;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+            var podcasts = response.data.results.slice(0, 8).filter(podcast => {
+              var mainGenreId;
+              if (podcast.genre_ids[0] === 67) {
+                mainGenreId = podcast.genre_ids[1];
+              } else {
+                mainGenreId = podcast.genre_ids[0];
+              }
+              this.isLoading = false;
+              this.$Loading.finish();
+              return (podcast.mainGenreName = globalMixin.methods._getGenreByID(
+                mainGenreId
+              ).name);
+            });
+
+            this.podcasts = podcasts;
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        this.podcasts = [];
+      }
     },
     searchForEpisodes (encodedURI) {
-      axios
-        .get(
-          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=episode&only_in=title%2Cdescription&language=English`,
-          {
-            headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-          }
-        )
-        .then(response => {
-          console.log(response.data.results);
+      if (this.searchQuery !== '' || null) {
+        axios
+          .get(
+            `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=episode&only_in=title%2Cdescription&language=English`,
+            {
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+            }
+          )
+          .then(response => {
+            console.log(response.data.results);
 
-          this.episodes = response.data.results.slice(0, 8);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+            this.episodes = response.data.results.slice(0, 8);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        this.episodes = [];
+      }
     },
     showHideDescription (epsiodeId) {
       document.getElementById(epsiodeId).classList.toggle('description-show');
@@ -185,7 +183,12 @@ export default {
   watch: {
     searchQuery (newQuery) {
       if (newQuery !== '' || null) {
+        console.log(newQuery);
+
         this.debounceSearchForQuery();
+      } else {
+        this.isLoading = false;
+        this.$Loading.finish();
       }
     }
   },
