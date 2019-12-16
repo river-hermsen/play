@@ -3,16 +3,16 @@
     <div class="header-container" v-if="!isLoading">
       <h1>Best podcasts of {{genre.name}}</h1>
     </div>
-    <div class="podcasts row">
-      <div class="col-md-6" v-for="podcast in bestPodcasts" :key="podcast.id">
+    <el-row class="podcasts" :gutter="50">
+      <el-col :span="6" v-for="podcast in bestPodcasts" :key="podcast.id">
         <PodcastCard
           :title="podcast.title"
           :mainGenre="genre.name"
           :thumbnail="podcast.thumbnail"
           :podcastId="podcast.id"
         />
-      </div>
-    </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -20,7 +20,7 @@
 .header-container {
   margin-bottom: 2rem;
   h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 }
 </style>
@@ -41,10 +41,11 @@ export default {
     };
   },
   created () {
-    this.$Loading.start();
+    console.log('test');
 
     let genreName = this.$route.params.name;
     this.genres = this.$store.getters.getGenres;
+    console.log(this.$route);
 
     let genreObj = this.genres.find(genre => genre.name === genreName);
 
@@ -56,6 +57,10 @@ export default {
     }
   },
   beforeMount () {
+    console.log(
+      `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`
+    );
+
     axios
       .get(
         `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
@@ -66,7 +71,6 @@ export default {
       .then(response => {
         console.log(response.data);
         this.bestPodcasts = response.data.podcasts;
-        this.$Loading.finish();
         this.isLoading = false;
       })
       .catch(function (error) {

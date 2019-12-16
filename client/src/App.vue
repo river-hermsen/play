@@ -22,31 +22,28 @@
       </div>
     </div>
     <div id="nav">
-      <at-menu mode="inline" router>
-        <at-menu-item name="search" to="/search">
-          <i class="icon icon-search"></i>Search
-        </at-menu-item>
-        <at-menu-item name="home" to="/home">
-          <i class="icon icon-home"></i>Home
-        </at-menu-item>
-        <at-menu-item name="browse" to="/browse">
-          <i class="icon icon-layers"></i>Browse
-        </at-menu-item>
-        <!-- <at-menu-item name="randomEpisode" @click="test()">
-          <i class="icon icon-shuffle"></i>Play random episode
-        </at-menu-item>-->
-        <!-- <at-menu-item name="logOut" id="signOut">
-          <i class="icon icon-log-out"></i>Sign Out
-        </at-menu-item>-->
-      </at-menu>
+      <el-menu default-active="2" router>
+        <el-menu-item index="/search">
+          <i class="el-icon-search"></i>
+          <span>Search</span>
+        </el-menu-item>
+        <el-menu-item index="/home">
+          <i class="el-icon-s-home"></i>
+          <span>Home</span>
+        </el-menu-item>
+        <el-menu-item index="/browse">
+          <i class="el-icon-files"></i>
+          <span>Browse</span>
+        </el-menu-item>
+      </el-menu>
     </div>
     <div id="player">
       <Player />
     </div>
     <div id="content">
-      <keep-alive exclude="Podcast" :max="5">
-        <router-view />
-      </keep-alive>
+      <!-- <keep-alive exclude="Podcast" :max="5"> -->
+      <router-view />
+      <!-- </keep-alive> -->
     </div>
   </div>
 </template>
@@ -63,10 +60,11 @@ body {
 
 body {
   font-family: "Open Sans", sans-serif !important;
+  margin: unset;
 }
 
 #nav {
-  .at-menu {
+  .el-menu {
     width: 220px !important;
     padding-top: 30px;
     min-height: calc(100vh - 110px);
@@ -162,7 +160,7 @@ body {
 #player {
   position: fixed;
   bottom: 0px;
-  height: 100px;
+  height: 110px;
   z-index: 99;
   background-color: #fff;
   width: 100%;
@@ -177,27 +175,9 @@ body {
   max-width: 1150px;
   padding-top: 52px;
 }
-
-//Fixed loading bar
-.at-loading-bar {
-  top: 32px !important;
-}
-
-// Fixed slider bug
-.at-tooltip__trigger {
-  display: block !important;
-  top: 2px;
-}
-// Remove tooltip from slider
-.at-tooltip__popper {
-  display: none;
-}
-
-.at-input__icon {
-  font-size: 2.5rem !important;
-  display: flex !important;
-  align-items: center !important;
-  margin-right: 2rem !important;
+.el-slider__button {
+  width: 12px;
+  height: 12px;
 }
 </style>
 <style lang="scss">

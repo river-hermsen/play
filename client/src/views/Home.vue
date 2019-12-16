@@ -3,21 +3,23 @@
     <div id="most-popular">
       <h1 class="header">Most popular Podcasts</h1>
       <div class="row" v-if="isLoading">
-        <div class="col-md-6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
-          <LoadingPodcastCard />
-        </div>
+        <el-row :gutter="12">
+          <el-col :span="6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
+            <LoadingPodcastCard />
+          </el-col>
+        </el-row>
       </div>
 
-      <div class="row at-row">
-        <div class="col-md-6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
+      <el-row :gutter="12">
+        <el-col :span="6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
           <PodcastCard
             :title="podcast.title"
             :mainGenre="podcast.genreName"
             :thumbnail="podcast.thumbnail"
             :podcastId="podcast.id"
           />
-        </div>
-      </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -65,9 +67,7 @@ export default {
     };
   },
   components: { PodcastCard, LoadingPodcastCard },
-  beforeCreate () {
-    this.$Loading.start();
-  },
+  beforeCreate () {},
   mounted () {
     axios
       .get('https://listen-api.listennotes.com/api/v2/best_podcasts', {
@@ -84,7 +84,6 @@ export default {
           } else {
             mainGenreId = podcast.genre_ids[0];
           }
-          this.$Loading.finish();
           this.isLoading = false;
           return (podcast.genreName = globalMixin.methods._getGenreByID(
             mainGenreId

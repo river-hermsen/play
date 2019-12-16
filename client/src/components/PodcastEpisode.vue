@@ -1,16 +1,20 @@
 <template>
-  <div class="episode row">
-    <div class="col-md-2 episode-play" @click="_playEpisode(episode, episode.podcast_title)">
-      <i class="icon icon-play-circle"></i>
-    </div>
-    <div class="col-md-7">
+  <el-row class="episode">
+    <el-col :span="2" class="episode-play">
+      <div @click="_playEpisode(episode, episode.podcast_title)">
+        <img src="../assets/icons/playback/play_circle.svg" alt="Play episode button" />
+      </div>
+    </el-col>
+    <el-col :span="7">
       <b :title="episode.title">{{episode.title}}</b>
-    </div>
-    <div class="col-md-13 description" :id="id" @click="showHideDescription(episode.id)">
-      <p>{{_removeHTMLTags(episode.description)}}</p>
-    </div>
-    <div class="col-md-2 episode-time">{{_formatTime(episode.audio_length)}}</div>
-  </div>
+    </el-col>
+    <el-col :span="13" class="description" :id="id">
+      <div @click="showHideDescription(episode.id)">
+        <p>{{_removeHTMLTags(episode.description)}}</p>
+      </div>
+    </el-col>
+    <el-col :span="2" class="episode-time">{{_formatTime(episode.audio_length)}}</el-col>
+  </el-row>
 </template>
 
 <style lang="scss" scoped>
@@ -23,8 +27,13 @@
   transition: width 2s, height 2s ease 2s;
   -webkit-animation: fadein 0.1s; /* Safari and Chrome */
   .episode-play {
-    text-align: center;
-    font-size: 2em;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 2rem;
+    }
     cursor: pointer;
   }
   .episode-time {
@@ -36,6 +45,9 @@
     -webkit-line-clamp: 2;
     overflow: hidden;
     cursor: pointer;
+    p {
+      margin: unset;
+    }
   }
   .description-show {
     -webkit-line-clamp: unset;
@@ -75,6 +87,8 @@ export default {
   },
   methods: {
     showHideDescription (episodeId) {
+      console.log(episodeId);
+
       document.getElementById(episodeId).classList.toggle('description-show');
     }
   },

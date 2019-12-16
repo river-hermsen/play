@@ -4,17 +4,13 @@
       <h1>Browse</h1>
     </div>
     <div id="contentBrowse">
-      <at-tabs>
-        <at-tab-pane label="Genres" name="Genres" icon="icon-book">
+      <el-tabs v-model="activeTabName">
+        <el-tab-pane label="Genres" name="Genres">
           <GenreContent />
-        </at-tab-pane>
-        <at-tab-pane label="Regions" name="Regions" icon="icon-map">
-          <p>Content of Tab Pane 2</p>
-        </at-tab-pane>
-        <at-tab-pane label="Languages" name="Languages" icon="icon-globe">
-          <p>Content of Tab Pane 3</p>
-        </at-tab-pane>
-      </at-tabs>
+        </el-tab-pane>
+        <el-tab-pane label="Regions" name="Regions">Regions</el-tab-pane>
+        <el-tab-pane label="Languages" name="Languages">Languages</el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
@@ -38,6 +34,11 @@ import GenreContent from '../components/browse/Genre';
 
 export default {
   name: 'Browse',
-  components: { GenreContent }
+  components: { GenreContent },
+  data () {
+    return {
+      activeTabName: 'Genres'
+    };
+  }
 };
 </script>

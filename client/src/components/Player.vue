@@ -1,70 +1,94 @@
 <template>
-  <div class="row">
-    <div class="col-md-6" id="playerImgTitle">
-      <div class="img-container">
-        <img :src="episodeInfo.image" alt="Podcast info" v-if="episodeInfo.image" />
-      </div>
-      <div class="title-container">
-        <span class="title" :title="episodeInfo.title">
-          <b>{{episodeInfo.title}}</b>
-        </span>
-        <p class="podcast">{{episodeInfo.podcast_title}}</p>
-      </div>
-    </div>
-    <div class="col-md-12" id="playerControls">
-      <div class="top-controls">
-        <!-- <div @click="skipBack()" class="controlContainer">
-          <i class="icon icon-skip-back"></i>
-        </div>-->
-        <div class="playPauseContainer">
-          <div @click="play" v-if="!isPlaying && !isLoading " class="controlContainer">
-            <i class="icon icon-play"></i>
-          </div>
-          <div @click="pause" v-else-if="isPlaying && !isLoading" class="controlContainer">
-            <i class="icon icon-pause"></i>
-          </div>
-          <div v-else-if="isLoading" class="controlContainer loading-episode-icon">
-            <i class="icon icon-loader"></i>
-          </div>
+  <el-row>
+    <el-col :span="6">
+      <div id="playerImgTitle">
+        <div class="img-container">
+          <img :src="episodeInfo.image" alt="Podcast info" v-if="episodeInfo.image" />
         </div>
-        <!-- <div @click="skipForward()" class="controlContainer">
-          <i class="icon icon-skip-forward"></i>
-        </div>-->
-      </div>
-      <div class="bottom-controls">
-        <span>{{formattedCurrenPosAudio ? formattedCurrenPosAudio : '0:00'}}</span>
-        <at-slider
-          v-model="currentPosAudio"
-          :max="lengthAudio"
-          class="sliderAudio"
-          @click.native="seeking"
-        ></at-slider>
-        <span>{{formattedLength ? formattedLength : '0:00'}}</span>
-      </div>
-    </div>
-    <div class="col-md-6" id="playerRightControls">
-      <div class="volume-container">
-        <div class="volume-icon" @click="toggleMuteVolume">
-          <i class="icon icon-volume-1" v-if="!mutedVolume && volumeLevel >= 50"></i>
-          <i class="icon icon-volume-2" v-if="!mutedVolume && volumeLevel < 50"></i>
-          <i class="icon icon-volume-x" v-else-if="mutedVolume"></i>
-        </div>
-        <div class="slider">
-          <at-slider v-model="volumeLevel" :max="100" class="slider-volume" :disabled="mutedVolume"></at-slider>
+        <div class="title-container">
+          <span class="title" :title="episodeInfo.title">
+            <b>{{episodeInfo.title}}</b>
+          </span>
+          <p class="podcast">{{episodeInfo.podcast_title}}</p>
         </div>
       </div>
-      <div class="maximize-icon">
-        <i class="icon icon-maximize-2"></i>
+    </el-col>
+    <el-col :span="12">
+      <div id="playerControls">
+        <div class="top-controls">
+          <div class="playPauseContainer">
+            <div @click="play" v-if="!isPlaying && !isLoading " class="controlContainer">
+              <img src="../assets/icons/playback/play_circle.svg" alt class="control-icon" />
+            </div>
+            <div @click="pause" v-else-if="isPlaying && !isLoading" class="controlContainer">
+              <img src="../assets/icons/playback/pause_circle.svg" alt class="control-icon" />
+            </div>
+            <div v-else-if="isLoading" class="controlContainer loading-episode-icon">
+              <i class="el-icon-loading"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-controls">
+          <span>{{formattedCurrenPosAudio ? formattedCurrenPosAudio : '0:00'}}</span>
+          <el-slider
+            v-model="currentPosAudio"
+            :max="lengthAudio"
+            :show-tooltip="false"
+            class="sliderAudio"
+            @dragover.prevent
+            @dragenter="seeking()"
+          ></el-slider>
+          <span>{{formattedLength ? formattedLength : '0:00'}}</span>
+        </div>
       </div>
-    </div>
-  </div>
+    </el-col>
+    <el-col :span="6">
+      <div id="playerRightControls">
+        <div class="volume-container">
+          <div class="volume-icon" @click="toggleMuteVolume">
+            <img
+              src="../assets/icons/playback/volume_up.svg"
+              v-if="!mutedVolume && volumeLevel >= 50"
+              class="control-icon"
+            />
+            <img
+              src="../assets/icons/playback/volume_down.svg"
+              v-else-if="!mutedVolume && volumeLevel < 50"
+              class="control-icon"
+            />
+            <img
+              src="../assets/icons/playback/volume_off.svg"
+              v-else-if="mutedVolume"
+              class="control-icon"
+            />
+          </div>
+          <div class="slider">
+            <el-slider
+              v-model="volumeLevel"
+              :max="100"
+              :show-tooltip="false"
+              :disabled="mutedVolume"
+              class="slider-volume"
+            ></el-slider>
+          </div>
+        </div>
+        <div class="maximize-icon">
+          <i class="icon icon-maximize-2"></i>
+        </div>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.control-icon {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+}
 #playerImgTitle {
   display: flex;
   .img-container {
-    height: 100px;
+    height: 110px;
     display: flex;
     align-items: center;
     float: left;
@@ -105,7 +129,11 @@
     align-items: center;
     justify-content: center;
     .controlContainer {
-      margin: 0 0.7rem 0 0.7rem;
+      height: 48px;
+      margin-top: 10px;
+      img {
+        width: 3rem;
+      }
     }
     .loading-episode-icon {
       -webkit-animation-name: spin;
@@ -124,7 +152,7 @@
   }
   .bottom-controls {
     display: flex;
-    justify-content: flex-start;
+    align-items: center;
     font-size: 0.4em;
     .sliderAudio {
       flex-basis: 100%;
@@ -135,18 +163,20 @@
 }
 
 #playerRightControls {
+  height: 110px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   padding: 0 2.5rem 0 4rem;
   font-size: 1.4rem;
   .volume-container {
-    flex-basis: 130px;
+    flex-basis: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
     .volume-icon {
       cursor: pointer;
+      height: 24px;
     }
   }
   .slider {
@@ -180,6 +210,7 @@ export default {
       mutedVolume: false,
       currentPosAudio: 0,
       currentPosSlider: 0,
+      isSeeking: false,
       lengthAudio: null,
       timeFormat: null,
       formattedLength: '',
@@ -187,6 +218,12 @@ export default {
     };
   },
   methods: {
+    test1 () {
+      console.log('mousedown');
+    },
+    test2 () {
+      console.log('mouseup');
+    },
     loadedAudio () {
       if (this.audioElement.duration > 60 * 60) {
         this.timeFormat = 'HH:MM:SS';
@@ -221,6 +258,9 @@ export default {
       this.isPlaying = false;
     },
     seeking () {
+      console.log('seeking');
+
+      this.audioElement.pause();
       this.audioElement.currentTime = this.currentPosAudio;
     },
     toggleMuteVolume () {
@@ -237,9 +277,6 @@ export default {
     }
   },
   computed: {
-    currentTimeAudio () {
-      return this.audioElement.currentTime;
-    },
     episodeVuex () {
       return this.$store.getters.getCurrentEpisode;
     }

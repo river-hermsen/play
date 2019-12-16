@@ -1,25 +1,25 @@
 <template>
   <router-link :to="'/podcast/' + podcastId" tag="div">
-    <at-card class="podcast-card">
+    <el-card class="podcast-card" shadow="hover">
       <div>
         <img style="width: 100%" :src="thumbnail" @load="loadedImg()" v-show="!isLoading" />
         <div class="loading-img loading" v-if="isLoading"></div>
-        <div style="padding: 6px;">
-          <span class="title">
+        <div>
+          <span class="title" :title="title">
             <b>{{title}}</b>
           </span>
-          <div class="extra-info">
-            <span class="genre">{{mainGenre}}</span>
-          </div>
+          <!-- <div class="extra-info"> -->
+          <span class="genre" :title="mainGenre">{{mainGenre}}</span>
+          <!-- </div> -->
         </div>
       </div>
-    </at-card>
+    </el-card>
   </router-link>
 </template>
 
 <style lang="scss" scoped>
 .podcast-card {
-  height: 280px;
+  // max-height: 280px;
   margin-bottom: 6px;
   cursor: pointer;
   .loading-img {
@@ -28,14 +28,15 @@
   }
   .title {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .extra-info {
-    position: absolute;
-    bottom: 12px;
-    width: 141px;
+  .genre {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 </style>

@@ -1,17 +1,17 @@
 <template>
   <div id="podcast" v-if="podcastInfo">
-    <div id="mainPodcastInfo" class="row">
-      <div class="col-md-6">
+    <el-row id="mainPodcastInfo">
+      <el-col :span="6">
         <img :src="podcastInfo.image" alt="Podcats Cover" class="image" />
-      </div>
-      <div class="col-md-16 text-info">
+      </el-col>
+      <el-col :span="16" class="text-info">
         <h1 class="title">{{podcastInfo.title}}</h1>
         <h5 class="publisher">Publisher: {{podcastInfo.publisher}}</h5>
         <p class="description">{{_removeHTMLTags(podcastInfo.description)}}</p>
-      </div>
-    </div>
-    <div class="row" id="podcastEpisodesExtraInfo">
-      <div id="extraPodcastInfo" class="col-md-5">
+      </el-col>
+    </el-row>
+    <el-row id="podcastEpisodesExtraInfo">
+      <el-col :span="5" id="extraPodcastInfo">
         <div class="extra-info">
           <b>Language</b>
           <p>{{podcastInfo.language}}</p>
@@ -28,22 +28,21 @@
           <b>Latest epsiode:</b>
           <p>{{_formatDate(_msToDate(podcastInfo.latest_pub_date_ms))}}</p>
         </div>
-      </div>
-      <div id="podcastEpisodes" class="col-md-19">
+      </el-col>
+      <el-col :span="19" id="podcastEpisodes">
         <div id="episodesContainer">
           <div id="searchContainer">
             <h4>Search for specific episodes:</h4>
-            <at-input v-model="searchQuery" placeholder="Search episodes" size="large"></at-input>
+            <el-input placeholder="Search episodes" v-model="searchQuery"></el-input>
           </div>
           <h1 class="episodes-header">Episodes:</h1>
-          <div id="headerContainer" class="row">
-            <div class="col-md-2 podcast-play"></div>
-            <div class="col-md-7">Title</div>
-            <div class="col-md-13">Description</div>
-            <div class="col-md-2 podcast-time">
+          <el-row id="headerContainer">
+            <el-col :span="7" :offset="2">Title</el-col>
+            <el-col :span="13">Description</el-col>
+            <el-col :span="2" class="podcast-time">
               <i class="icon icon-clock"></i>
-            </div>
-          </div>
+            </el-col>
+          </el-row>
           <div v-if="!noResultsFound && searchResults && searchResults.length !== 0">
             <PodcastEpisode
               v-for="episode in searchResults"
@@ -72,16 +71,18 @@
               :podcastTitle="podcastInfo.title"
             />
           </div>
-          <div v-if="noResultsFound" class="row">
-            <h3 id="noResultsFoundHeader" class="col-md-offset-2">
-              No episodes found, try using the
-              <router-link to="/search">search page</router-link>.
-            </h3>
-          </div>
+          <el-row v-if="noResultsFound">
+            <el-col :offset="2">
+              <h3 id="noResultsFoundHeader">
+                No episodes found, try using the
+                <router-link to="/search">search page</router-link>.
+              </h3>
+            </el-col>
+          </el-row>
           <div class="loader" v-if="loadingNewEpisodes || isLoadingQueryEpisode"></div>
         </div>
-      </div>
-    </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -125,7 +126,8 @@
           margin-top: 1rem;
         }
         .episodes-header {
-          margin-bottom: 0.5rem;
+          margin-bottom: 1.2rem;
+          margin-left: 1rem;
         }
         #searchContainer {
           border-bottom: 1px solid #ebebeb;
@@ -254,7 +256,6 @@ export default {
           })
           .catch(error => {
             console.log(error);
-            this.$Loading.error();
           });
       } else {
         this.noResultsFound = false;
@@ -279,9 +280,6 @@ export default {
         this.searchQuery = episodeName;
       }
     }
-  },
-  beforeCreate () {
-    this.$Loading.start();
   },
   created () {
     this.isLoading = true;
@@ -312,11 +310,9 @@ export default {
         this.nextPubDate = response.data.next_episode_pub_date;
         this.podcastInfo = response.data;
         this.isLoading = false;
-        this.$Loading.finish();
       })
       .catch(error => {
         console.log(error);
-        this.$Loading.error();
       });
   },
   mounted () {

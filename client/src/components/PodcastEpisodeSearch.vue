@@ -77,7 +77,6 @@ export default {
     },
     loadedImg () {
       this.isLoading = false;
-      console.log('loaded');
     }
   }
 };

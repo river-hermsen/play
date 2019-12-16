@@ -10,15 +10,15 @@
       ></at-input>
     </div>
     <div id="searchContent">
-      <div id="podcasts" class="section-search" v-if="podcasts.length !== 0 || isLoading">
+      <div id="podcasts" class="section-search" v-if="podcasts.length !== 0 || isLoadingPodcasts">
         <h1>Podcasts</h1>
-        <div class="row" v-if="isLoading">
+        <div class="row" v-if="isLoadingPodcasts">
           <div class="col-md-6" v-for="loadingCard in amountLoadingPodcasts" :key="loadingCard">
             <LoadingPodcastCard />
           </div>
         </div>
 
-        <div class="row" v-if="!isLoading">
+        <div class="row" v-if="!isLoadingPodcasts">
           <div class="col-md-6" v-for="podcast in podcasts" :key="podcast.id">
             <PodcastCard
               :title="podcast.title_original"
@@ -29,15 +29,15 @@
           </div>
         </div>
       </div>
-      <div id="episodes" class="section-search" v-if="episodes.length !== 0 || isLoading">
+      <div id="episodes" class="section-search" v-if="episodes.length !== 0 || isLoadingEpisodes">
         <h1>Episodes</h1>
-        <div v-if="isLoading">
+        <div v-if="isLoadingEpisodes">
           <div v-for="loadingCard in amountLoadingEpisodes" :key="loadingCard">
             <LoadingEpisodeSearch />
           </div>
         </div>
 
-        <div v-if="!isLoading">
+        <div v-if="!isLoadingEpisodes">
           <div v-for="episode in episodes" :key="episode.id">
             <PodcastEpisodeSearch
               :episodeId="episode.id"
@@ -97,7 +97,8 @@ import LoadingEpisodeSearch from '../components/loading/LoadingEpisodeSearch';
 export default {
   data () {
     return {
-      isLoading: false,
+      isLoadingPodcasts: false,
+      isLoadingEpisodes: false,
       amountLoadingPodcasts: 8,
       amountLoadingEpisodes: 12,
       searchQuery: null,
@@ -115,66 +116,62 @@ export default {
   methods: {
     searchForQuery () {
       const encodedURI = encodeURIComponent(this.searchQuery);
-      this.searchForPodcasts(encodedURI);
-      this.searchForEpisodes(encodedURI);
-    },
-    searchForPodcasts (encodedURI) {
-      if (this.searchQuery !== '' || null) {
-        this.isLoading = true;
-        this.$Loading.start();
-        axios
-          .get(
-            `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription&language=English`,
-            {
-              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-            }
-          )
-          .then(response => {
-            // console.log(response.data);
-
-            var podcasts = response.data.results.slice(0, 8).filter(podcast => {
-              var mainGenreId;
-              if (podcast.genre_ids[0] === 67) {
-                mainGenreId = podcast.genre_ids[1];
-              } else {
-                mainGenreId = podcast.genre_ids[0];
-              }
-              this.isLoading = false;
-              this.$Loading.finish();
-              return (podcast.mainGenreName = globalMixin.methods._getGenreByID(
-                mainGenreId
-              ).name);
-            });
-
-            this.podcasts = podcasts;
-          });
-        // .catch(function (error) {
-        //   console.log(error);
-        // });
+      if (this.searchQuery.length >= 2) {
+        this.searchForPodcasts(encodedURI);
+        this.searchForEpisodes(encodedURI);
       } else {
+        console.log('empty');
         this.podcasts = [];
-      }
-    },
-    searchForEpisodes (encodedURI) {
-      if (this.searchQuery !== '' || null) {
-        axios
-          .get(
-            `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=episode&only_in=title%2Cdescription&language=English`,
-            {
-              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-            }
-          )
-          .then(response => {
-            // console.log(response.data.results);
-
-            this.episodes = response.data.results.slice(0, 8);
-          });
-        // .catch(function (error) {
-        //   console.log(error);
-        // });
-      } else {
         this.episodes = [];
       }
+    },
+    searchForPodcasts (encodedURI) {
+      this.isLoadingPodcasts = true;
+      this.$Loading.start();
+      axios
+        .get(
+          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription&language=English`,
+          {
+            headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+          }
+        )
+        .then(response => {
+          var podcasts = response.data.results.slice(0, 8).filter(podcast => {
+            var mainGenreId;
+            if (podcast.genre_ids[0] === 67) {
+              mainGenreId = podcast.genre_ids[1];
+            } else {
+              mainGenreId = podcast.genre_ids[0];
+            }
+            this.isLoadingPodcasts = false;
+            this.$Loading.finish();
+            return (podcast.mainGenreName = globalMixin.methods._getGenreByID(
+              mainGenreId
+            ).name);
+          });
+
+          this.podcasts = podcasts;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    searchForEpisodes (encodedURI) {
+      this.isLoadingEpisodes = true;
+      axios
+        .get(
+          `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=episode&only_in=title%2Cdescription&language=English`,
+          {
+            headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
+          }
+        )
+        .then(response => {
+          this.episodes = response.data.results.slice(0, 8);
+          this.isLoadingEpisodes = false;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     showHideDescription (epsiodeId) {
       document.getElementById(epsiodeId).classList.toggle('description-show');
@@ -182,13 +179,13 @@ export default {
   },
   watch: {
     searchQuery (newQuery) {
-      if (newQuery !== '' || null) {
-        // console.log(newQuery);
-
+      if (this.searchQuery.length >= 2) {
         this.debounceSearchForQuery();
       } else {
-        this.isLoading = false;
-        this.$Loading.finish();
+        this.isLoadingPodcasts = false;
+        this.isLoadingEpisodes = false;
+        this.podcasts = [];
+        this.episodes = [];
       }
     }
   },

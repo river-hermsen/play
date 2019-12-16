@@ -4,24 +4,25 @@
       <h3>Genres:</h3>
     </div>
     <div class="search-container">
-      <at-input v-model="genreSearchQuery" size="large" placeholder="Search for genres"></at-input>
+      <el-input placeholder="Search for genres" v-model="genreSearchQuery"></el-input>
     </div>
     <div class="genres-container">
-      <div class="row" v-if="!noResultsFound">
-        <div
-          class="card col-md-6"
+      <el-row :gutter="12" v-if="!noResultsFound">
+        <el-col
+          :span="6"
+          class="card"
           v-for="genre in searchGenres.length === 0 ? genres : searchGenres"
           :key="genre"
         >
-          <router-link :to="'/genre/' + genre">
-            <at-card>
+          <router-link :to="'/genre/' + genre" class="genre-link">
+            <el-card>
               <div class="card-content-container">
                 <p>{{genre}}</p>
               </div>
-            </at-card>
+            </el-card>
           </router-link>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
       <div v-if="noResultsFound">
         <h2>No genres found</h2>
       </div>
@@ -47,6 +48,10 @@
     .card {
       cursor: pointer;
       margin-top: 1rem;
+      .genre-link {
+        color: inherit;
+        text-decoration: none;
+      }
       .card-content-container {
         padding: 8px;
         text-align: center;

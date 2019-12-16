@@ -1,5 +1,5 @@
 <template>
-  <at-card class="card">
+  <el-card class="card">
     <div>
       <div class="loading image" />
       <div class="text-info">
@@ -10,27 +10,26 @@
         </div>
       </div>
     </div>
-  </at-card>
+  </el-card>
 </template>
 
 <style lang="scss" scoped>
 .card {
-  height: 280px;
   margin-top: 10px;
   .image {
-    height: 166px;
-    width: 166px;
+    padding-bottom: 100%;
+    position: relative;
   }
   .text-info {
     margin-top: 6px;
     .title {
       height: 19px;
-      width: 144px;
+      width: 100%;
       margin-bottom: 2px;
     }
     .second-title {
       height: 19px;
-      width: 120px;
+      width: 60%;
       margin-bottom: 9px;
     }
     .genre {
