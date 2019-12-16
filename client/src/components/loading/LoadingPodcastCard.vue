@@ -1,5 +1,5 @@
 <template>
-  <el-card class="card">
+  <el-card class="card" shadow="hover">
     <div>
       <div class="loading image" />
       <div class="text-info">

@@ -1,6 +1,6 @@
 <template>
-  <div class="row episode">
-    <div class="col-md-3 image-container">
+  <el-row class="episode">
+    <el-col :span="3" class="image-container">
       <div class="loading-img loading" v-if="isLoading"></div>
       <router-link
         :to="'/podcast/' + podcastId + '?episode=' + encodeURIComponent(episodeTitle)"
@@ -8,20 +8,20 @@
       >
         <img :src="image" @load="loadedImg()" />
       </router-link>
-    </div>
-    <div class="col-md-7">
+    </el-col>
+    <el-col :span="7">
       <h4>{{podcastTitle}}:</h4>
       <div>
         <span>{{episodeTitle}}</span>
       </div>
-    </div>
-    <div class="col-md-11 description" :id="episodeId" @click="showHideDescription(episodeId)">
+    </el-col>
+    <el-col :span="11" class="description" :id="episodeId" @click="showHideDescription(episodeId)">
       <p>{{description}}</p>
-    </div>
-    <div class="col-md-3">
+    </el-col>
+    <el-col :span="3">
       <p>{{_formatDate(_msToDate(pubDateMS))}}</p>
-    </div>
-  </div>
+    </el-col>
+  </el-row>
 </template>
 <style lang="scss" scoped>
 .episode {

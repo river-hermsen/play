@@ -1,33 +1,32 @@
 <template>
   <div id="search">
     <div class="header">
-      <!-- <h1>Search</h1> -->
-      <at-input
-        v-model="searchQuery"
+      <el-input
         class="search-input"
         placeholder="Search podcasts or episodes"
-        icon="search"
-      ></at-input>
+        v-model="searchQuery"
+        suffix-icon="el-icon-search"
+      ></el-input>
     </div>
     <div id="searchContent">
       <div id="podcasts" class="section-search" v-if="podcasts.length !== 0 || isLoadingPodcasts">
         <h1>Podcasts</h1>
-        <div class="row" v-if="isLoadingPodcasts">
-          <div class="col-md-6" v-for="loadingCard in amountLoadingPodcasts" :key="loadingCard">
+        <el-row :gutter="20" v-if="isLoadingPodcasts">
+          <el-col :span="6" v-for="loadingCard in amountLoadingPodcasts" :key="loadingCard">
             <LoadingPodcastCard />
-          </div>
-        </div>
+          </el-col>
+        </el-row>
 
-        <div class="row" v-if="!isLoadingPodcasts">
-          <div class="col-md-6" v-for="podcast in podcasts" :key="podcast.id">
+        <el-row :gutter="20" v-if="!isLoadingPodcasts">
+          <el-col :span="6" v-for="podcast in podcasts" :key="podcast.id">
             <PodcastCard
               :title="podcast.title_original"
               :mainGenre="podcast.mainGenreName"
               :thumbnail="podcast.thumbnail"
               :podcastId="podcast.id"
             />
-          </div>
-        </div>
+          </el-col>
+        </el-row>
       </div>
       <div id="episodes" class="section-search" v-if="episodes.length !== 0 || isLoadingEpisodes">
         <h1>Episodes</h1>
@@ -61,11 +60,18 @@
     h1 {
       font-size: 2rem;
     }
-    .search-input {
-      line-height: 2;
-      input {
-        font-size: 2rem;
-      }
+    .el-input__inner {
+      height: 100px;
+      font-size: 2.2rem !important;
+    }
+    .el-input__suffix {
+      display: flex;
+    }
+    .el-input__icon.el-icon-search {
+      font-size: 2.2rem !important;
+      display: flex;
+      align-items: center;
+      margin-right: 1.5rem;
     }
   }
   #searchContent {
@@ -127,7 +133,6 @@ export default {
     },
     searchForPodcasts (encodedURI) {
       this.isLoadingPodcasts = true;
-      this.$Loading.start();
       axios
         .get(
           `https://listen-api.listennotes.com/api/v2/search?q=${encodedURI}&type=podcast&only_in=title%2Cdescription&language=English`,
@@ -144,7 +149,6 @@ export default {
               mainGenreId = podcast.genre_ids[0];
             }
             this.isLoadingPodcasts = false;
-            this.$Loading.finish();
             return (podcast.mainGenreName = globalMixin.methods._getGenreByID(
               mainGenreId
             ).name);

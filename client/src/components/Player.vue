@@ -35,8 +35,7 @@
             :max="lengthAudio"
             :show-tooltip="false"
             class="sliderAudio"
-            @dragover.prevent
-            @dragenter="seeking()"
+            @click.native="seeking()"
           ></el-slider>
           <span>{{formattedLength ? formattedLength : '0:00'}}</span>
         </div>
@@ -241,7 +240,6 @@ export default {
     },
     timeUpdate () {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
-
       this.formattedCurrenPosAudio = globalMixin.methods._formatTime(
         Math.trunc(this.audioElement.currentTime),
         this.timeFormat
@@ -258,9 +256,8 @@ export default {
       this.isPlaying = false;
     },
     seeking () {
-      console.log('seeking');
-
-      this.audioElement.pause();
+      // this.audioElement.pause();
+      // this.isPlaying = false;
       this.audioElement.currentTime = this.currentPosAudio;
     },
     toggleMuteVolume () {
