@@ -1,7 +1,7 @@
 <template>
   <el-row class="episode">
     <el-col :span="2" class="episode-play">
-      <div @click="_playEpisode(episode, episode.podcast_title)">
+      <div @click="playEpisode(episode, episode.podcast_title)">
         <img src="../assets/icons/playback/play_circle.svg" alt="Play episode button" />
       </div>
     </el-col>
@@ -10,10 +10,10 @@
     </el-col>
     <el-col :span="13" class="description" :id="id">
       <div @click="showHideDescription(episode.id)">
-        <p>{{_removeHTMLTags(episode.description)}}</p>
+        <p>{{removeHTMLTags(episode.description)}}</p>
       </div>
     </el-col>
-    <el-col :span="2" class="episode-time">{{_formatTime(episode.audio_length)}}</el-col>
+    <el-col :span="2" class="episode-time">{{formatTime(episode.audio_length)}}</el-col>
   </el-row>
 </template>
 
@@ -67,7 +67,7 @@
 </style>
 
 <script>
-import { globalMixin } from '../sevices/_helper';
+import globalMixin from '../sevices/_helper';
 
 export default {
   props: [
@@ -77,22 +77,22 @@ export default {
     'description',
     'audio',
     'audioLength',
-    'podcastTitle'
+    'podcastTitle',
   ],
   mixins: [globalMixin],
-  data () {
+  data() {
     return {
-      episode: {}
+      episode: {},
     };
   },
   methods: {
-    showHideDescription (episodeId) {
+    showHideDescription(episodeId) {
       console.log(episodeId);
 
       document.getElementById(episodeId).classList.toggle('description-show');
-    }
+    },
   },
-  created () {
+  created() {
     this.episode = {
       id: this.id,
       title: this.title,
@@ -100,9 +100,9 @@ export default {
       description: this.description,
       audio: this.audio,
       audio_length: this.audioLength,
-      podcast_title: this.podcastTitle
+      podcast_title: this.podcastTitle,
     };
     console.log(this.episode);
-  }
+  },
 };
 </script>

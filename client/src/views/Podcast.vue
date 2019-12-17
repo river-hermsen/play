@@ -7,7 +7,7 @@
       <el-col :span="16" class="text-info">
         <h1 class="title">{{podcastInfo.title}}</h1>
         <h5 class="publisher">Publisher: {{podcastInfo.publisher}}</h5>
-        <p class="description">{{_removeHTMLTags(podcastInfo.description)}}</p>
+        <p class="description">{{removeHTMLTags(podcastInfo.description)}}</p>
       </el-col>
     </el-row>
     <el-row id="podcastEpisodesExtraInfo">
@@ -22,11 +22,14 @@
         </div>
         <div class="extra-info">
           <b>Genre(s)</b>
-          <p v-for="genreId in podcastInfo.genre_ids" :key="genreId">{{_getGenreByID(genreId).name}}</p>
+          <span
+            v-for="genreId in podcastInfo.genre_ids"
+            :key="genreId"
+          >{{getGenreByID(genreId).name}}</span>
         </div>
         <div class="extra-info">
           <b>Latest epsiode:</b>
-          <p>{{_formatDate(_msToDate(podcastInfo.latest_pub_date_ms))}}</p>
+          <p>{{formatDate(msToDate(podcastInfo.latest_pub_date_ms))}}</p>
         </div>
       </el-col>
       <el-col :span="19" id="podcastEpisodes">
@@ -57,7 +60,8 @@
             />
           </div>
           <div
-            v-else-if="!noResultsFound && searchResults.length === 0 && podcastInfo.episodes.length !== 0 && !isLoadingQueryEpisode"
+            v-else-if="!noResultsFound && searchResults.length === 0
+            && podcastInfo.episodes.length !== 0 && !isLoadingQueryEpisode"
           >
             <PodcastEpisode
               v-for="episode in podcastInfo.episodes"
@@ -117,6 +121,9 @@
       border-right: 1px solid #ebebeb;
       .extra-info {
         margin-bottom: 1.25rem;
+        span {
+          display: block;
+        }
       }
     }
     #podcastEpisodes {
@@ -169,74 +176,75 @@
 
 <script>
 import axios from 'axios';
-import { globalMixin } from '../sevices/_helper';
-import PodcastEpisode from '../components/PodcastEpisode';
+import globalMixin from '../sevices/_helper';
+import PodcastEpisode from '../components/PodcastEpisode.vue';
+
 export default {
   name: 'Podcast',
   mixins: [globalMixin],
   components: { PodcastEpisode },
-  data: () => {
-    return {
-      isLoading: false,
-      isLoadingQueryEpisode: false,
-      podcastId: null,
-      podcastInfo: undefined,
-      loadingNewEpisodes: false,
-      searchResults: [],
-      noResultsFound: false,
-      searchQuery: null,
-      nextPubDate: null
-    };
-  },
+  data: () => ({
+    isLoading: false,
+    isLoadingQueryEpisode: false,
+    podcastId: null,
+    podcastInfo: undefined,
+    loadingNewEpisodes: false,
+    searchResults: [],
+    noResultsFound: false,
+    searchQuery: null,
+    nextPubDate: null,
+  }),
   methods: {
-    onScroll () {
-      var offset =
+    onScroll() {
+      // eslint-disable-next-line operator-linebreak
+      const offset =
         document.documentElement.scrollTop + window.innerHeight + 200;
-      var height = document.documentElement.offsetHeight;
+
+      const height = document.documentElement.offsetHeight;
       if (offset >= height) {
         this.getMoreEpisodes();
       }
     },
-    getMoreEpisodes () {
+    getMoreEpisodes() {
       if (
-        this.podcastInfo.total_episodes > this.podcastInfo.episodes.length &&
-        !this.loadingNewEpisodes
+        this.podcastInfo.total_episodes > this.podcastInfo.episodes.length
+        && !this.loadingNewEpisodes
       ) {
         this.loadingNewEpisodes = true;
         axios
           .get(
             `https://listen-api.listennotes.com/api/v2/podcasts/${this.podcastId}?next_episode_pub_date=${this.nextPubDate}`,
             {
-              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-            }
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+            },
           )
-          .then(response => {
+          .then((response) => {
             this.nextPubDate = response.data.next_episode_pub_date;
             this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
-              response.data.episodes
+              response.data.episodes,
             );
             this.loadingNewEpisodes = false;
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
             this.$Loading.error();
           });
       }
     },
-    searchEpisodes () {
+    searchEpisodes() {
       if (this.searchQuery) {
         console.log('running');
-        var searchQueryURI = encodeURIComponent(this.searchQuery);
-        var podcastIdURI = encodeURIComponent(this.podcastInfo.id);
+        const searchQueryURI = encodeURIComponent(this.searchQuery);
+        const podcastIdURI = encodeURIComponent(this.podcastInfo.id);
 
         axios
           .get(
             `https://listen-api.listennotes.com/api/v2/search?q=${searchQueryURI}&ocid=${podcastIdURI}`,
             {
-              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-            }
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+            },
           )
-          .then(response => {
+          .then((response) => {
             this.noResultsFound = false;
             console.log(response.data);
 
@@ -254,7 +262,7 @@ export default {
               this.isLoadingQueryEpisode = false;
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
           });
       } else {
@@ -262,10 +270,10 @@ export default {
         this.searchResults = [];
         console.log('not running');
       }
-    }
+    },
   },
   watch: {
-    searchQuery (newQuery) {
+    searchQuery(newQuery) {
       console.log(newQuery);
 
       if (this.isLoadingQueryEpisode) {
@@ -274,21 +282,21 @@ export default {
         this.debounceSearchForQuery();
       }
     },
-    isLoading (newVal) {
+    isLoading(newVal) {
       if (!newVal && this.$route.query.episode) {
         const episodeName = decodeURIComponent(this.$route.query.episode);
         this.searchQuery = episodeName;
       }
-    }
+    },
   },
-  created () {
+  created() {
     this.isLoading = true;
     if (this.$route.query.episode) {
       this.isLoadingQueryEpisode = true;
     }
-    this.debounceSearchForQuery = globalMixin.methods._debounce(
+    this.debounceSearchForQuery = globalMixin.methods.debounce(
       this.searchEpisodes,
-      500
+      500,
     );
 
     if (this.$route.params.id.length !== 32) {
@@ -297,28 +305,28 @@ export default {
       this.podcastId = this.$route.params.id;
     }
   },
-  beforeMount () {
+  beforeMount() {
     axios
       .get(
         `https://listen-api.listennotes.com/api/v2/podcasts/${this.podcastId}`,
         {
-          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-        }
+          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+        },
       )
-      .then(response => {
+      .then((response) => {
         console.log(response.data);
         this.nextPubDate = response.data.next_episode_pub_date;
         this.podcastInfo = response.data;
         this.isLoading = false;
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   },
-  mounted () {
+  mounted() {
     window.onscroll = () => {
       this.onScroll();
     };
-  }
+  },
 };
 </script>

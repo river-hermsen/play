@@ -42,11 +42,9 @@
 <script>
 export default {
   name: 'Login',
-  data: () => {
-    return {
+  data: () => ({
       email: null,
       password: null
-    }
-  }
-}
+    }),
+};
 </script>

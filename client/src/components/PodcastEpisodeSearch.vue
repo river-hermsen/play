@@ -53,7 +53,7 @@
 </style>
 
 <script>
-import { globalMixin } from '../sevices/_helper';
+import globalMixin from '../sevices/_helper';
 
 export default {
   props: [
@@ -63,21 +63,21 @@ export default {
     'podcastTitle',
     'image',
     'description',
-    'pubDateMS'
+    'pubDateMS',
   ],
   mixins: [globalMixin],
-  data () {
+  data() {
     return {
-      isLoading: true
+      isLoading: true,
     };
   },
   methods: {
-    showHideDescription (epsiodeId) {
+    showHideDescription(epsiodeId) {
       document.getElementById(epsiodeId).classList.toggle('description-show');
     },
-    loadedImg () {
+    loadedImg() {
       this.isLoading = false;
-    }
-  }
+    },
+  },
 };
 </script>

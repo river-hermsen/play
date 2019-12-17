@@ -190,77 +190,75 @@
 </style>
 
 <script>
-import { globalMixin } from '../sevices/_helper';
+import globalMixin from '../sevices/_helper';
 
 export default {
   name: 'Player',
   mixins: [globalMixin],
-  data: () => {
-    return {
-      isLoading: null,
-      episodeInfo: {
-        title: null,
-        podcast: null,
-        image: null
-      },
-      isPlaying: false,
-      audioElement: new Audio(),
-      volumeLevel: 100,
-      mutedVolume: false,
-      currentPosAudio: 0,
-      currentPosSlider: 0,
-      isSeeking: false,
-      lengthAudio: null,
-      timeFormat: null,
-      formattedLength: '',
-      formattedCurrenPosAudio: ''
-    };
-  },
+  data: () => ({
+    isLoading: null,
+    episodeInfo: {
+      title: null,
+      podcast: null,
+      image: null,
+    },
+    isPlaying: false,
+    audioElement: new Audio(),
+    volumeLevel: 100,
+    mutedVolume: false,
+    currentPosAudio: 0,
+    currentPosSlider: 0,
+    isSeeking: false,
+    lengthAudio: null,
+    timeFormat: null,
+    formattedLength: '',
+    formattedCurrenPosAudio: '',
+  }),
   methods: {
-    test1 () {
+    test1() {
       console.log('mousedown');
     },
-    test2 () {
+    test2() {
       console.log('mouseup');
     },
-    loadedAudio () {
+    loadedAudio() {
       if (this.audioElement.duration > 60 * 60) {
         this.timeFormat = 'HH:MM:SS';
       } else {
         this.timeFormat = 'MM:SS';
       }
-      this.formattedLength = globalMixin.methods._formatTime(
+      this.formattedLength = globalMixin.methods.formatTime(
         Math.trunc(this.audioElement.duration),
-        this.timeFormat
+        this.timeFormat,
       );
 
       this.lengthAudio = Math.trunc(this.audioElement.duration);
       this.isLoading = false;
       this.play();
     },
-    timeUpdate () {
+    timeUpdate() {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
-      this.formattedCurrenPosAudio = globalMixin.methods._formatTime(
+      this.formattedCurrenPosAudio = globalMixin.methods.formatTime(
         Math.trunc(this.audioElement.currentTime),
-        this.timeFormat
+        this.timeFormat,
       );
     },
-    play () {
+    play() {
       if (this.episodeInfo.title) {
         this.audioElement.play();
         this.isPlaying = true;
       }
     },
-    pause () {
+    pause() {
       this.audioElement.pause();
       this.isPlaying = false;
     },
-    seeking () {
+    seeking() {
       // this.audioElement.pause();
       // this.isPlaying = false;
       this.audioElement.currentTime = this.currentPosAudio;
     },
-    toggleMuteVolume () {
+    toggleMuteVolume() {
       this.mutedVolume = !this.mutedVolume;
 
       if (this.mutedVolume) {
@@ -271,15 +269,15 @@ export default {
         }
         this.audioElement.volume = this.volumeLevel / 100;
       }
-    }
+    },
   },
   computed: {
-    episodeVuex () {
+    episodeVuex() {
       return this.$store.getters.getCurrentEpisode;
-    }
+    },
   },
   watch: {
-    volumeLevel () {
+    volumeLevel() {
       if (this.volumeLevel === 0) {
         this.toggleMuteVolume();
       } else {
@@ -287,7 +285,7 @@ export default {
         this.audioElement.volume = this.volumeLevel / 100;
       }
     },
-    episodeVuex (newEpisode) {
+    episodeVuex(newEpisode) {
       console.log(newEpisode);
 
       this.isLoading = true;
@@ -296,17 +294,17 @@ export default {
       this.episodeInfo = {
         title: newEpisode.title,
         image: newEpisode.image,
-        podcast_title: newEpisode.podcast_title
+        podcast_title: newEpisode.podcast_title,
       };
       this.audioElement.src = newEpisode.audio;
-      this.audioElement.addEventListener('loadedmetadata', event => {
+      this.audioElement.addEventListener('loadedmetadata', () => {
         this.loadedAudio();
       });
 
-      this.audioElement.addEventListener('timeupdate', event => {
+      this.audioElement.addEventListener('timeupdate', () => {
         this.timeUpdate();
       });
-    }
-  }
+    },
+  },
 };
 </script>

@@ -26,28 +26,28 @@
 </style>
 
 <script>
-import PodcastCard from '../components/PodcastCard';
 import axios from 'axios';
+import PodcastCard from '../components/PodcastCard.vue';
 
 export default {
   name: 'Genre',
   components: { PodcastCard },
-  data () {
+  data() {
     return {
       isLoading: true,
       genre: {},
       genres: [],
-      bestPodcasts: []
+      bestPodcasts: [],
     };
   },
-  created () {
+  created() {
     console.log('test');
 
-    let genreName = this.$route.params.name;
+    const genreName = this.$route.params.name;
     this.genres = this.$store.getters.getGenres;
     console.log(this.$route);
 
-    let genreObj = this.genres.find(genre => genre.name === genreName);
+    const genreObj = this.genres.find((genre) => genre.name === genreName);
 
     if (!genreObj) {
       this.$router.push('/browse');
@@ -56,26 +56,26 @@ export default {
       console.log(genreObj);
     }
   },
-  beforeMount () {
+  beforeMount() {
     console.log(
-      `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`
+      `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
     );
 
     axios
       .get(
         `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
         {
-          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' }
-        }
+          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+        },
       )
-      .then(response => {
+      .then((response) => {
         console.log(response.data);
         this.bestPodcasts = response.data.podcasts;
         this.isLoading = false;
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error);
       });
-  }
+  },
 };
 </script>

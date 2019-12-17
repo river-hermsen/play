@@ -30,15 +30,15 @@
 </style>
 
 <script>
-import GenreContent from '../components/browse/Genre';
+import GenreContent from '../components/browse/Genre.vue';
 
 export default {
   name: 'Browse',
   components: { GenreContent },
-  data () {
+  data() {
     return {
-      activeTabName: 'Genres'
+      activeTabName: 'Genres',
     };
-  }
+  },
 };
 </script>

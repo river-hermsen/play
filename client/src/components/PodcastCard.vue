@@ -44,16 +44,16 @@
 <script>
 export default {
   props: ['podcastId', 'title', 'thumbnail', 'mainGenre'],
-  data () {
+  data() {
     return {
-      isLoading: true
+      isLoading: true,
     };
   },
   methods: {
-    loadedImg () {
+    loadedImg() {
       this.isLoading = false;
       console.log('loaded');
-    }
-  }
+    },
+  },
 };
 </script>

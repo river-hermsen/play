@@ -184,41 +184,46 @@ body {
 @import "@/assets/scss/loading.scss";
 </style>
 <script>
-import Player from './components/Player';
-import { globalMixin } from './sevices/_helper';
-const remote = require('electron').remote;
+import Player from './components/Player.vue';
+import globalMixin from './sevices/_helper';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { remote } = require('electron');
 
 export default {
   name: 'App',
   components: {
-    Player
+    Player,
   },
-  data () {
+  data() {
     return {
-      isMaximized: false
+      isMaximized: false,
     };
   },
   mixins: [globalMixin],
   methods: {
-    closeWindow () {
+    closeWindow() {
       this.currentWindow.close();
     },
-    maximizeWindow () {
+    maximizeWindow() {
       this.isMaximized = true;
       this.currentWindow.maximize();
     },
-    unMaximizeWindow () {
+    unMaximizeWindow() {
       this.isMaximized = false;
       this.currentWindow.unmaximize();
     },
-    minimizeWindow () {
+    minimizeWindow() {
       this.currentWindow.minimize();
-    }
+    },
   },
   computed: {
-    currentWindow () {
+    currentWindow() {
       return remote.getCurrentWindow();
-    }
-  }
+    },
+  },
+  created() {
+    console.log('test');
+  },
 };
 </script>
