@@ -68,22 +68,22 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       genres: [],
       searchGenres: [],
       noResultsFound: false,
-      genreSearchQuery: ''
+      genreSearchQuery: '',
     };
   },
   methods: {
-    searchGenre () {
+    searchGenre() {
       this.noResultsFound = false;
-      var genres = this.genres;
-      var searchedGenres = [];
+      const { genres } = this;
+      const searchedGenres = [];
 
-      for (let i = 0; i < genres.length; i++) {
-        let searchGenre = genres[i]
+      for (let i = 0; i < genres.length; i += 1) {
+        const searchGenre = genres[i]
           .toLowerCase()
           .search(this.genreSearchQuery.toLowerCase());
         if (searchGenre > -1) {
@@ -95,26 +95,24 @@ export default {
         this.noResultsFound = true;
       }
       this.searchGenres = searchedGenres;
-    }
+    },
   },
   watch: {
-    genreSearchQuery (newSearch) {
+    genreSearchQuery(newSearch) {
       if (newSearch) {
         this.searchGenre();
       } else {
         this.searchGenres = [];
       }
-    }
+    },
   },
-  created () {
-    let storeGenres = this.$store.getters.getGenres;
+  created() {
+    const storeGenres = this.$store.getters.getGenres;
 
-    let genres = storeGenres.map(genre => {
-      return genre.name;
-    });
+    const genres = storeGenres.map((genre) => genre.name);
     genres.sort();
-    let uniqueGenres = [...new Set(genres)];
+    const uniqueGenres = [...new Set(genres)];
     this.genres = uniqueGenres;
-  }
+  },
 };
 </script>

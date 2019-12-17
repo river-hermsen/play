@@ -3,14 +3,14 @@
     <div id="most-popular">
       <h1 class="header">Most popular Podcasts</h1>
       <div class="row" v-if="isLoading">
-        <el-row :gutter="12">
+        <el-row :gutter="16">
           <el-col :span="6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
             <LoadingPodcastCard />
           </el-col>
         </el-row>
       </div>
 
-      <el-row :gutter="12">
+      <el-row :gutter="16">
         <el-col :span="6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
           <PodcastCard
             :title="podcast.title"

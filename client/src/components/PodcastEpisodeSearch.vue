@@ -19,7 +19,7 @@
       <p>{{description}}</p>
     </el-col>
     <el-col :span="3">
-      <p>{{_formatDate(_msToDate(pubDateMS))}}</p>
+      <p>{{formatDate(msToDate(pubDateMS))}}</p>
     </el-col>
   </el-row>
 </template>

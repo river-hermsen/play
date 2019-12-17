@@ -222,8 +222,5 @@ export default {
       return remote.getCurrentWindow();
     },
   },
-  created() {
-    console.log('test');
-  },
 };
 </script>

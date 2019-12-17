@@ -6,30 +6,36 @@
       </el-col>
       <el-col :span="16" class="text-info">
         <h1 class="title">{{podcastInfo.title}}</h1>
-        <h5 class="publisher">Publisher: {{podcastInfo.publisher}}</h5>
+        <span class="publisher">
+          <b>Publisher: {{podcastInfo.publisher}}</b>
+        </span>
         <p class="description">{{removeHTMLTags(podcastInfo.description)}}</p>
       </el-col>
     </el-row>
     <el-row id="podcastEpisodesExtraInfo">
       <el-col :span="5" id="extraPodcastInfo">
         <div class="extra-info">
-          <b>Language</b>
-          <p>{{podcastInfo.language}}</p>
+          <b>Language:</b>
+          <span>{{podcastInfo.language}}</span>
         </div>
         <div class="extra-info">
-          <b>Country</b>
-          <p>{{podcastInfo.country}}</p>
+          <b>Country:</b>
+          <span>{{podcastInfo.country}}</span>
         </div>
         <div class="extra-info">
-          <b>Genre(s)</b>
+          <b>Genre(s):</b>
           <span
             v-for="genreId in podcastInfo.genre_ids"
             :key="genreId"
           >{{getGenreByID(genreId).name}}</span>
         </div>
         <div class="extra-info">
+          <b>Total epsiodes:</b>
+          <span>{{podcastInfo.total_episodes}} episodes</span>
+        </div>
+        <div class="extra-info">
           <b>Latest epsiode:</b>
-          <p>{{formatDate(msToDate(podcastInfo.latest_pub_date_ms))}}</p>
+          <span>{{formatDate(msToDate(podcastInfo.latest_pub_date_ms))}}</span>
         </div>
       </el-col>
       <el-col :span="19" id="podcastEpisodes">
@@ -42,8 +48,8 @@
           <el-row id="headerContainer">
             <el-col :span="7" :offset="2">Title</el-col>
             <el-col :span="13">Description</el-col>
-            <el-col :span="2" class="podcast-time">
-              <i class="icon icon-clock"></i>
+            <el-col :span="2" class="time-container">
+              <i class="el-icon-time"></i>
             </el-col>
           </el-row>
           <div v-if="!noResultsFound && searchResults && searchResults.length !== 0">
@@ -99,17 +105,16 @@
       width: 100%;
     }
     .text-info {
-      margin-top: 0.5rem;
       margin-left: 1rem;
       .title {
-        font-size: 1.6rem;
+        margin: unset;
       }
       .publisher {
         margin-bottom: 0.5rem;
       }
       .description {
         display: -webkit-box;
-        -webkit-line-clamp: 5;
+        -webkit-line-clamp: 9;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
@@ -147,6 +152,9 @@
         #headerContainer {
           font-size: 1.1em;
           border-bottom: 1px solid #ebebeb;
+          .time-container {
+            text-align: center;
+          }
         }
       }
     }

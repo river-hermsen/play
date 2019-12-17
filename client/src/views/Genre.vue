@@ -3,7 +3,7 @@
     <div class="header-container" v-if="!isLoading">
       <h1>Best podcasts of {{genre.name}}</h1>
     </div>
-    <el-row class="podcasts" :gutter="50">
+    <el-row class="podcasts" :gutter="16">
       <el-col :span="6" v-for="podcast in bestPodcasts" :key="podcast.id">
         <PodcastCard
           :title="podcast.title"
