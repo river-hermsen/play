@@ -22,7 +22,7 @@
       </div>
     </div>
     <div id="nav">
-      <el-menu default-active="2" router>
+      <el-menu default-active="/home" router>
         <el-menu-item index="/search">
           <i class="el-icon-search"></i>
           <span>Search</span>
@@ -178,6 +178,12 @@ body {
 .el-slider__button {
   width: 12px;
   height: 12px;
+}
+.el-menu-item {
+  color: #8f9ab3;
+}
+.el-menu-item.is-active {
+  border-left: 4px solid #000000;
 }
 </style>
 <style lang="scss">

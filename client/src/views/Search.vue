@@ -9,7 +9,12 @@
       ></el-input>
     </div>
     <div id="searchContent">
-      <div id="podcasts" class="section-search" v-if="podcasts.length !== 0 || isLoadingPodcasts">
+      <div
+        id="podcasts"
+        class="section-search"
+        v-if="podcasts.length !== 0
+      || isLoadingPodcasts"
+      >
         <h1>Podcasts</h1>
         <el-row :gutter="20" v-if="isLoadingPodcasts">
           <el-col :span="6" v-for="loadingCard in amountLoadingPodcasts" :key="loadingCard">

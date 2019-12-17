@@ -23,8 +23,8 @@
   margin-bottom: 6px;
   cursor: pointer;
   .loading-img {
-    min-width: 166px;
-    min-height: 166px;
+    padding-bottom: 100%;
+    position: relative;
   }
   .title {
     display: -webkit-box;

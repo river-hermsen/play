@@ -43,8 +43,8 @@
 export default {
   name: 'Login',
   data: () => ({
-      email: null,
-      password: null
-    }),
+    email: null,
+    password: null,
+  }),
 };
 </script>
