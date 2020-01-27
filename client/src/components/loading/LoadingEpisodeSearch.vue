@@ -1,20 +1,20 @@
 <template>
-  <div class="row loading-episode">
-    <div class="col-md-3">
+  <el-row class="loading-episode" :gutter="8">
+    <el-col :span="2">
       <div class="image loading"></div>
-    </div>
-    <div class="col-md-7">
+    </el-col>
+    <el-col :span="8">
       <div class="episode-title loading"></div>
       <div class="podcast-title loading"></div>
-    </div>
-    <div class="col-md-11">
+    </el-col>
+    <el-col :span="11">
       <div class="description loading"></div>
       <div class="description-last-line loading"></div>
-    </div>
-    <div class="col-md-3">
+    </el-col>
+    <el-col :span="3">
       <div class="pubDate loading"></div>
-    </div>
-  </div>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -27,8 +27,8 @@ export default {};
   padding: 0.5rem 0 0.5rem 0;
 
   .image {
-    width: 104px;
-    height: 104px;
+    width: 100%;
+    height: 76px;
   }
   .episode-title {
     width: 250px;

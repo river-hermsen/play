@@ -3,7 +3,7 @@
     <div id="toolbar">
       <div id="drag-region">
         <div id="window-title">
-          <span>PLAY PROJECT</span>
+          <span @click="test()">PLAY PROJECT</span>
         </div>
         <div id="window-controls">
           <div class="button" id="min-button" @click="minimizeWindow()">
@@ -41,9 +41,9 @@
       <Player />
     </div>
     <div id="content">
-      <!-- <keep-alive exclude="Podcast" :max="5"> -->
-      <router-view />
-      <!-- </keep-alive> -->
+      <keep-alive exclude="Podcast" :max="5">
+        <router-view />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -195,6 +195,8 @@ import globalMixin from './sevices/_helper';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { remote } = require('electron');
+// eslint-disable-next-line import/no-extraneous-dependencies
+// const { BrowserWindow } = require('electron');
 
 export default {
   name: 'App',
@@ -203,20 +205,21 @@ export default {
   },
   data() {
     return {
-      isMaximized: false,
+      isMaximized: null,
     };
   },
   mixins: [globalMixin],
   methods: {
+    test() {
+      console.log(this.isMAX);
+    },
     closeWindow() {
       this.currentWindow.close();
     },
     maximizeWindow() {
-      this.isMaximized = true;
       this.currentWindow.maximize();
     },
     unMaximizeWindow() {
-      this.isMaximized = false;
       this.currentWindow.unmaximize();
     },
     minimizeWindow() {
@@ -227,6 +230,22 @@ export default {
     currentWindow() {
       return remote.getCurrentWindow();
     },
+    isRemoteMaximized() {
+      return remote.getCurrentWindow().isMaximized();
+    },
+  },
+  watch: {
+    isReallMax() {
+      console.log('changed');
+    },
+  },
+  mounted() {
+    remote.getCurrentWindow().on('maximize', () => {
+      this.isMaximized = true;
+    });
+    remote.getCurrentWindow().on('unmaximize', () => {
+      this.isMaximized = false;
+    });
   },
 };
 </script>

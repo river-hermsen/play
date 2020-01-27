@@ -1,6 +1,21 @@
 import axios from 'axios';
 import store from '../store/index';
 
+const monthsAbbreviations = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 export default {
   methods: {
     getGenreByID(genreId) {
@@ -12,18 +27,24 @@ export default {
     msToDate(msTime) {
       return new Date(msTime);
     },
-    formatDate(date) {
-      let dd = date.getDate();
-      let mm = date.getMonth() + 1;
-      const yyyy = date.getFullYear();
+    formatDate(date, monthAbbreviation) {
+      console.log(monthAbbreviation);
 
+      let dd = date.getDate();
+      let mm;
+      if (monthAbbreviation) {
+        mm = monthsAbbreviations[date.getMonth()];
+      } else {
+        mm = date.getMonth() + 1;
+      }
+      const yyyy = date.getFullYear();
       if (dd < 10) {
         dd = `0${dd}`;
       }
       if (mm < 10) {
         mm = `0${mm}`;
       }
-      const formattedDate = `${dd}/${mm}/${yyyy}`;
+      const formattedDate = monthAbbreviation ? `${dd} ${mm} ${yyyy}` : `${dd}/${mm}/${yyyy}`;
       return formattedDate;
     },
     formatTime(timeInSeconds, format) {

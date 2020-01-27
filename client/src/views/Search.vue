@@ -40,7 +40,6 @@
             <LoadingEpisodeSearch />
           </div>
         </div>
-
         <div v-if="!isLoadingEpisodes">
           <div v-for="episode in episodes" :key="episode.id">
             <PodcastEpisodeSearch

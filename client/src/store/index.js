@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -10,28 +10,26 @@ export default new Vuex.Store({
       isPlaying: false,
       episode: {
 
-      }
-    }
+      },
+    },
   },
   getters: {
-    getGenres: state => {
-      return state.genres
+    getGenres: (state) => state.genres,
+    getPlayerInfo(state) {
+      return state.player;
     },
-    getPlayerInfo (state) {
-      return state.player
+    getCurrentEpisode(state) {
+      return state.player.episode;
     },
-    getCurrentEpisode (state) {
-      return state.player.episode
-    }
   },
   mutations: {
-    setGenres (state, genres) {
-      state.genres = genres
+    setGenres(state, genres) {
+      state.genres = genres;
     },
-    setCurrentEpisode (state, episode) {
-      state.player.episode = episode
-    }
+    setCurrentEpisode(state, episode) {
+      state.player.episode = episode;
+    },
   },
   actions: {
-  }
-})
+  },
+});

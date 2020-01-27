@@ -1,6 +1,6 @@
 <template>
-  <el-row class="episode">
-    <el-col :span="3" class="image-container">
+  <el-row class="episode" :gutter="8">
+    <el-col :span="2" class="image-container">
       <div class="loading-img loading" v-if="isLoading"></div>
       <router-link
         :to="'/podcast/' + podcastId + '?episode=' + encodeURIComponent(episodeTitle)"
@@ -9,17 +9,17 @@
         <img :src="image" @load="loadedImg()" />
       </router-link>
     </el-col>
-    <el-col :span="7">
-      <h4>{{podcastTitle}}:</h4>
+    <el-col :span="8">
+      <h4 class="episode-title">{{episodeTitle}}</h4>
       <div>
-        <span>{{episodeTitle}}</span>
+        <span>{{podcastTitle}}</span>
       </div>
     </el-col>
-    <el-col :span="11" class="description" :id="episodeId" @click="showHideDescription(episodeId)">
-      <p>{{description}}</p>
+    <el-col :span="11" class="description" :id="episodeId">
+      <p @click="showHideDescription(episodeId)">{{description}}</p>
     </el-col>
     <el-col :span="3">
-      <p>{{formatDate(msToDate(pubDateMS))}}</p>
+      <p>{{formatDate(msToDate(pubDateMS), true)}}</p>
     </el-col>
   </el-row>
 </template>
@@ -37,12 +37,22 @@
       width: 100%;
     }
   }
+  .episode-title {
+    margin: unset;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
   .description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 4;
     overflow: hidden;
     cursor: pointer;
+    p {
+      margin: unset;
+    }
   }
   .description-show {
     -webkit-line-clamp: unset;
@@ -73,6 +83,8 @@ export default {
   },
   methods: {
     showHideDescription(epsiodeId) {
+      console.log(epsiodeId);
+
       document.getElementById(epsiodeId).classList.toggle('description-show');
     },
     loadedImg() {
