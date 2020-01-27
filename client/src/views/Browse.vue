@@ -6,10 +6,18 @@
     <div id="contentBrowse">
       <el-tabs v-model="activeTabName">
         <el-tab-pane label="Genres" name="Genres">
-          <GenreContent />
+          <All type="Genres" />
+
+          <!-- <GenreContent /> -->
         </el-tab-pane>
-        <el-tab-pane label="Regions" name="Regions">Regions</el-tab-pane>
-        <el-tab-pane label="Languages" name="Languages">Languages</el-tab-pane>
+        <el-tab-pane label="Regions" name="Regions">
+          <All type="Regions" />
+
+          <!-- <RegionContent /> -->
+        </el-tab-pane>
+        <el-tab-pane label="Languages" name="Languages">
+          <All type="Languages" />
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -30,11 +38,13 @@
 </style>
 
 <script>
-import GenreContent from '../components/browse/Genre.vue';
+// import GenreContent from '../components/browse/Genres.vue';
+// import RegionContent from '../components/browse/Regions.vue';
+import All from '../components/ChildBrowse.vue';
 
 export default {
   name: 'Browse',
-  components: { GenreContent },
+  components: { All },
   data() {
     return {
       activeTabName: 'Genres',

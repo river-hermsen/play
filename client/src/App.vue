@@ -41,7 +41,7 @@
       <Player />
     </div>
     <div id="content">
-      <keep-alive exclude="Podcast" :max="5">
+      <keep-alive :exclude="['Podcast', 'Genre', 'Region']" :max="5">
         <router-view />
       </keep-alive>
     </div>
@@ -184,6 +184,9 @@ body {
 }
 .el-menu-item.is-active {
   border-left: 4px solid #000000;
+}
+.el-loading-spinner {
+  margin-top: 34vh;
 }
 </style>
 <style lang="scss">

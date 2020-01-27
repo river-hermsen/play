@@ -1,5 +1,5 @@
 <template>
-  <el-row class="episode">
+  <el-row class="episode" :gutter="5">
     <el-col :span="2" class="episode-play">
       <div @click="playEpisode(episode, episode.podcast_title)">
         <img src="../assets/icons/playback/play_circle.svg" alt="Play episode button" />

@@ -1,16 +1,12 @@
 <template>
   <div v-loading="isLoading">
     <div class="header-container" v-if="!isLoading">
-      <h1>Best podcasts of {{genre.name}}</h1>
+      <h1>Best podcasts of {{regionName}}</h1>
     </div>
     <el-row class="podcasts" :gutter="16">
       <el-col :span="6" v-for="podcast in bestPodcasts" :key="podcast.id">
-        <PodcastCard
-          :title="podcast.title"
-          :mainGenre="genre.name"
-          :thumbnail="podcast.thumbnail"
-          :podcastId="podcast.id"
-        />
+        <!-- eslint-disable-next-line max-len -->
+        <PodcastCard :title="podcast.title" :thumbnail="podcast.thumbnail" :podcastId="podcast.id" />
       </el-col>
     </el-row>
   </div>
@@ -30,39 +26,25 @@ import axios from 'axios';
 import PodcastCard from '../components/PodcastCard.vue';
 
 export default {
-  name: 'Genre',
+  name: 'Region',
   components: { PodcastCard },
   data() {
     return {
       isLoading: true,
-      genre: {},
-      genres: [],
+      regionName: '',
+      regionCode: '',
       bestPodcasts: [],
     };
   },
   beforeMount() {
-    const genreName = this.$route.params.name;
-    this.genres = this.$store.getters.getGenres;
+    this.regionName = this.$route.params.name;
+    this.regionCode = this.$route.query.code;
     console.log(this.$route);
-
-    const genreObj = this.genres.find((genre) => genre.name === genreName);
-
-    if (!genreObj) {
-      // this.$router.push('/browse');
-      console.log('no genre');
-    } else {
-      this.genre = genreObj;
-      console.log(genreObj);
-    }
   },
   mounted() {
-    console.log(
-      `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
-    );
-
     axios
       .get(
-        `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
+        `https://listen-api.listennotes.com/api/v2/best_podcasts?region=${this.regionCode}`,
         {
           headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
         },

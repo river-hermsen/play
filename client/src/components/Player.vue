@@ -215,13 +215,9 @@ export default {
     formattedCurrenPosAudio: '',
   }),
   methods: {
-    test1() {
-      console.log('mousedown');
-    },
-    test2() {
-      console.log('mouseup');
-    },
     loadedAudio() {
+      console.log(this);
+
       if (this.audioElement.duration > 60 * 60) {
         this.timeFormat = 'HH:MM:SS';
       } else {
