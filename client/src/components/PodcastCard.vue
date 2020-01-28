@@ -52,7 +52,6 @@ export default {
   methods: {
     loadedImg() {
       this.isLoading = false;
-      console.log('loaded');
     },
   },
 };

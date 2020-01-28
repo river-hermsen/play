@@ -27,8 +27,6 @@ export default {
       return new Date(msTime);
     },
     formatDate(date, monthAbbreviation) {
-      console.log(monthAbbreviation);
-
       let dd = date.getDate();
       let mm;
       if (monthAbbreviation) {

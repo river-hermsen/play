@@ -1,7 +1,7 @@
 <template>
   <div id="home">
     <div id="most-popular">
-      <h1 class="header">Most popular Podcasts</h1>
+      <h1 class="header">Popular Podcasts</h1>
       <div class="row" v-if="isLoading">
         <el-row :gutter="16">
           <el-col :span="6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
@@ -11,7 +11,28 @@
       </div>
 
       <el-row :gutter="16">
-        <el-col :span="6" v-for="podcast in podcasts.mostPopular" :key="podcast.id">
+        <el-col :span="6" v-for="podcast in podcasts.popularGeneral" :key="podcast.id">
+          <PodcastCard
+            :title="podcast.title"
+            :mainGenre="podcast.genreName"
+            :thumbnail="podcast.thumbnail"
+            :podcastId="podcast.id"
+          />
+        </el-col>
+      </el-row>
+    </div>
+    <div id="random-genre">
+      <h1 class="header">Popular podcasts in {{ip.countryName}}</h1>
+      <div class="row" v-if="isLoading">
+        <el-row :gutter="16">
+          <el-col :span="6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
+            <LoadingPodcastCard />
+          </el-col>
+        </el-row>
+      </div>
+
+      <el-row :gutter="16">
+        <el-col :span="6" v-for="podcast in podcasts.popularInCountry" :key="podcast.id">
           <PodcastCard
             :title="podcast.title"
             :mainGenre="podcast.genreName"
@@ -62,7 +83,12 @@ export default {
       isLoading: true,
       amountLoadingCards: 8,
       podcasts: {
-        mostPopular: [],
+        popularGeneral: [],
+        popularInCountry: [],
+      },
+      ip: {
+        countryName: '',
+        countryCode: '',
       },
     };
   },
@@ -96,7 +122,51 @@ export default {
           return modifiedPodcast;
         });
 
-        this.podcasts.mostPopular = mostPopularArrayUpdated;
+        this.podcasts.popularGeneral = mostPopularArrayUpdated;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    axios
+      .get('https://json.geoiplookup.io/')
+      .then((response) => {
+        this.ip.countryName = response.data.country_name;
+        this.ip.countryCode = response.data.country_code.toLowerCase();
+        axios
+          .get(
+            `https://listen-api.listennotes.com/api/v2/best_podcasts?region=${this.ip.countryCode}`,
+            {
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+            },
+          )
+          .then((response2) => {
+            console.log(response2.data);
+            const mostPopularArray = response2.data.podcasts.slice(0, 8);
+            const mostPopularArrayUpdated = mostPopularArray.filter((podcast) => {
+              const modifiedPodcast = podcast;
+              let mainGenreId;
+              // Check if genre is 'podcast' in that case get second genre in array
+              if (podcast.genre_ids[0] !== 67) {
+                [mainGenreId] = modifiedPodcast.genre_ids;
+              } else {
+                [, mainGenreId] = modifiedPodcast.genre_ids;
+              }
+
+              console.log(mainGenreId);
+
+              this.isLoading = false;
+              modifiedPodcast.genreName = globalMixin.methods.getGenreByID(
+                mainGenreId,
+              ).name;
+              return modifiedPodcast;
+            });
+
+            this.podcasts.popularInCountry = mostPopularArrayUpdated;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch((error) => {
         console.log(error);
