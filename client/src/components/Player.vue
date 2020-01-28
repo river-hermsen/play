@@ -33,7 +33,7 @@
           </div>
         </div>
         <div class="bottom-controls">
-          <span>{{formattedCurrenPosAudio ? formattedCurrenPosAudio : '0:00'}}</span>
+          <span>{{formattedCurrentPosAudio ? formattedCurrentPosAudio : '0:00'}}</span>
           <el-slider
             v-model="currentPosAudio"
             :max="lengthAudio"
@@ -222,7 +222,7 @@ export default {
     lengthAudio: null,
     timeFormat: null,
     formattedLength: '',
-    formattedCurrenPosAudio: '',
+    formattedCurrentPosAudio: '',
   }),
   methods: {
     loadedAudio() {
@@ -242,10 +242,10 @@ export default {
     },
     timeUpdate() {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
-      this.formattedCurrenPosAudio = globalMixin.methods.formatTime(
-        Math.trunc(this.audioElement.currentTime),
-        this.timeFormat,
-      );
+      // this.formattedCurrentPosAudio = globalMixin.methods.formatTime(
+      //   Math.trunc(this.audioElement.currentTime),
+      //   this.timeFormat,
+      // );
     },
     play() {
       if (this.episodeInfo.title) {
@@ -259,6 +259,7 @@ export default {
     },
     seeking() {
       this.pause();
+      this.audioElement.currentTime = this.currentPosAudio;
     },
     seekingRelease() {
       this.audioElement.currentTime = this.currentPosAudio;
@@ -292,10 +293,21 @@ export default {
       }
     },
     currentPosAudio() {
-      this.formattedCurrenPosAudio = globalMixin.methods.formatTime(
-        Math.trunc(this.currentPosAudio),
-        this.timeFormat,
-      );
+      let secondTrunc = Math.trunc(this.currentPosAudio);
+      if (this.timeFormat === 'MM:SS') {
+        // eslint-disable-next-line no-multi-spaces
+        this.formattedCurrentPosAudio =          (secondTrunc - (secondTrunc %= 60)) / 60
+          + (secondTrunc > 9 ? ':' : ':0')
+          + secondTrunc;
+      } else {
+        this.formattedCurrentPosAudio = new Date(secondTrunc * 1000)
+          .toISOString()
+          .substr(11, 8);
+      }
+      // this.formattedCurrentPosAudio = globalMixin.methods.formatTime(
+      //   Math.trunc(this.currentPosAudio),
+      //   this.timeFormat,
+      // );
     },
     episodeVuex(newEpisode) {
       console.log(newEpisode);

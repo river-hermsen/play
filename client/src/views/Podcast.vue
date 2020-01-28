@@ -35,7 +35,7 @@
         </div>
         <div class="extra-info">
           <b>Latest epsiode:</b>
-          <span>{{formatDate(msToDate(podcastInfo.latest_pub_date_ms))}}</span>
+          <span>{{formatDate(msToDate(podcastInfo.latest_pub_date_ms), true)}}</span>
         </div>
       </el-col>
       <el-col :span="19" id="podcastEpisodes">

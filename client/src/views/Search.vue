@@ -143,7 +143,6 @@ export default {
         this.searchForPodcasts(encodedURI);
         this.searchForEpisodes(encodedURI);
       } else {
-        console.log('empty');
         this.podcasts = [];
         this.episodes = [];
       }
@@ -174,10 +173,10 @@ export default {
           });
 
           this.podcasts = podcasts;
-        })
-        .catch((error) => {
-          console.log(error);
         });
+      // .catch((error) => {
+      //   // console.log(error);
+      // });
     },
     searchForEpisodes(encodedURI) {
       this.isLoadingEpisodes = true;
@@ -191,10 +190,10 @@ export default {
         .then((response) => {
           this.episodes = response.data.results.slice(0, 8);
           this.isLoadingEpisodes = false;
-        })
-        .catch((error) => {
-          console.log(error);
         });
+      // .catch((error) => {
+      //   // console.log(error);
+      // });
     },
     showHideDescription(epsiodeId) {
       document.getElementById(epsiodeId).classList.toggle('description-show');

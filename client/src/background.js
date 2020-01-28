@@ -22,6 +22,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
+    title: 'Play Project',
     // frame: false,
   });
 
