@@ -44,6 +44,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "browse" */ '../views/Region.vue'),
   },
   {
+    path: '/language/:name',
+    name: 'Language',
+    component: () => import(/* webpackChunkName: "browse" */ '../views/Language.vue'),
+  },
+
+  {
     path: '/podcast/:id',
     name: 'Podcast',
     component: () => import(/* webpackChunkName: "podcast" */ '../views/Podcast.vue'),

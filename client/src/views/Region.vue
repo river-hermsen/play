@@ -1,14 +1,20 @@
 <template>
   <div v-loading="isLoading">
-    <div class="header-container" v-if="!isLoading">
-      <h1>Best podcasts of {{regionName}}</h1>
+    <div class="best-podcasts">
+      <div class="header-container" v-if="!isLoading">
+        <h1>Best podcasts of {{regionName}}</h1>
+      </div>
+      <el-row class="podcasts" :gutter="16">
+        <el-col :span="6" v-for="podcast in bestPodcasts" :key="podcast.id">
+          <!-- eslint-disable-next-line max-len -->
+          <PodcastCard
+            :title="podcast.title"
+            :thumbnail="podcast.thumbnail"
+            :podcastId="podcast.id"
+          />
+        </el-col>
+      </el-row>
     </div>
-    <el-row class="podcasts" :gutter="16">
-      <el-col :span="6" v-for="podcast in bestPodcasts" :key="podcast.id">
-        <!-- eslint-disable-next-line max-len -->
-        <PodcastCard :title="podcast.title" :thumbnail="podcast.thumbnail" :podcastId="podcast.id" />
-      </el-col>
-    </el-row>
   </div>
 </template>
 
@@ -34,6 +40,8 @@ export default {
       regionName: '',
       regionCode: '',
       bestPodcasts: [],
+      searchQuery: '',
+      searchResults: '',
     };
   },
   beforeMount() {

@@ -78,6 +78,7 @@ export default {
     'audio',
     'audioLength',
     'podcastTitle',
+    'podcastId',
   ],
   mixins: [globalMixin],
   data() {
@@ -101,6 +102,7 @@ export default {
       audio: this.audio,
       audio_length: this.audioLength,
       podcast_title: this.podcastTitle,
+      podcastId: this.podcastId,
     };
     console.log(this.episode);
   },

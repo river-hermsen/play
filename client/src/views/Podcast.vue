@@ -79,6 +79,7 @@
               :audio="episode.audio"
               :audioLength="episode.audio_length_sec"
               :podcastTitle="podcastInfo.title"
+              :podcastId="podcastInfo.id"
             />
           </div>
           <el-row v-if="noResultsFound">
@@ -227,6 +228,10 @@ export default {
             },
           )
           .then((response) => {
+            console.log('-----RESPONSE--------------');
+
+            console.log(response.data);
+
             this.nextPubDate = response.data.next_episode_pub_date;
             this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
               response.data.episodes,
@@ -254,7 +259,6 @@ export default {
           )
           .then((response) => {
             this.noResultsFound = false;
-            console.log(response.data);
 
             if (response.data.count > 0) {
               console.log('results found!');

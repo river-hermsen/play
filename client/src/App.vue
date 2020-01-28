@@ -41,7 +41,7 @@
       <Player />
     </div>
     <div id="content">
-      <keep-alive :exclude="['Podcast', 'Genre', 'Region']" :max="5">
+      <keep-alive :exclude="['Podcast', 'Genre', 'Region', 'Language']" :max="5">
         <router-view />
       </keep-alive>
     </div>
@@ -129,10 +129,10 @@ body {
 
   #close-button:hover {
     background: #e81123 !important;
+    color: #ffffff;
   }
   #close-button:active {
     background: #f1707a !important;
-    color: #000;
   }
   #titlebar #drag-region {
     display: grid;

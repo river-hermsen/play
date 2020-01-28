@@ -9,7 +9,11 @@
           <span class="title" :title="episodeInfo.title">
             <b>{{episodeInfo.title}}</b>
           </span>
-          <p class="podcast">{{episodeInfo.podcast_title}}</p>
+          <router-link
+            :to="'/podcast/' + episodeInfo.podcastId"
+            tag="p"
+            class="podcast"
+          >{{episodeInfo.podcast_title}}</router-link>
         </div>
       </div>
     </el-col>
@@ -101,7 +105,7 @@
     padding-left: 15px;
     float: left;
     .title {
-      font-size: 1rem;
+      font-size: 1.15rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -109,10 +113,16 @@
     }
     .podcast {
       display: -webkit-box;
+      width: fit-content;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      cursor: pointer;
       overflow: hidden;
-      font-size: 0.9em;
+      margin-top: 0.1rem;
+      font-size: 1.05em;
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }
@@ -216,8 +226,6 @@ export default {
   }),
   methods: {
     loadedAudio() {
-      console.log(this);
-
       if (this.audioElement.duration > 60 * 60) {
         this.timeFormat = 'HH:MM:SS';
       } else {
@@ -291,6 +299,7 @@ export default {
         title: newEpisode.title,
         image: newEpisode.image,
         podcast_title: newEpisode.podcast_title,
+        podcastId: newEpisode.podcastId,
       };
       this.audioElement.src = newEpisode.audio;
       this.audioElement.addEventListener('loadedmetadata', () => {
@@ -299,6 +308,10 @@ export default {
 
       this.audioElement.addEventListener('timeupdate', () => {
         this.timeUpdate();
+      });
+
+      this.audioElement.addEventListener('ended', () => {
+        this.pause();
       });
     },
   },

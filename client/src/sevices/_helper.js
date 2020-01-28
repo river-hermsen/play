@@ -82,9 +82,9 @@ export default {
 
     // PLAYBACK methods
     playEpisode(episode, podcastTitle) {
-      console.log(episode);
       const modifiedEpisode = episode;
       modifiedEpisode.podcast_title = podcastTitle;
+
       store.commit('setCurrentEpisode', modifiedEpisode);
     },
     playRandomEpisode() {
