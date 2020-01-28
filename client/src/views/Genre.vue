@@ -48,8 +48,7 @@ export default {
     const genreObj = this.genres.find((genre) => genre.name === genreName);
 
     if (!genreObj) {
-      // this.$router.push('/browse');
-      console.log('no genre');
+      this.$router.push('/browse');
     } else {
       this.genre = genreObj;
       console.log(genreObj);

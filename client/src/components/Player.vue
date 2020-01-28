@@ -101,7 +101,7 @@
     }
   }
   .title-container {
-    margin-top: 8px;
+    margin-top: 15px;
     padding-left: 15px;
     float: left;
     .title {

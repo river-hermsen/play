@@ -22,19 +22,31 @@
       </div>
     </div>
     <div id="nav">
-      <el-menu default-active="/home" router>
-        <el-menu-item index="/search">
+      <el-menu>
+        <router-link to="/search" tag="el-menu-item">
+          <!-- <el-menu-item index="/search"> -->
           <i class="el-icon-search"></i>
           <span>Search</span>
-        </el-menu-item>
-        <el-menu-item index="/home">
+          <!-- </el-menu-item> -->
+        </router-link>
+        <router-link to="/home" tag="el-menu-item">
+          <!-- <el-menu-item index="/home"> -->
           <i class="el-icon-s-home"></i>
           <span>Home</span>
-        </el-menu-item>
-        <el-menu-item index="/browse">
+          <!-- </el-menu-item> -->
+        </router-link>
+        <router-link to="/browse" tag="el-menu-item">
+          <!-- <el-menu-item index="/browse"> -->
           <i class="el-icon-files"></i>
           <span>Browse</span>
+          <!-- </el-menu-item> -->
+        </router-link>
+        <!-- <router-link to="/search" exact tag="el-menu-item"> -->
+        <el-menu-item index="randomPodcast" @click="randomPodcast()">
+          <i class="el-icon-position"></i>
+          <span>Random podcast</span>
         </el-menu-item>
+        <!-- </router-link> -->
       </el-menu>
     </div>
     <div id="player">
@@ -182,8 +194,17 @@ body {
 .el-menu-item {
   color: #8f9ab3;
 }
-.el-menu-item.is-active {
+.el-menu-item.router-link-active {
   border-left: 4px solid #000000;
+}
+.el-menu-item.is-active {
+  color: #8f9ab3;
+}
+.el-menu-item.router-link-active {
+  color: #000000;
+}
+.el-menu-item i {
+  color: unset;
 }
 .el-loading-spinner {
   margin-top: 34vh;
@@ -193,6 +214,7 @@ body {
 @import "@/assets/scss/loading.scss";
 </style>
 <script>
+import axios from 'axios';
 import Player from './components/Player.vue';
 import globalMixin from './sevices/_helper';
 
@@ -213,9 +235,6 @@ export default {
   },
   mixins: [globalMixin],
   methods: {
-    test() {
-      console.log(this.isMAX);
-    },
     closeWindow() {
       this.currentWindow.close();
     },
@@ -227,6 +246,19 @@ export default {
     },
     minimizeWindow() {
       this.currentWindow.minimize();
+    },
+    randomPodcast() {
+      axios
+        .get('https://listen-api.listennotes.com/api/v2/just_listen', {
+          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+        })
+        .then((response) => {
+          const podcastId = response.data.podcast_id;
+          this.$router.push(`/podcast/${podcastId}`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   computed: {

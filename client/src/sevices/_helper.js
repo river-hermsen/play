@@ -1,4 +1,3 @@
-import axios from 'axios';
 import store from '../store/index';
 
 const monthsAbbreviations = [
@@ -79,27 +78,12 @@ export default {
         if (callNow) func.apply(context, args);
       };
     },
-
     // PLAYBACK methods
     playEpisode(episode, podcastTitle) {
       const modifiedEpisode = episode;
       modifiedEpisode.podcast_title = podcastTitle;
 
       store.commit('setCurrentEpisode', modifiedEpisode);
-    },
-    playRandomEpisode() {
-      console.log('Playing random episode');
-
-      axios
-        .get('https://listen-api.listennotes.com/api/v2/just_listen', {
-          headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
-        })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     },
   },
 };

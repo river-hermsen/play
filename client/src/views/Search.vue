@@ -3,12 +3,16 @@
     <div class="header">
       <el-input
         class="search-input"
-        placeholder="Search podcasts or episodes"
+        placeholder="Search for podcasts or episodes"
         v-model="searchQuery"
         suffix-icon="el-icon-search"
       ></el-input>
     </div>
     <div id="searchContent">
+      <!-- <div class="filter">
+        <span>Filter</span>
+        <el-icon class="el-icon-s-operation"></el-icon>
+      </div>-->
       <div
         id="podcasts"
         class="section-search"
@@ -61,6 +65,8 @@
 <style lang="scss">
 #search {
   .header {
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 2.2rem;
     h1 {
       font-size: 2rem;
     }
@@ -79,6 +85,13 @@
     }
   }
   #searchContent {
+    .filter {
+      display: inline;
+      float: right;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+    }
     .section-search {
       h1 {
         font-size: 1.8rem;
