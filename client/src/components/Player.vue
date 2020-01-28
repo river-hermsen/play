@@ -39,7 +39,8 @@
             :max="lengthAudio"
             :show-tooltip="false"
             class="sliderAudio"
-            @click.native="seeking()"
+            @mousedown.native="seeking()"
+            @mouseup.native="seekingRelease()"
           ></el-slider>
           <span>{{formattedLength ? formattedLength : '0:00'}}</span>
         </div>
@@ -217,7 +218,6 @@ export default {
     volumeLevel: 100,
     mutedVolume: false,
     currentPosAudio: 0,
-    currentPosSlider: 0,
     isSeeking: false,
     lengthAudio: null,
     timeFormat: null,
@@ -258,9 +258,11 @@ export default {
       this.isPlaying = false;
     },
     seeking() {
-      // this.audioElement.pause();
-      // this.isPlaying = false;
+      this.pause();
+    },
+    seekingRelease() {
       this.audioElement.currentTime = this.currentPosAudio;
+      this.play();
     },
     toggleMuteVolume() {
       this.mutedVolume = !this.mutedVolume;
@@ -288,6 +290,12 @@ export default {
         this.mutedVolume = false;
         this.audioElement.volume = this.volumeLevel / 100;
       }
+    },
+    currentPosAudio() {
+      this.formattedCurrenPosAudio = globalMixin.methods.formatTime(
+        Math.trunc(this.currentPosAudio),
+        this.timeFormat,
+      );
     },
     episodeVuex(newEpisode) {
       console.log(newEpisode);
