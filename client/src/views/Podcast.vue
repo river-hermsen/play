@@ -228,10 +228,6 @@ export default {
             },
           )
           .then((response) => {
-            console.log('-----RESPONSE--------------');
-
-            console.log(response.data);
-
             this.nextPubDate = response.data.next_episode_pub_date;
             this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
               response.data.episodes,
@@ -326,7 +322,6 @@ export default {
         },
       )
       .then((response) => {
-        console.log(response.data);
         this.nextPubDate = response.data.next_episode_pub_date;
         this.podcastInfo = response.data;
         this.isLoading = false;

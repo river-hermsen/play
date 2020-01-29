@@ -1,4 +1,9 @@
+/* eslint-disable max-len */
 import store from '../store/index';
+
+const Store = require('electron-store');
+
+const ElectronStore = new Store();
 
 const monthsAbbreviations = [
   'Jan',
@@ -77,11 +82,21 @@ export default {
       };
     },
     // PLAYBACK methods
-    playEpisode(episode, podcastTitle) {
-      const modifiedEpisode = episode;
-      modifiedEpisode.podcast_title = podcastTitle;
+    playEpisode(episode) {
+      const recentlyPlayedPodcasts = ElectronStore.get('recentlyPlayedPodcasts');
+      if (recentlyPlayedPodcasts) {
+        if (!recentlyPlayedPodcasts.includes(episode.podcastId)) {
+          const recentAdded = recentlyPlayedPodcasts.concat(episode.podcastId);
+          if (recentlyPlayedPodcasts.length >= 8) {
+            recentAdded.shift();
+          }
+          ElectronStore.set('recentlyPlayedPodcasts', recentAdded);
+        }
+      } else {
+        ElectronStore.set('recentlyPlayedPodcasts', [episode.podcastId]);
+      }
 
-      store.commit('setCurrentEpisode', modifiedEpisode);
+      store.commit('setCurrentEpisode', episode);
     },
   },
 };

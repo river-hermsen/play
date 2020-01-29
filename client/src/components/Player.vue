@@ -322,7 +322,7 @@ export default {
       }
     },
     episodeVuex(newEpisode) {
-      console.log(newEpisode);
+      console.log(newEpisode.podcastId);
 
       this.isLoading = true;
       this.isPlaying = false;
@@ -344,6 +344,16 @@ export default {
 
       this.audioElement.addEventListener('ended', () => {
         this.pause();
+      });
+
+      this.audioElement.addEventListener('error', () => {
+        this.$notify({
+          title: 'Something went wrong',
+          message:
+            'Something went wrong trying to play the audio, please try again later.',
+          position: 'bottom-right',
+          type: 'error',
+        });
       });
     },
   },

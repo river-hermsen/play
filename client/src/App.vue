@@ -209,6 +209,10 @@ body {
 .el-loading-spinner {
   margin-top: 34vh;
 }
+
+.el-notification.right {
+  bottom: 130px !important;
+}
 </style>
 <style lang="scss">
 @import "@/assets/scss/loading.scss";

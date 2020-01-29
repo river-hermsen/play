@@ -1,7 +1,7 @@
 <template>
   <el-row class="episode" :gutter="5">
     <el-col :span="2" class="episode-play">
-      <div @click="playEpisode(episode, episode.podcast_title)">
+      <div @click="playEpisode(episode)">
         <img src="../assets/icons/playback/play_circle.svg" alt="Play episode button" />
       </div>
     </el-col>
@@ -104,7 +104,6 @@ export default {
       podcast_title: this.podcastTitle,
       podcastId: this.podcastId,
     };
-    console.log(this.episode);
   },
 };
 </script>
