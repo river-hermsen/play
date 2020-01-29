@@ -42,7 +42,7 @@
             @mousedown.native="seeking()"
             @mouseup.native="seekingRelease()"
           ></el-slider>
-          <span>{{formattedLength ? formattedLength : '0:00'}}</span>
+          <span>-{{formattedTimeToEnd ? formattedTimeToEnd : '0:00'}}</span>
         </div>
       </div>
     </el-col>
@@ -141,6 +141,7 @@
     .controlContainer {
       height: 48px;
       margin-top: 10px;
+      cursor: pointer;
       img {
         width: 3rem;
       }
@@ -201,6 +202,8 @@
 </style>
 
 <script>
+/* eslint-disable max-len */
+
 import globalMixin from '../sevices/_helper';
 
 export default {
@@ -218,6 +221,8 @@ export default {
     volumeLevel: 100,
     mutedVolume: false,
     currentPosAudio: 0,
+    timeToEnd: null,
+    formattedTimeToEnd: '',
     isSeeking: false,
     lengthAudio: null,
     timeFormat: null,
@@ -242,10 +247,7 @@ export default {
     },
     timeUpdate() {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
-      // this.formattedCurrentPosAudio = globalMixin.methods.formatTime(
-      //   Math.trunc(this.audioElement.currentTime),
-      //   this.timeFormat,
-      // );
+      this.timeToEnd = this.lengthAudio - this.currentPosAudio;
     },
     play() {
       if (this.episodeInfo.title) {
@@ -258,12 +260,14 @@ export default {
       this.isPlaying = false;
     },
     seeking() {
+      console.log('seeking');
       this.pause();
-      this.audioElement.currentTime = this.currentPosAudio;
+      this.isSeeking = true;
     },
     seekingRelease() {
-      this.audioElement.currentTime = this.currentPosAudio;
+      console.log('released');
       this.play();
+      this.isSeeking = false;
     },
     toggleMuteVolume() {
       this.mutedVolume = !this.mutedVolume;
@@ -292,22 +296,30 @@ export default {
         this.audioElement.volume = this.volumeLevel / 100;
       }
     },
-    currentPosAudio() {
-      let secondTrunc = Math.trunc(this.currentPosAudio);
+    currentPosAudio(newVal, oldVal) {
+      if (newVal - oldVal > 1 || newVal - oldVal < 0) {
+        this.audioElement.currentTime = this.currentPosAudio;
+      }
+
+      let secondsElapsedTrunc = Math.trunc(this.currentPosAudio);
+      let secondsToEndTrunc = Math.trunc(this.timeToEnd);
       if (this.timeFormat === 'MM:SS') {
         // eslint-disable-next-line no-multi-spaces
-        this.formattedCurrentPosAudio =          (secondTrunc - (secondTrunc %= 60)) / 60
-          + (secondTrunc > 9 ? ':' : ':0')
-          + secondTrunc;
+        this.formattedCurrentPosAudio =          (secondsElapsedTrunc - (secondsElapsedTrunc %= 60)) / 60
+          + (secondsElapsedTrunc > 9 ? ':' : ':0')
+          + secondsElapsedTrunc;
+        // eslint-disable-next-line no-multi-spaces
+        this.formattedTimeToEnd =          (secondsToEndTrunc - (secondsToEndTrunc %= 60)) / 60
+          + (secondsToEndTrunc > 9 ? ':' : ':0')
+          + secondsToEndTrunc;
       } else {
-        this.formattedCurrentPosAudio = new Date(secondTrunc * 1000)
+        this.formattedCurrentPosAudio = new Date(secondsElapsedTrunc * 1000)
+          .toISOString()
+          .substr(11, 8);
+        this.formattedTimeToEnd = new Date(secondsToEndTrunc * 1000)
           .toISOString()
           .substr(11, 8);
       }
-      // this.formattedCurrentPosAudio = globalMixin.methods.formatTime(
-      //   Math.trunc(this.currentPosAudio),
-      //   this.timeFormat,
-      // );
     },
     episodeVuex(newEpisode) {
       console.log(newEpisode);
