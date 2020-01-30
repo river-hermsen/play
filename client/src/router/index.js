@@ -34,6 +34,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "browse" */ '../views/Browse.vue'),
   },
   {
+    path: '/continue',
+    name: 'Continue',
+    component: () => import(/* webpackChunkName: "browse" */ '../views/Continue.vue'),
+  },
+  {
     path: '/genre/:name',
     name: 'Genre',
     component: () => import(/* webpackChunkName: "browse" */ '../views/Genre.vue'),

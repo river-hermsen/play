@@ -23,6 +23,15 @@
     </div>
     <div id="nav">
       <el-menu>
+        <div class="router-control-container">
+          <div class="router-control-back" @click="routerGoBack()">
+            <i class="el-icon-back"></i>
+          </div>
+          <div class="router-control-forward" @click="routerGoForward()">
+            <i class="el-icon-right"></i>
+          </div>
+        </div>
+
         <router-link to="/search" tag="el-menu-item">
           <!-- <el-menu-item index="/search"> -->
           <i class="el-icon-search"></i>
@@ -41,6 +50,13 @@
           <span>Browse</span>
           <!-- </el-menu-item> -->
         </router-link>
+        <router-link to="/continue" tag="el-menu-item">
+          <!-- <el-menu-item index="/browse"> -->
+          <i class="el-icon-d-arrow-right"></i>
+          <span>Continue listening</span>
+          <!-- </el-menu-item> -->
+        </router-link>
+
         <!-- <router-link to="/search" exact tag="el-menu-item"> -->
         <el-menu-item index="randomPodcast" @click="randomPodcast()">
           <i class="el-icon-position"></i>
@@ -81,9 +97,25 @@ body {
     padding-top: 30px;
     min-height: calc(100vh - 110px);
     position: fixed;
-    #signOut {
-      position: absolute;
-      bottom: 12px;
+    .router-control-container {
+      padding: 1rem 5.1rem 1rem 5.1rem;
+      margin: 0 auto;
+      font-size: 1.5rem;
+      .router-control-back {
+        cursor: pointer;
+        display: inline;
+        padding-right: 0.3rem;
+        border-right: 1px solid #ebebeb;
+      }
+      .router-control-forward {
+        cursor: pointer;
+        display: inline;
+        float: right;
+      }
+      .router-control-impossible {
+        color: #d4d4d4;
+        cursor: unset;
+      }
     }
   }
 }
@@ -217,16 +249,33 @@ body {
 <style lang="scss">
 @import "@/assets/scss/loading.scss";
 </style>
+
 <script>
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
+
 import axios from 'axios';
+import { createBrowserHistory, createMemoryHistory } from 'history';
+
 import Player from './components/Player.vue';
 import globalMixin from './sevices/_helper';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { remote } = require('electron');
-// eslint-disable-next-line import/no-extraneous-dependencies
-// const { BrowserWindow } = require('electron');
 
+const history = createBrowserHistory();
+const history2 = createMemoryHistory();
+
+// Get the current location.
+const { location } = history;
+
+// Listen for changes to the current location.
+const unlisten = history.listen((location, action) => {
+  // location is an object like window.location
+  console.log(action, location.pathname, location.state);
+});
+
+unlisten();
 export default {
   name: 'App',
   components: {
@@ -250,6 +299,12 @@ export default {
     },
     minimizeWindow() {
       this.currentWindow.minimize();
+    },
+    routerGoBack() {
+      this.$router.go(-1);
+    },
+    routerGoForward() {
+      this.$router.go(1);
     },
     randomPodcast() {
       axios
@@ -279,6 +334,13 @@ export default {
     },
   },
   mounted() {
+    // history.listen((location, action) => {
+    //   console.log(
+    //     `The current URL is ${location.pathname}${location.search}${location.hash}`,
+    //   );
+    //   console.log(`The last navigation action was ${action}`);
+    // });
+
     remote.getCurrentWindow().on('maximize', () => {
       this.isMaximized = true;
     });

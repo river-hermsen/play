@@ -10,9 +10,22 @@
       </router-link>
     </el-col>
     <el-col :span="8">
-      <h4 class="episode-title">{{episodeTitle}}</h4>
+      <router-link
+        :to="'/podcast/' + podcastId + '?episode=' + encodeURIComponent(episodeTitle)"
+        tag="div"
+        class="episode-title-container"
+      >
+        <h4 class="episode-title">{{episodeTitle}}</h4>
+      </router-link>
+
       <div>
-        <span>{{podcastTitle}}</span>
+        <router-link
+          :to="'/podcast/' + podcastId"
+          tag="div"
+          class="episode-podcast-title-container"
+        >
+          <span>{{podcastTitle}}</span>
+        </router-link>
       </div>
     </el-col>
     <el-col :span="11" class="description" :id="episodeId">
@@ -37,13 +50,23 @@
       width: 100%;
     }
   }
-  .episode-title {
-    margin: unset;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
+  .episode-title-container {
+    cursor: pointer;
+    .episode-title {
+      margin: unset;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
   }
+  .episode-podcast-title-container {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
