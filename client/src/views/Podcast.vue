@@ -59,10 +59,12 @@
               :id="episode.id"
               :title="episode.title_original"
               :description="episode.description_original"
+              :pubDate="episode.pub_date_ms"
               :audioLength="episode.audio_length_sec"
               :image="episode.image"
               :audio="episode.audio"
               :podcastTitle="podcastInfo.title"
+              :podcastId="podcastInfo.id"
             />
           </div>
           <div
@@ -76,6 +78,7 @@
               :title="episode.title"
               :image="episode.image"
               :description="episode.description"
+              :pubDate="episode.pub_date_ms"
               :audio="episode.audio"
               :audioLength="episode.audio_length_sec"
               :podcastTitle="podcastInfo.title"
@@ -234,9 +237,8 @@ export default {
             );
             this.loadingNewEpisodes = false;
           })
-          .catch((error) => {
-            console.log(error);
-            this.$Loading.error();
+          .catch(() => {
+            globalMixin.methods.somethingWentWrongNotification(this);
           });
       }
     },
@@ -270,8 +272,8 @@ export default {
               this.isLoadingQueryEpisode = false;
             }
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
+            globalMixin.methods.somethingWentWrongNotification(this);
           });
       } else {
         this.noResultsFound = false;
@@ -326,8 +328,8 @@ export default {
         this.podcastInfo = response.data;
         this.isLoading = false;
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        globalMixin.methods.somethingWentWrongNotification(this);
       });
   },
   mounted() {

@@ -206,6 +206,10 @@
 
 import globalMixin from '../sevices/_helper';
 
+const Store = require('electron-store');
+
+const ElectronStore = new Store();
+
 export default {
   name: 'Player',
   mixins: [globalMixin],
@@ -231,6 +235,24 @@ export default {
   }),
   methods: {
     loadedAudio() {
+      const recentlyPlayedEpisodes = ElectronStore.get(
+        'recentlyPlayedEpisodes',
+      );
+
+      if (recentlyPlayedEpisodes) {
+        if (!recentlyPlayedEpisodes.includes(this.episodeInfo.id)) {
+          const recentAdded = recentlyPlayedEpisodes.concat(
+            this.episodeInfo.id,
+          );
+          if (recentlyPlayedEpisodes.length >= 50) {
+            recentAdded.shift();
+          }
+          ElectronStore.set('recentlyPlayedEpisodes', recentAdded);
+        }
+      } else {
+        ElectronStore.set('recentlyPlayedEpisodes', [this.episodeInfo.id]);
+      }
+
       if (this.audioElement.duration > 60 * 60) {
         this.timeFormat = 'HH:MM:SS';
       } else {
@@ -244,12 +266,15 @@ export default {
       this.lengthAudio = Math.trunc(this.audioElement.duration);
       this.isLoading = false;
       this.play();
+      this.timeUpdate();
     },
     timeUpdate() {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
       this.timeToEnd = this.lengthAudio - this.currentPosAudio;
     },
     play() {
+      console.log(this.$store);
+
       if (this.episodeInfo.title) {
         this.audioElement.play();
         this.isPlaying = true;
@@ -322,12 +347,13 @@ export default {
       }
     },
     episodeVuex(newEpisode) {
-      console.log(newEpisode.podcastId);
+      console.log(newEpisode);
 
       this.isLoading = true;
       this.isPlaying = false;
       this.lengthAudio = 0;
       this.episodeInfo = {
+        id: newEpisode.id,
         title: newEpisode.title,
         image: newEpisode.image,
         podcast_title: newEpisode.podcast_title,

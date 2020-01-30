@@ -260,8 +260,8 @@ export default {
           const podcastId = response.data.podcast_id;
           this.$router.push(`/podcast/${podcastId}`);
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
   },

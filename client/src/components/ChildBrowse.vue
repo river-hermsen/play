@@ -87,6 +87,7 @@
 
 <script>
 import axios from 'axios';
+import globalMixin from '../sevices/_helper';
 
 export default {
   props: {
@@ -152,8 +153,8 @@ export default {
           this.regionCodes = response.data.regions;
           this.data = Object.values(response.data.regions).sort();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          globalMixin.methods.somethingWentWrongNotification(this);
         });
     } else if (this.type === 'Languages') {
       axios
@@ -164,8 +165,8 @@ export default {
           console.log(response);
           this.data = response.data.languages.sort();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          globalMixin.methods.somethingWentWrongNotification(this);
         });
     }
   },

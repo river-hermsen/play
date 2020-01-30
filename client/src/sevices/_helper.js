@@ -98,5 +98,24 @@ export default {
 
       store.commit('setCurrentEpisode', episode);
     },
+    somethingWentWrongNotification(self, errorText) {
+      if (errorText && errorText.title && errorText.message) {
+        self.$notify({
+          title: errorText.title,
+          message:
+            errorText.message,
+          position: 'bottom-right',
+          type: 'error',
+        });
+      } else {
+        self.$notify({
+          title: 'Something went wrong',
+          message:
+            'Something went wrong, please try again later.',
+          position: 'bottom-right',
+          type: 'error',
+        });
+      }
+    },
   },
 };

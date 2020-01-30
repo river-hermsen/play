@@ -29,6 +29,9 @@ export default new Vuex.Store({
     setCurrentEpisode(state, episode) {
       state.player.episode = episode;
     },
+    setIsPlaying(state, value) {
+      state.player.isPlaying = value;
+    },
   },
   actions: {
   },

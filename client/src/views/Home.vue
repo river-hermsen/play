@@ -1,8 +1,10 @@
 <template>
   <div id="home">
-    <div id="continue-listening">
+    <div class="podcast-section" id="continue-listening">
       <el-button type="primary" @click="test()">Get</el-button>
       <el-button type="primary" @click="test2()">Delete</el-button>
+      <el-button type="primary" @click="test3()">Get episodes</el-button>
+      <el-button type="primary" @click="test4()">Delete episodes</el-button>
 
       <h1 class="header">Recently played</h1>
       <div class="row" v-if="isLoading">
@@ -25,7 +27,7 @@
       </el-row>
     </div>
 
-    <div id="most-popular">
+    <div class="podcast-section" id="most-popular">
       <h1 class="header">Popular Podcasts</h1>
       <div class="row" v-if="isLoading">
         <el-row :gutter="16">
@@ -46,7 +48,7 @@
         </el-col>
       </el-row>
     </div>
-    <div id="random-genre">
+    <div class="podcast-section" id="random-genre">
       <h1 class="header">Popular podcasts in {{ip.countryName}}</h1>
       <div class="row" v-if="isLoading">
         <el-row :gutter="16">
@@ -75,6 +77,11 @@
   .header {
     font-size: 1.6rem;
     margin-bottom: 1rem;
+  }
+  .podcast-section {
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 2rem;
+    margin-top: 1.5rem;
   }
   .podcast-card {
     height: 280px;
@@ -163,8 +170,8 @@ export default {
 
           this.podcasts.popularGeneral = mostPopularArrayUpdated;
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
     getPopularPodcastsIpLocation() {
@@ -175,8 +182,8 @@ export default {
           this.ip.countryCode = response.data.country_code.toLowerCase();
           this.getPopularPodcastsRegion();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
     getPopularPodcastsRegion() {
@@ -188,7 +195,6 @@ export default {
           },
         )
         .then((response) => {
-          console.log(response.data);
           const mostPopularArray = response.data.podcasts.slice(0, 8);
           const mostPopularArrayUpdated = mostPopularArray.filter((podcast) => {
             const modifiedPodcast = podcast;
@@ -209,18 +215,18 @@ export default {
 
           this.podcasts.popularInCountry = mostPopularArrayUpdated;
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
     getRecentlyPlayedPodcasts() {
       this.recentlyPlayedPodcastIds = ElectronStore.get(
         'recentlyPlayedPodcasts',
-      );
+      ).reverse();
       if (this.recentlyPlayedPodcastIds) {
         console.log();
 
-        // this.recentlyPlayedPodcastIds = this.recentlyPlayedPodcastIds.reverse();
+        this.recentlyPlayedPodcastIds = this.recentlyPlayedPodcastIds;
         const ids = `ids=${this.recentlyPlayedPodcastIds.toString()}`;
 
         const options = {
@@ -234,10 +240,16 @@ export default {
         };
         axios(options)
           .then((response) => {
-            this.podcasts.recentlyPlayedPodcasts = response.data.podcasts;
+            // To sort response correspondig to recent order
+            const sortedArrayOnRecent = response.data.podcasts.sort(
+              (a, b) => this.recentlyPlayedPodcastIds.indexOf(a.id)
+                - this.recentlyPlayedPodcastIds.indexOf(b.id),
+            );
+
+            this.podcasts.recentlyPlayedPodcasts = sortedArrayOnRecent;
           })
-          .catch((error) => {
-            console.log(error.response);
+          .catch(() => {
+            globalMixin.methods.somethingWentWrongNotification(this);
           });
       }
     },
@@ -246,6 +258,12 @@ export default {
     },
     test2() {
       ElectronStore.delete('recentlyPlayedPodcasts');
+    },
+    test3() {
+      console.log(ElectronStore.get('recentlyPlayedEpisodes'));
+    },
+    test4() {
+      ElectronStore.delete('recentlyPlayedEpisodes');
     },
   },
 };
