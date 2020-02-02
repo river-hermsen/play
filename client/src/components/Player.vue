@@ -216,6 +216,7 @@ export default {
   data: () => ({
     isLoading: null,
     episodeInfo: {
+      id: null,
       title: null,
       podcast: null,
       image: null,
@@ -241,16 +242,19 @@ export default {
 
       if (recentlyPlayedEpisodes) {
         if (!recentlyPlayedEpisodes.includes(this.episodeInfo.id)) {
-          const recentAdded = recentlyPlayedEpisodes.concat(
-            this.episodeInfo.id,
-          );
+          const recentAdded = recentlyPlayedEpisodes.concat({
+            id: this.episodeInfo.id,
+            time: 0,
+          });
           if (recentlyPlayedEpisodes.length >= 50) {
             recentAdded.shift();
           }
           ElectronStore.set('recentlyPlayedEpisodes', recentAdded);
         }
       } else {
-        ElectronStore.set('recentlyPlayedEpisodes', [this.episodeInfo.id]);
+        ElectronStore.set('recentlyPlayedEpisodes', [
+          { id: this.episodeInfo.id, time: 0 },
+        ]);
       }
 
       if (this.audioElement.duration > 60 * 60) {
@@ -270,27 +274,42 @@ export default {
     },
     timeUpdate() {
       this.currentPosAudio = Math.trunc(this.audioElement.currentTime);
+      const recentlyPlayedEpisodes = ElectronStore.get(
+        'recentlyPlayedEpisodes',
+      );
+
+      const episodeIndex = recentlyPlayedEpisodes.findIndex(
+        (episode) => episode.id === this.episodeInfo.id,
+      );
+
+      if (episodeIndex !== -1) {
+        recentlyPlayedEpisodes[episodeIndex].time = Math.trunc(
+          this.audioElement.currentTime,
+        );
+        ElectronStore.set('recentlyPlayedEpisodes', recentlyPlayedEpisodes);
+      }
+
       this.timeToEnd = this.lengthAudio - this.currentPosAudio;
     },
     play() {
-      console.log(this.$store);
-
       if (this.episodeInfo.title) {
         this.audioElement.play();
         this.isPlaying = true;
+        this.$store.commit('changePlayingState', true);
       }
     },
     pause() {
-      this.audioElement.pause();
-      this.isPlaying = false;
+      if (this.episodeInfo.title) {
+        this.audioElement.pause();
+        this.isPlaying = false;
+        this.$store.commit('changePlayingState', false);
+      }
     },
     seeking() {
-      console.log('seeking');
       this.pause();
       this.isSeeking = true;
     },
     seekingRelease() {
-      console.log('released');
       this.play();
       this.isSeeking = false;
     },
@@ -310,6 +329,9 @@ export default {
   computed: {
     episodeVuex() {
       return this.$store.getters.getCurrentEpisode;
+    },
+    playingStateInStore() {
+      return this.$store.getters.getPlayingState;
     },
   },
   watch: {
@@ -360,6 +382,21 @@ export default {
         podcastId: newEpisode.podcastId,
       };
       this.audioElement.src = newEpisode.audio;
+      const recentlyPlayedEpisodes = ElectronStore.get(
+        'recentlyPlayedEpisodes',
+      );
+      if (recentlyPlayedEpisodes) {
+        const currentEpisodeInStore = recentlyPlayedEpisodes.find((episode) => {
+          console.log(newEpisode.id);
+          console.log(episode.id);
+
+          return episode.id === newEpisode.id;
+        });
+        if (currentEpisodeInStore) {
+          this.audioElement.currentTime = currentEpisodeInStore.time;
+        }
+      }
+
       this.audioElement.addEventListener('loadedmetadata', () => {
         this.loadedAudio();
       });
@@ -381,6 +418,17 @@ export default {
           type: 'error',
         });
       });
+    },
+    playingStateInStore(newVal) {
+      console.log(newVal);
+
+      if (newVal && !this.isLoading && !this.isPlaying) {
+        this.audioElement.play();
+        this.isPlaying = true;
+      } else if (!this.isLoading && this.isPlaying) {
+        this.audioElement.pause();
+        this.isPlaying = false;
+      }
     },
   },
 };

@@ -3,37 +3,77 @@
     <div>
       <h1>Continue where you left off!</h1>
     </div>
-    <div>
+    <div class="section" v-if="this.recentlyPlayedEpisodes">
       <h2>Episodes</h2>
-      <div></div>
+      <div>
+        <PodcastEpisode
+          v-for="episode in results.episodes"
+          :key="episode.id"
+          :id="episode.id"
+          :title="episode.title"
+          :image="episode.image"
+          :description="episode.description"
+          :pubDate="episode.pub_date_ms"
+          :audio="episode.audio"
+          :audioLength="episode.audio_length_sec"
+          :podcastTitle="episode.podcast_title"
+          :podcastId="episode.podcast_id"
+        />
+      </div>
     </div>
-    <div>
+    <div class="section" v-if="this.recentlyPlayedPodcasts">
       <h2>Podcasts</h2>
-      <div></div>
+      <el-row :gutter="16">
+        <el-col :span="6" v-for="podcast in results.podcasts" :key="podcast.id">
+          <PodcastCard
+            :title="podcast.title"
+            :mainGenre="podcast.genreName"
+            :thumbnail="podcast.thumbnail"
+            :podcastId="podcast.id"
+          />
+        </el-col>
+      </el-row>
+    </div>
+    <div v-if="!this.recentlyPlayedEpisodes && !this.recentlyPlayedPodcasts">
+      You haven't listened to any podcasts yet.
+      Start now by listening by searching your favorite podcasts
+      <router-link to="/search">here.</router-link>
     </div>
   </div>
 </template>
 
-<style>
+<style lang="scss" scoped>
+.section {
+  border-bottom: 1px solid #ebebeb;
+  &:last-child {
+    border-bottom: unset;
+  }
+}
 </style>
 
 <script>
 import axios from 'axios';
 import globalMixin from '../sevices/_helper';
+import PodcastCard from '../components/PodcastCard.vue';
+import PodcastEpisode from '../components/PodcastEpisode.vue';
 
 const Store = require('electron-store');
 
 const ElectronStore = new Store();
 
 export default {
+  name: 'Continue',
+  components: {
+    PodcastEpisode,
+    PodcastCard,
+  },
   data() {
     return {
       isLoadingPodcasts: true,
       isLoadingEpisodes: true,
-      ids: {
-        podcast: {},
-        episode: {},
-      },
+      recentlyPlayedPodcasts: null,
+      recentlyPlayedEpisodes: null,
+      recentlyPlayedEpisodesIds: null,
       results: {
         podcasts: {},
         episodes: {},
@@ -42,7 +82,7 @@ export default {
   },
   methods: {
     batchFetchPodcasts() {
-      const ids = `ids=${this.ids.podcast.toString()}`;
+      const ids = `ids=${this.recentlyPlayedPodcasts.toString()}`;
       console.log(ids);
 
       const options = {
@@ -61,16 +101,17 @@ export default {
             (a, b) => this.ids.podcast.indexOf(a.id) - this.ids.podcast.indexOf(b.id),
           );
 
-          this.results.podcasts = sortedArrayOnRecent;
+          this.results.podcasts = sortedArrayOnRecent.reverse();
         })
-        .catch((error) => {
-          console.log(error);
-
+        .catch(() => {
           globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
     batchFetchEpisodes() {
-      const ids = `ids=${this.ids.episode.toString()}`;
+      console.log(this.recentlyPlayedEpisodes);
+
+      const episodeIds = this.recentlyPlayedEpisodes.map((episode) => episode.id);
+      const ids = `ids=${episodeIds.toString()}`;
       console.log(ids);
 
       const options = {
@@ -85,17 +126,14 @@ export default {
       axios(options)
         .then((response) => {
           // To sort response correspondig to recent order
-          console.log(response);
-
           const sortedArrayOnRecent = response.data.episodes.sort(
-            (a, b) => this.ids.episode.indexOf(a.id) - this.ids.episode.indexOf(b.id),
+            (a, b) => this.recentlyPlayedEpisodesIds.indexOf(a.id)
+              - this.recentlyPlayedEpisodesIds.indexOf(b.id),
           );
 
-          this.results.episodes = sortedArrayOnRecent;
+          this.results.episodes = sortedArrayOnRecent.reverse();
         })
-        .catch((error) => {
-          console.log(error);
-
+        .catch(() => {
           globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
@@ -104,12 +142,19 @@ export default {
   created() {
     console.log('Creating...');
 
-    this.ids.podcast = ElectronStore.get('recentlyPlayedPodcasts');
-    this.ids.episode = ElectronStore.get('recentlyPlayedEpisodes');
+    this.recentlyPlayedPodcasts = ElectronStore.get('recentlyPlayedPodcasts');
+    this.recentlyPlayedEpisodes = ElectronStore.get('recentlyPlayedEpisodes');
+    this.recentlyPlayedEpisodesIds = this.recentlyPlayedEpisodes.map(
+      (episode) => episode.id,
+    );
   },
   beforeMount() {
-    this.batchFetchPodcasts();
-    this.batchFetchEpisodes();
+    if (this.recentlyPlayedPodcasts) {
+      this.batchFetchPodcasts();
+    }
+    if (this.recentlyPlayedEpisodes) {
+      this.batchFetchEpisodes();
+    }
   },
 };
 </script>

@@ -69,7 +69,7 @@
       <Player />
     </div>
     <div id="content">
-      <keep-alive :exclude="['Podcast', 'Genre', 'Region', 'Language']" :max="5">
+      <keep-alive :exclude="['Podcast', 'Genre', 'Region', 'Language', 'Continue']" :max="5">
         <router-view />
       </keep-alive>
     </div>

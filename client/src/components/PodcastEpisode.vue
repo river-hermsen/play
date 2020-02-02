@@ -1,10 +1,13 @@
 <template>
   <el-row class="episode" :gutter="5">
     <el-col :span="2" class="episode-play">
-      <div @click="playEpisode(episode)" v-show="!isPlaying">
+      <div
+        @click="isCurrentEpisode ? playAudio() : playEpisode(episode)"
+        v-show="!isCurrentEpisode || !isPlaying"
+      >
         <img src="../assets/icons/playback/play_circle.svg" alt="Play episode button" />
       </div>
-      <div v-show="isPlaying">
+      <div @click="pauseAudio()" v-show="isCurrentEpisode && isPlaying">
         <img src="../assets/icons/playback/pause_circle.svg" alt="Pause episode button" />
       </div>
     </el-col>
@@ -99,6 +102,7 @@ export default {
   mixins: [globalMixin],
   data() {
     return {
+      isCurrentEpisode: false,
       isPlaying: false,
       episode: {},
     };
@@ -107,10 +111,22 @@ export default {
     currentEpisodeId() {
       return this.$store.state.player.episode.id;
     },
+    currentPlayingState() {
+      if (this.isCurrentEpisode) {
+        return this.$store.getters.getPlayingState;
+      }
+      return null;
+    },
   },
   methods: {
     showHideDescription(episodeId) {
       document.getElementById(episodeId).classList.toggle('description-show');
+    },
+    playAudio() {
+      this.$store.commit('changePlayingState', true);
+    },
+    pauseAudio() {
+      this.$store.commit('changePlayingState', false);
     },
   },
   created() {
@@ -134,6 +150,13 @@ export default {
   watch: {
     currentEpisodeId(newVal) {
       if (this.id === newVal) {
+        this.isCurrentEpisode = true;
+      } else {
+        this.isCurrentEpisode = false;
+      }
+    },
+    currentPlayingState(newVal) {
+      if (newVal) {
         this.isPlaying = true;
       } else {
         this.isPlaying = false;

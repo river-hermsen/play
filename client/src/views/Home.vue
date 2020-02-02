@@ -1,11 +1,10 @@
 <template>
   <div id="home">
-    <div class="podcast-section" id="continue-listening">
+    <div class="podcast-section" id="continue-listening" v-if="recentlyPlayedPodcastIds">
       <el-button type="primary" @click="test()">Get</el-button>
       <el-button type="primary" @click="test2()">Delete</el-button>
       <el-button type="primary" @click="test3()">Get episodes</el-button>
       <el-button type="primary" @click="test4()">Delete episodes</el-button>
-
       <h1 class="header">Recently played</h1>
       <div class="row" v-if="isLoading">
         <el-row :gutter="16">
@@ -75,7 +74,7 @@
 <style lang="scss" scoped>
 #home {
   .header {
-    font-size: 1.6rem;
+    font-size: 2rem;
     margin-bottom: 1rem;
   }
   .podcast-section {
@@ -222,10 +221,9 @@ export default {
     getRecentlyPlayedPodcasts() {
       this.recentlyPlayedPodcastIds = ElectronStore.get(
         'recentlyPlayedPodcasts',
-      ).reverse();
+      );
       if (this.recentlyPlayedPodcastIds) {
-        console.log();
-
+        this.recentlyPlayedPodcastIds.reverse();
         this.recentlyPlayedPodcastIds = this.recentlyPlayedPodcastIds;
         const ids = `ids=${this.recentlyPlayedPodcastIds.toString()}`;
 

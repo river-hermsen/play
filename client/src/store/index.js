@@ -21,6 +21,9 @@ export default new Vuex.Store({
     getCurrentEpisode(state) {
       return state.player.episode;
     },
+    getPlayingState(state) {
+      return state.player.isPlaying;
+    },
   },
   mutations: {
     setGenres(state, genres) {
@@ -30,6 +33,9 @@ export default new Vuex.Store({
       state.player.episode = episode;
     },
     setIsPlaying(state, value) {
+      state.player.isPlaying = value;
+    },
+    changePlayingState(state, value) {
       state.player.isPlaying = value;
     },
   },
