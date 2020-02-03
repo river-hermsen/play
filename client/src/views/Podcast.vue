@@ -1,5 +1,6 @@
 <template>
   <div id="podcast" v-if="podcastInfo">
+    <router-link to="/podcast/d8dd100adea94898b104460238fa9e47">TESTING</router-link>
     <el-row id="mainPodcastInfo">
       <el-col :span="6">
         <img :src="podcastInfo.image" alt="Podcats Cover" class="image" />
@@ -196,7 +197,7 @@ export default {
   mixins: [globalMixin],
   components: { PodcastEpisode },
   data: () => ({
-    isLoading: false,
+    isLoading: true,
     isLoadingQueryEpisode: false,
     podcastId: null,
     podcastInfo: undefined,
@@ -218,28 +219,32 @@ export default {
       }
     },
     getMoreEpisodes() {
-      if (
-        this.podcastInfo.total_episodes > this.podcastInfo.episodes.length
-        && !this.loadingNewEpisodes
-      ) {
-        this.loadingNewEpisodes = true;
-        axios
-          .get(
-            `https://listen-api.listennotes.com/api/v2/podcasts/${this.podcastId}?next_episode_pub_date=${this.nextPubDate}`,
-            {
-              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
-            },
-          )
-          .then((response) => {
-            this.nextPubDate = response.data.next_episode_pub_date;
-            this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
-              response.data.episodes,
-            );
-            this.loadingNewEpisodes = false;
-          })
-          .catch(() => {
-            globalMixin.methods.somethingWentWrongNotification(this);
-          });
+      if (this.podcastInfo) {
+        if (
+          this.podcastInfo.total_episodes > this.podcastInfo.episodes.length
+          && !this.loadingNewEpisodes
+        ) {
+          this.loadingNewEpisodes = true;
+          axios
+            .get(
+              `https://listen-api.listennotes.com/api/v2/podcasts/${this.podcastId}?next_episode_pub_date=${this.nextPubDate}`,
+              {
+                headers: {
+                  'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e',
+                },
+              },
+            )
+            .then((response) => {
+              this.nextPubDate = response.data.next_episode_pub_date;
+              this.podcastInfo.episodes = this.podcastInfo.episodes.concat(
+                response.data.episodes,
+              );
+              this.loadingNewEpisodes = false;
+            })
+            .catch(() => {
+              globalMixin.methods.somethingWentWrongNotification(this);
+            });
+        }
       }
     },
     searchEpisodes() {
@@ -259,12 +264,8 @@ export default {
             this.noResultsFound = false;
 
             if (response.data.count > 0) {
-              console.log('results found!');
-
               this.searchResults = response.data.results;
             } else {
-              console.log('NO results found!');
-
               this.noResultsFound = true;
             }
 
@@ -278,7 +279,6 @@ export default {
       } else {
         this.noResultsFound = false;
         this.searchResults = [];
-        console.log('not running');
       }
     },
   },

@@ -96,14 +96,18 @@ export default {
       };
       axios(options)
         .then((response) => {
+          console.log(response);
+
           // To sort response correspondig to recent order
           const sortedArrayOnRecent = response.data.podcasts.sort(
-            (a, b) => this.ids.podcast.indexOf(a.id) - this.ids.podcast.indexOf(b.id),
+            (a, b) => this.recentlyPlayedPodcasts.indexOf(a.id)
+              - this.recentlyPlayedPodcasts.indexOf(b.id),
           );
 
           this.results.podcasts = sortedArrayOnRecent.reverse();
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
           globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
@@ -133,7 +137,9 @@ export default {
 
           this.results.episodes = sortedArrayOnRecent.reverse();
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
+
           globalMixin.methods.somethingWentWrongNotification(this);
         });
     },

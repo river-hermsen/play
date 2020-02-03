@@ -70,7 +70,7 @@
     </div>
     <div id="content">
       <keep-alive :exclude="['Podcast', 'Genre', 'Region', 'Language', 'Continue']" :max="5">
-        <router-view />
+        <router-view :key="$route.fullPath" />
       </keep-alive>
     </div>
   </div>

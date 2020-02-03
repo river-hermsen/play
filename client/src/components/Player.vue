@@ -241,7 +241,10 @@ export default {
       );
 
       if (recentlyPlayedEpisodes) {
-        if (!recentlyPlayedEpisodes.includes(this.episodeInfo.id)) {
+        const recentlyPlayedEpisodesIds = recentlyPlayedEpisodes.map(
+          (episode) => episode.id,
+        );
+        if (!recentlyPlayedEpisodesIds.includes(this.episodeInfo.id)) {
           const recentAdded = recentlyPlayedEpisodes.concat({
             id: this.episodeInfo.id,
             time: 0,

@@ -1,10 +1,10 @@
 <template>
   <div id="home">
     <div class="podcast-section" id="continue-listening" v-if="recentlyPlayedPodcastIds">
-      <el-button type="primary" @click="test()">Get</el-button>
+      <!-- <el-button type="primary" @click="test()">Get</el-button>
       <el-button type="primary" @click="test2()">Delete</el-button>
       <el-button type="primary" @click="test3()">Get episodes</el-button>
-      <el-button type="primary" @click="test4()">Delete episodes</el-button>
+      <el-button type="primary" @click="test4()">Delete episodes</el-button>-->
       <h1 class="header">Recently played</h1>
       <div class="row" v-if="isLoading">
         <el-row :gutter="16">
@@ -16,6 +16,28 @@
 
       <el-row :gutter="16">
         <el-col :span="6" v-for="podcast in podcasts.recentlyPlayedPodcasts" :key="podcast.id">
+          <PodcastCard
+            :title="podcast.title"
+            :mainGenre="podcast.genreName"
+            :thumbnail="podcast.thumbnail"
+            :podcastId="podcast.id"
+          />
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="podcast-section" id="most-popular">
+      <h1 class="header">Because you listened to {{recommendationLatestPodcastName}}</h1>
+      <div class="row" v-if="isLoading">
+        <el-row :gutter="16">
+          <el-col :span="6" v-for="loadingCard in amountLoadingCards" :key="loadingCard">
+            <LoadingPodcastCard />
+          </el-col>
+        </el-row>
+      </div>
+
+      <el-row :gutter="16">
+        <el-col :span="6" v-for="podcast in podcasts.recommendationLatestPodcast" :key="podcast.id">
           <PodcastCard
             :title="podcast.title"
             :mainGenre="podcast.genreName"
@@ -124,7 +146,9 @@ export default {
         popularGeneral: [],
         popularInCountry: [],
         recentlyPlayedPodcasts: [],
+        recommendationLatestPodcast: [],
       },
+      recommendationLatestPodcastName: '',
       recentlyPlayedPodcastIds: [],
       ip: {
         countryName: '',
@@ -141,6 +165,7 @@ export default {
     this.getPopularPodcasts();
     this.getPopularPodcastsIpLocation();
     this.getRecentlyPlayedPodcasts();
+    this.getRecommendationLatestPodcast();
   },
   methods: {
     getPopularPodcasts() {
@@ -224,7 +249,6 @@ export default {
       );
       if (this.recentlyPlayedPodcastIds) {
         this.recentlyPlayedPodcastIds.reverse();
-        this.recentlyPlayedPodcastIds = this.recentlyPlayedPodcastIds;
         const ids = `ids=${this.recentlyPlayedPodcastIds.toString()}`;
 
         const options = {
@@ -247,6 +271,39 @@ export default {
             this.podcasts.recentlyPlayedPodcasts = sortedArrayOnRecent;
           })
           .catch(() => {
+            globalMixin.methods.somethingWentWrongNotification(this);
+          });
+      }
+    },
+    getRecommendationLatestPodcast() {
+      if (this.recentlyPlayedPodcastIds) {
+        const id = this.recentlyPlayedPodcastIds[0];
+
+        axios
+          .get(
+            `https://listen-api.listennotes.com/api/v2/podcasts/${id}/recommendations`,
+            {
+              headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+            },
+          )
+          .then((response) => {
+            console.log(response);
+            this.podcasts.recommendationLatestPodcast =              response.data.recommendations;
+          })
+          .catch((error) => {
+            console.log(error);
+            globalMixin.methods.somethingWentWrongNotification(this);
+          });
+        axios
+          .get(`https://listen-api.listennotes.com/api/v2/podcasts/${id}`, {
+            headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
+          })
+          .then((response) => {
+            console.log(response);
+            this.recommendationLatestPodcastName = response.data.title;
+          })
+          .catch((error) => {
+            console.log(error);
             globalMixin.methods.somethingWentWrongNotification(this);
           });
       }

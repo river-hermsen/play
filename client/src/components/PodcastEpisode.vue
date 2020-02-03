@@ -13,7 +13,10 @@
     </el-col>
     <el-col :span="7">
       <b :title="episode.title" class="episode-title">{{episode.title}}</b>
-      <span class="episode-date">{{formatDate(msToDate(episode.pubDate), true)}}</span>
+      {{episode.podcast_title}}
+      <span
+        class="episode-date"
+      >{{formatDate(msToDate(episode.pubDate), true)}}</span>
     </el-col>
     <el-col :span="13" class="description" :id="id">
       <div @click="showHideDescription(episode.id)">
@@ -55,7 +58,7 @@
 
   .episode-date {
     display: block;
-    color: #404040;
+    color: #929292;
   }
   .description {
     display: -webkit-box;
