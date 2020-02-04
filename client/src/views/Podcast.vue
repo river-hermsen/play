@@ -1,6 +1,5 @@
 <template>
   <div id="podcast" v-if="podcastInfo">
-    <router-link to="/podcast/d8dd100adea94898b104460238fa9e47">TESTING</router-link>
     <el-row id="mainPodcastInfo">
       <el-col :span="6">
         <img :src="podcastInfo.image" alt="Podcats Cover" class="image" />
