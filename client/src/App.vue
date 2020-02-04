@@ -3,7 +3,7 @@
     <div id="toolbar">
       <div id="drag-region">
         <div id="window-title">
-          <span @click="test()">PLAY PROJECT</span>
+          <span @click="test()">Play Project</span>
         </div>
         <div id="window-controls">
           <div class="button" id="min-button" @click="minimizeWindow()">
@@ -272,7 +272,6 @@ const { location } = history;
 // Listen for changes to the current location.
 const unlisten = history.listen((location, action) => {
   // location is an object like window.location
-  console.log(action, location.pathname, location.state);
 });
 
 unlisten();
@@ -328,18 +327,25 @@ export default {
       return remote.getCurrentWindow().isMaximized();
     },
   },
-  watch: {
-    isReallMax() {
-      console.log('changed');
-    },
-  },
   mounted() {
-    // history.listen((location, action) => {
-    //   console.log(
-    //     `The current URL is ${location.pathname}${location.search}${location.hash}`,
-    //   );
-    //   console.log(`The last navigation action was ${action}`);
-    // });
+    document.onkeydown = (e) => {
+      if (e.keyCode === 123) {
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 'I'.charCodeAt(0)) {
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 'C'.charCodeAt(0)) {
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && e.keyCode === 'J'.charCodeAt(0)) {
+        return false;
+      }
+      if (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0)) {
+        return false;
+      }
+      return true;
+    };
 
     remote.getCurrentWindow().on('maximize', () => {
       this.isMaximized = true;

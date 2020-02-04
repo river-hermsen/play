@@ -47,7 +47,6 @@ export default {
   beforeMount() {
     this.regionName = this.$route.params.name;
     this.regionCode = this.$route.query.code;
-    console.log(this.$route);
   },
   mounted() {
     axios
@@ -58,13 +57,10 @@ export default {
         },
       )
       .then((response) => {
-        console.log(response.data);
         this.bestPodcasts = response.data.podcasts;
         this.isLoading = false;
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(() => {});
   },
 };
 </script>

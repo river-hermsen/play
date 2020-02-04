@@ -372,8 +372,6 @@ export default {
       }
     },
     episodeVuex(newEpisode) {
-      console.log(newEpisode);
-
       this.isLoading = true;
       this.isPlaying = false;
       this.lengthAudio = 0;
@@ -389,12 +387,9 @@ export default {
         'recentlyPlayedEpisodes',
       );
       if (recentlyPlayedEpisodes) {
-        const currentEpisodeInStore = recentlyPlayedEpisodes.find((episode) => {
-          console.log(newEpisode.id);
-          console.log(episode.id);
-
-          return episode.id === newEpisode.id;
-        });
+        const currentEpisodeInStore = recentlyPlayedEpisodes.find(
+          (episode) => episode.id === newEpisode.id,
+        );
         if (currentEpisodeInStore) {
           this.audioElement.currentTime = currentEpisodeInStore.time;
         }
@@ -423,12 +418,11 @@ export default {
       });
     },
     playingStateInStore(newVal) {
-      console.log(newVal);
-
       if (newVal && !this.isLoading && !this.isPlaying) {
         this.audioElement.play();
         this.isPlaying = true;
-      } else if (!this.isLoading && this.isPlaying) {
+      }
+      if (newVal === false && !this.isLoading && this.isPlaying) {
         this.audioElement.pause();
         this.isPlaying = false;
       }

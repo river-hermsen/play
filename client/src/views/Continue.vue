@@ -83,7 +83,6 @@ export default {
   methods: {
     batchFetchPodcasts() {
       const ids = `ids=${this.recentlyPlayedPodcasts.toString()}`;
-      console.log(ids);
 
       const options = {
         method: 'POST',
@@ -96,8 +95,6 @@ export default {
       };
       axios(options)
         .then((response) => {
-          console.log(response);
-
           // To sort response correspondig to recent order
           const sortedArrayOnRecent = response.data.podcasts.sort(
             (a, b) => this.recentlyPlayedPodcasts.indexOf(a.id)
@@ -106,17 +103,13 @@ export default {
 
           this.results.podcasts = sortedArrayOnRecent.reverse();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
           globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
     batchFetchEpisodes() {
-      console.log(this.recentlyPlayedEpisodes);
-
       const episodeIds = this.recentlyPlayedEpisodes.map((episode) => episode.id);
       const ids = `ids=${episodeIds.toString()}`;
-      console.log(ids);
 
       const options = {
         method: 'POST',
@@ -137,17 +130,13 @@ export default {
 
           this.results.episodes = sortedArrayOnRecent.reverse();
         })
-        .catch((error) => {
-          console.log(error);
-
+        .catch(() => {
           globalMixin.methods.somethingWentWrongNotification(this);
         });
     },
   },
 
   created() {
-    console.log('Creating...');
-
     this.recentlyPlayedPodcasts = ElectronStore.get('recentlyPlayedPodcasts');
     this.recentlyPlayedEpisodes = ElectronStore.get('recentlyPlayedEpisodes');
     this.recentlyPlayedEpisodesIds = this.recentlyPlayedEpisodes.map(

@@ -124,7 +124,6 @@ export default {
         this.searchForPodcasts(encodedURI);
         this.searchForEpisodes(encodedURI);
       } else {
-        console.log('empty');
         this.searchPodcastsRes = [];
         this.searchEpisodesRes = [];
       }
@@ -146,9 +145,7 @@ export default {
             this.searchPodcastsRes = response.data.results;
           }
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch(() => {});
     },
     searchForEpisodes(encodedURI) {
       this.isLoadingEpisodes = true;
@@ -167,9 +164,7 @@ export default {
             this.searchEpisodesRes = response.data.results;
           }
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch(() => {});
     },
   },
   watch: {

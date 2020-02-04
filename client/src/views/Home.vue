@@ -159,7 +159,6 @@ export default {
   components: { PodcastCard, LoadingPodcastCard },
   // beforeCreate() {
   //   store.set('foo.bar', true);
-  //   console.log(store.get('foo'));
   // },
   mounted() {
     this.getPopularPodcasts();
@@ -287,11 +286,9 @@ export default {
             },
           )
           .then((response) => {
-            console.log(response);
             this.podcasts.recommendationLatestPodcast =              response.data.recommendations;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
             globalMixin.methods.somethingWentWrongNotification(this);
           });
         axios
@@ -299,24 +296,18 @@ export default {
             headers: { 'X-ListenAPI-Key': '2e2c4f39b7b44659b73cb3b31f95236e' },
           })
           .then((response) => {
-            console.log(response);
             this.recommendationLatestPodcastName = response.data.title;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
             globalMixin.methods.somethingWentWrongNotification(this);
           });
       }
     },
-    test() {
-      console.log(ElectronStore.get('recentlyPlayedPodcasts'));
-    },
+    test() {},
     test2() {
       ElectronStore.delete('recentlyPlayedPodcasts');
     },
-    test3() {
-      console.log(ElectronStore.get('recentlyPlayedEpisodes'));
-    },
+    test3() {},
     test4() {
       ElectronStore.delete('recentlyPlayedEpisodes');
     },

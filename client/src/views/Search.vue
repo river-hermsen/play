@@ -174,9 +174,6 @@ export default {
 
           this.podcasts = podcasts;
         });
-      // .catch((error) => {
-      //   // console.log(error);
-      // });
     },
     searchForEpisodes(encodedURI) {
       this.isLoadingEpisodes = true;
@@ -192,7 +189,6 @@ export default {
           this.isLoadingEpisodes = false;
         });
       // .catch((error) => {
-      //   // console.log(error);
       // });
     },
     showHideDescription(epsiodeId) {

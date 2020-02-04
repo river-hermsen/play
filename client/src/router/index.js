@@ -59,12 +59,12 @@ const routes = [
     name: 'Podcast',
     component: () => import(/* webpackChunkName: "podcast" */ '../views/Podcast.vue'),
   },
-  // {
-  //   path: '*',
-  //   redirect: {
-  //     name: 'Home'
-  //   }
-  // }
+  {
+    path: '*',
+    redirect: {
+      name: 'Home',
+    },
+  },
 ];
 
 const router = new VueRouter({
@@ -83,8 +83,7 @@ router.beforeEach((to, from, next) => {
         store.commit('setGenres', response.data.genres);
         next();
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
       });
   } else {
     next();

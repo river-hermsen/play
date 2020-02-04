@@ -248,7 +248,6 @@ export default {
     },
     searchEpisodes() {
       if (this.searchQuery) {
-        console.log('running');
         const searchQueryURI = encodeURIComponent(this.searchQuery);
         const podcastIdURI = encodeURIComponent(this.podcastInfo.id);
 
@@ -282,9 +281,7 @@ export default {
     },
   },
   watch: {
-    searchQuery(newQuery) {
-      console.log(newQuery);
-
+    searchQuery() {
       if (this.isLoadingQueryEpisode) {
         this.searchEpisodes();
       } else {

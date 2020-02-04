@@ -23,7 +23,7 @@ function createWindow() {
       nodeIntegration: true,
     },
     title: 'Play Project',
-    // frame: false,
+    frame: false,
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

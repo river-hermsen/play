@@ -43,7 +43,6 @@ export default {
   beforeMount() {
     const genreName = this.$route.params.name;
     this.genres = this.$store.getters.getGenres;
-    console.log(this.$route);
 
     const genreObj = this.genres.find((genre) => genre.name === genreName);
 
@@ -51,14 +50,9 @@ export default {
       this.$router.push('/browse');
     } else {
       this.genre = genreObj;
-      console.log(genreObj);
     }
   },
   mounted() {
-    console.log(
-      `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
-    );
-
     axios
       .get(
         `https://listen-api.listennotes.com/api/v2/best_podcasts?genre_id=${this.genre.id}`,
@@ -67,13 +61,10 @@ export default {
         },
       )
       .then((response) => {
-        console.log(response.data);
         this.bestPodcasts = response.data.podcasts;
         this.isLoading = false;
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch(() => {});
   },
 };
 </script>
